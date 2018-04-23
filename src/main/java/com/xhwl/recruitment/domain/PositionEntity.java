@@ -8,23 +8,24 @@ import java.util.Objects;
 /**
  * @Author: guiyu
  * @Description:
- * @Date: Create in 下午4:24 2018/4/22
+ * @Date: Create in 下午12:36 2018/4/23
  **/
 @Entity
 @Table(name = "position", schema = "xhwl", catalog = "")
 public class PositionEntity {
     private long id;
     private String positionName;
-    private String resumeAuditPosition;
-    private String assessmentPosition;
+    private String department;
+    private String resumeAuditDepartment;
+    private String assessmentDepartment;
     private String positionType;
     private Integer recruitmentType;
     private String workPlace;
-    private Integer education;
+    private String education;
     private Integer recruitingNumbers;
     private Date deadline;
     private String jobResponsibilities;
-    private String jobDescription;
+    private String jobRequirements;
     private Integer publishType;
     private Date publishDate;
     private Timestamp gmtCreate;
@@ -32,7 +33,6 @@ public class PositionEntity {
 
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
     public long getId() {
         return id;
     }
@@ -52,23 +52,33 @@ public class PositionEntity {
     }
 
     @Basic
-    @Column(name = "resume_audit_position", nullable = true, length = 255)
-    public String getResumeAuditPosition() {
-        return resumeAuditPosition;
+    @Column(name = "department", nullable = true, length = 255)
+    public String getDepartment() {
+        return department;
     }
 
-    public void setResumeAuditPosition(String resumeAuditPosition) {
-        this.resumeAuditPosition = resumeAuditPosition;
+    public void setDepartment(String department) {
+        this.department = department;
     }
 
     @Basic
-    @Column(name = "assessment_position", nullable = true, length = 255)
-    public String getAssessmentPosition() {
-        return assessmentPosition;
+    @Column(name = "resume_audit_department", nullable = true, length = 255)
+    public String getResumeAuditDepartment() {
+        return resumeAuditDepartment;
     }
 
-    public void setAssessmentPosition(String assessmentPosition) {
-        this.assessmentPosition = assessmentPosition;
+    public void setResumeAuditDepartment(String resumeAuditDepartment) {
+        this.resumeAuditDepartment = resumeAuditDepartment;
+    }
+
+    @Basic
+    @Column(name = "assessment_department", nullable = true, length = 255)
+    public String getAssessmentDepartment() {
+        return assessmentDepartment;
+    }
+
+    public void setAssessmentDepartment(String assessmentDepartment) {
+        this.assessmentDepartment = assessmentDepartment;
     }
 
     @Basic
@@ -102,12 +112,12 @@ public class PositionEntity {
     }
 
     @Basic
-    @Column(name = "education", nullable = true)
-    public Integer getEducation() {
+    @Column(name = "education", nullable = true, length = 255)
+    public String getEducation() {
         return education;
     }
 
-    public void setEducation(Integer education) {
+    public void setEducation(String education) {
         this.education = education;
     }
 
@@ -142,13 +152,13 @@ public class PositionEntity {
     }
 
     @Basic
-    @Column(name = "job_description", nullable = true, length = -1)
-    public String getJobDescription() {
-        return jobDescription;
+    @Column(name = "job_requirements", nullable = true, length = -1)
+    public String getJobRequirements() {
+        return jobRequirements;
     }
 
-    public void setJobDescription(String jobDescription) {
-        this.jobDescription = jobDescription;
+    public void setJobRequirements(String jobRequirements) {
+        this.jobRequirements = jobRequirements;
     }
 
     @Basic
@@ -198,8 +208,9 @@ public class PositionEntity {
         PositionEntity that = (PositionEntity) o;
         return id == that.id &&
                 Objects.equals(positionName, that.positionName) &&
-                Objects.equals(resumeAuditPosition, that.resumeAuditPosition) &&
-                Objects.equals(assessmentPosition, that.assessmentPosition) &&
+                Objects.equals(department, that.department) &&
+                Objects.equals(resumeAuditDepartment, that.resumeAuditDepartment) &&
+                Objects.equals(assessmentDepartment, that.assessmentDepartment) &&
                 Objects.equals(positionType, that.positionType) &&
                 Objects.equals(recruitmentType, that.recruitmentType) &&
                 Objects.equals(workPlace, that.workPlace) &&
@@ -207,7 +218,7 @@ public class PositionEntity {
                 Objects.equals(recruitingNumbers, that.recruitingNumbers) &&
                 Objects.equals(deadline, that.deadline) &&
                 Objects.equals(jobResponsibilities, that.jobResponsibilities) &&
-                Objects.equals(jobDescription, that.jobDescription) &&
+                Objects.equals(jobRequirements, that.jobRequirements) &&
                 Objects.equals(publishType, that.publishType) &&
                 Objects.equals(publishDate, that.publishDate) &&
                 Objects.equals(gmtCreate, that.gmtCreate) &&
@@ -217,6 +228,6 @@ public class PositionEntity {
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, positionName, resumeAuditPosition, assessmentPosition, positionType, recruitmentType, workPlace, education, recruitingNumbers, deadline, jobResponsibilities, jobDescription, publishType, publishDate, gmtCreate, gmtModified);
+        return Objects.hash(id, positionName, department, resumeAuditDepartment, assessmentDepartment, positionType, recruitmentType, workPlace, education, recruitingNumbers, deadline, jobResponsibilities, jobRequirements, publishType, publishDate, gmtCreate, gmtModified);
     }
 }

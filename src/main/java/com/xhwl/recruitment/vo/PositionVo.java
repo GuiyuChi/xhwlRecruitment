@@ -6,14 +6,15 @@ package com.xhwl.recruitment.vo;
  * @Date: Create in 上午10:52 2018/4/23
  **/
 public class PositionVo {
-    private long id;
+    private Long id;
     private String positionName;
-    private String resumeAuditPosition;
-    private String assessmentPosition;
+    private String department;
+    private String resumeAuditDepartment;
+    private String assessmentDepartment;
     private String positionType;
     private Integer recruitmentType;
     private String workPlace;
-    private Integer education;
+    private String education;
     private Integer recruitingNumbers;
     private String deadline;
     private String jobResponsibilities;
@@ -21,11 +22,11 @@ public class PositionVo {
     private Integer publishType;
     private String publishDate;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -37,20 +38,28 @@ public class PositionVo {
         this.positionName = positionName;
     }
 
-    public String getResumeAuditPosition() {
-        return resumeAuditPosition;
+    public String getDepartment() {
+        return department;
     }
 
-    public void setResumeAuditPosition(String resumeAuditPosition) {
-        this.resumeAuditPosition = resumeAuditPosition;
+    public void setDepartment(String department) {
+        this.department = department;
     }
 
-    public String getAssessmentPosition() {
-        return assessmentPosition;
+    public String getResumeAuditDepartment() {
+        return resumeAuditDepartment;
     }
 
-    public void setAssessmentPosition(String assessmentPosition) {
-        this.assessmentPosition = assessmentPosition;
+    public void setResumeAuditDepartment(String resumeAuditDepartment) {
+        this.resumeAuditDepartment = resumeAuditDepartment;
+    }
+
+    public String getAssessmentDepartment() {
+        return assessmentDepartment;
+    }
+
+    public void setAssessmentDepartment(String assessmentDepartment) {
+        this.assessmentDepartment = assessmentDepartment;
     }
 
     public String getPositionType() {
@@ -77,11 +86,11 @@ public class PositionVo {
         this.workPlace = workPlace;
     }
 
-    public Integer getEducation() {
+    public String getEducation() {
         return education;
     }
 
-    public void setEducation(Integer education) {
+    public void setEducation(String education) {
         this.education = education;
     }
 
@@ -138,12 +147,13 @@ public class PositionVo {
         return "PositionVo{" +
                 "id=" + id +
                 ", positionName='" + positionName + '\'' +
-                ", resumeAuditPosition='" + resumeAuditPosition + '\'' +
-                ", assessmentPosition='" + assessmentPosition + '\'' +
+                ", department='" + department + '\'' +
+                ", resumeAuditDepartment='" + resumeAuditDepartment + '\'' +
+                ", assessmentDepartment='" + assessmentDepartment + '\'' +
                 ", positionType='" + positionType + '\'' +
                 ", recruitmentType=" + recruitmentType +
                 ", workPlace='" + workPlace + '\'' +
-                ", education=" + education +
+                ", education='" + education + '\'' +
                 ", recruitingNumbers=" + recruitingNumbers +
                 ", deadline='" + deadline + '\'' +
                 ", jobResponsibilities='" + jobResponsibilities + '\'' +

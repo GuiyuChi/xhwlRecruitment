@@ -1,4 +1,4 @@
-package com.xhwl.recruitment.ServiceTest;//package com.xhwl.recruitment.ServiceTest;
+//package com.xhwl.recruitment.ServiceTest;//package com.xhwl.recruitment.ServiceTest;
 //
 //import com.xhwl.recruitment.domain.EducationExperienceEntity;
 //import com.xhwl.recruitment.domain.TrainingExperienceEntity;

@@ -1,5 +1,6 @@
 package com.xhwl.recruitment.controller;
 
+import com.xhwl.recruitment.exception.MException;
 import com.xhwl.recruitment.service.ResumeService;
 import com.xhwl.recruitment.service.UserService;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -45,6 +46,7 @@ public class SelfAssessment {
     public String modifySelfAssessment(@RequestHeader HttpHeaders headers, @RequestBody HashMap hashMap){
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         String selfAssessment = (String)hashMap.get("selfAssessment");
+        if(selfAssessment==null) throw new MException("自我介绍格式错误");
         return resumeService.modifySelfAssessment(userId,selfAssessment);
     }
 }
