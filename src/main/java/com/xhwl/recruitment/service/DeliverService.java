@@ -5,6 +5,7 @@ import com.xhwl.recruitment.domain.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,6 +64,21 @@ public class DeliverService {
     @Autowired
     private DwWorkExperienceRepository dwWorkExperienceRepository;
 
+    @Autowired
+    private DwInternshipExperienceRepository dwInternshipExperienceRepository;
+
+    @Autowired
+    private DwAwardRepository dwAwardRepository;
+
+    @Autowired
+    private DwJobIntentionRepository dwJobIntentionRepository;
+
+    @Autowired
+    private ResumeDeliverRepository resumeDeliverRepository;
+
+    @Autowired
+    private PositionRepository positionRepository;
+
     /**
      * 查找用户原先的resumeId
      *
@@ -90,7 +106,7 @@ public class DeliverService {
      * @param address
      */
     @Transactional
-    public void copyDatabase(Long userId, HashMap<String, String> address) {
+    public Long copyDatabase(Long userId, HashMap<String, String> address) {
         DwResumeEntity dwResumeEntity = copyResumeTable(userId, address);
         Long newResumeId = dwResumeEntity.getId();
         Long oldResumeId = findResumeIdByUserId(userId);
@@ -98,7 +114,10 @@ public class DeliverService {
         copyEducationExperience(oldResumeId, newResumeId);
         copyTrainingExperience(oldResumeId, newResumeId);
         copyProjectExperience(oldResumeId, newResumeId);
-
+        copyWorkExperience(oldResumeId, newResumeId);
+        copyAward(oldResumeId, newResumeId);
+        copyJobIntention(oldResumeId, newResumeId);
+        return newResumeId;
     }
 
     /**
@@ -116,7 +135,9 @@ public class DeliverService {
         dwResumeEntity.setSupportDetailPath(address.get("supportDetailPath"));
         dwResumeEntity.setUploadResumePath(address.get("uploadResumePath"));
         dwResumeEntity.setResumesForm(resumeEntity.getResumesForm());
-        return dwResumeRepository.save(dwResumeEntity);
+        DwResumeEntity dwr = dwResumeRepository.save(dwResumeEntity);
+//        log.info("the result of copy copyJobIntention: {}", dwr);
+        return dwr;
     }
 
     /**
@@ -138,7 +159,7 @@ public class DeliverService {
 
         DwPersonalInformationEntity dwPersonalInformationEntity1 = dwPersonalInformationRepository.save(dwPersonalInformationEntity);
 
-        log.info("deliverService copyPersonalInformation {}", dwPersonalInformationEntity1);
+//        log.info("deliverService copyPersonalInformation {}", dwPersonalInformationEntity1);
     }
 
 
@@ -157,7 +178,7 @@ public class DeliverService {
             BeanUtils.copyProperties(educations.get(i), dwEducation);
             dwEducation.setResumeId(newResumeId);
             DwEducationExperienceEntity dwr = dwEducationExperienceRepository.save(dwEducation);
-            log.info("the {} result of copy educationExperience: {}", i, dwr);
+//            log.info("the {} result of copy educationExperience: {}", i, dwr);
         }
     }
 
@@ -176,7 +197,7 @@ public class DeliverService {
             BeanUtils.copyProperties(trains.get(i), dwTrain);
             dwTrain.setResumeId(newResumeId);
             DwTrainingExperienceEntity dwt = dwTrainingExperienceRepository.save(dwTrain);
-            log.info("the {} result of copy copyTrainingExperience: {}", i, dwt);
+//            log.info("the {} result of copy copyTrainingExperience: {}", i, dwt);
         }
     }
 
@@ -194,21 +215,153 @@ public class DeliverService {
             BeanUtils.copyProperties(projects.get(i), dwProject);
             dwProject.setResumeId(newResumeId);
             DwProjectExperienceEntity dwp = dwProjectExperienceRepository.save(dwProject);
-            log.info("the {} result of copy copyProjectExperience: {}", i, dwp);
+//            log.info("the {} result of copy copyProjectExperience: {}", i, dwp);
         }
 
     }
 
     /**
+     * 复制工作经历
+     *
      * @param oldResumeId
      * @param newResumeId
      */
     public void copyWorkExperience(Long oldResumeId, Long newResumeId) {
         List<WorkExperienceEntity> works = workExperienceRepository.findAllByResumeId(oldResumeId);
 
-        for (int i=0;i<works.size();i++){
+        for (int i = 0; i < works.size(); i++) {
             DwWorkExperienceEntity dwWork = new DwWorkExperienceEntity();
-            BeanUtils.copyProperties(works.get(i),dwWork);
+            BeanUtils.copyProperties(works.get(i), dwWork);
+            dwWork.setResumeId(newResumeId);
+            DwWorkExperienceEntity dww = dwWorkExperienceRepository.save(dwWork);
+//            log.info("the {} result of copy copyWorkExperience: {}", i, dww);
         }
+    }
+
+    /**
+     * 复制实习经历
+     *
+     * @param oldResumeId
+     * @param newResumeId
+     */
+    public void copyInternshipExperience(Long oldResumeId, Long newResumeId) {
+        List<InternshipExperienceEntity> internships = internshipExperienceRepository.findAllByResumeId(oldResumeId);
+
+        for (int i = 0; i < internships.size(); i++) {
+            DwInternshipExperienceEntity dwInternship = new DwInternshipExperienceEntity();
+            BeanUtils.copyProperties(internships.get(i), dwInternship);
+            dwInternship.setResumeId(newResumeId);
+            DwInternshipExperienceEntity dwi = dwInternshipExperienceRepository.save(dwInternship);
+//            log.info("the {} result of copy copyInternshipExperience: {}", i, dwi);
+        }
+    }
+
+
+    /**
+     * 复制奖励表
+     *
+     * @param oldResumeId
+     * @param newResumeId
+     */
+    public void copyAward(Long oldResumeId, Long newResumeId) {
+        List<AwardEntity> awards = awardRepository.findAllByResumeId(oldResumeId);
+
+        for (int i = 0; i < awards.size(); i++) {
+            DwAwardEntity dwAward = new DwAwardEntity();
+            BeanUtils.copyProperties(awards.get(i), dwAward);
+            dwAward.setResumeId(newResumeId);
+            DwAwardEntity dwa = dwAwardRepository.save(dwAward);
+//            log.info("the {} result of copy copyAward: {}", i, dwa);
+        }
+    }
+
+    /**
+     * 复制求职意向
+     *
+     * @param oldResumeId
+     * @param newResumeId
+     */
+    public void copyJobIntention(Long oldResumeId, Long newResumeId) {
+        JobIntentionEntity jobIntention = jobIntentionRepository.findByResumeId(oldResumeId);
+
+        DwJobIntentionEntity dwJobIntention = new DwJobIntentionEntity();
+        BeanUtils.copyProperties(jobIntention, dwJobIntention);
+        dwJobIntention.setResumeId(newResumeId);
+        DwJobIntentionEntity dwj = dwJobIntentionRepository.save(dwJobIntention);
+//        log.info("the result of copy copyJobIntention: {}", dwj);
+    }
+
+    /**
+     * 添加投递表
+     *
+     * @param positionId
+     * @param userId
+     * @param newResumeId
+     */
+    public Long addResumeDeliver(Long positionId, Long userId, Long newResumeId) {
+        ResumeDeliverEntity resumeDeliverEntity = new ResumeDeliverEntity();
+
+        resumeDeliverEntity.setPositionId(positionId);
+        resumeDeliverEntity.setUserId(userId);
+        resumeDeliverEntity.setDwResumeId(newResumeId);
+
+        //投递时进度为0 及简历待审核状态
+        resumeDeliverEntity.setRecruitmentState(0);
+
+        PositionEntity positionEntity = positionRepository.findOne(positionId);
+        //todo 验证字段未输入
+
+        ResumeDeliverEntity rde = resumeDeliverRepository.save(resumeDeliverEntity);
+//        log.info("the result of copy addResumeDeliver: {}", rde);
+        return rde.getId();
+    }
+
+    /**
+     * 用户投递简历
+     *
+     * @param positionId
+     * @param userId
+     * @return 投递表的ID
+     */
+    public Long deliver(Long positionId, Long userId) {
+        HashMap<String, String> filespath = copyDocument();
+        Long newResumeId = copyDatabase(userId, filespath);
+        Long resumeDeliverId = addResumeDeliver(positionId, userId, newResumeId);
+        return resumeDeliverId;
+    }
+
+    /**
+     * 判断是否是第一次投递
+     *
+     * @param userId
+     * @param positionId
+     * @return
+     */
+    public boolean isFirst(Long userId, Long positionId) {
+        boolean flag = true;
+        List<ResumeDeliverEntity> resumeDeliverEntities = resumeDeliverRepository.findAllByUserId(userId);
+
+        if (resumeDeliverEntities == null) return true;
+        for (ResumeDeliverEntity resumeDeliverEntity : resumeDeliverEntities) {
+            if (resumeDeliverEntity.getPositionId() == positionId) {
+                flag = false;
+            }
+        }
+        return flag;
+    }
+
+    /**
+     * 判断用户的简历类型是否和岗位需要一致
+     *
+     * @param userId
+     * @param positionId
+     * @return
+     */
+    public boolean checkResumeType(Long userId, Long positionId) {
+        Integer resumeType = Integer.valueOf(resumeRepository.findByUserId(userId).getResumesForm());
+        Integer positionType = positionRepository.findOne(positionId).getRecruitmentType();
+
+        if (resumeType == positionType) return true;
+        else return false;
     }
 }

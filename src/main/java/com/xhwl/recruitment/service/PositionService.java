@@ -48,6 +48,8 @@ public class PositionService {
                     hashMap.put("workPlace", position.getWorkPlace());
                     hashMap.put("recruiting_numbers", position.getRecruitingNumbers().toString());
                     hashMap.put("publishDate", position.getPublishDate().toString());
+                    hashMap.put("jobResponsibilities", position.getJobResponsibilities());
+                    hashMap.put("jobRequirements", position.getJobRequirements());
                     res.add(hashMap);
                 }
             }

@@ -111,4 +111,17 @@ public class DwInternshipExperienceEntity {
 
         return Objects.hash(id, resumeId, startTime, endTime, company, position, description);
     }
+
+    @Override
+    public String toString() {
+        return "DwInternshipExperienceEntity{" +
+                "id=" + id +
+                ", resumeId=" + resumeId +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", company='" + company + '\'' +
+                ", position='" + position + '\'' +
+                ", description='" + description + '\'' +
+                '}';
+    }
 }

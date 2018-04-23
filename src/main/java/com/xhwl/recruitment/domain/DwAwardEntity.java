@@ -75,4 +75,14 @@ public class DwAwardEntity {
 
         return Objects.hash(id, resumeId, awardName, dateOfAward);
     }
+
+    @Override
+    public String toString() {
+        return "DwAwardEntity{" +
+                "id=" + id +
+                ", resumeId=" + resumeId +
+                ", awardName='" + awardName + '\'' +
+                ", dateOfAward=" + dateOfAward +
+                '}';
+    }
 }

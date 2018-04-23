@@ -86,4 +86,15 @@ public class DwJobIntentionEntity {
 
         return Objects.hash(id, resumeId, workPlace, salary, expectedTimeForDuty);
     }
+
+    @Override
+    public String toString() {
+        return "DwJobIntentionEntity{" +
+                "id=" + id +
+                ", resumeId=" + resumeId +
+                ", workPlace='" + workPlace + '\'' +
+                ", salary=" + salary +
+                ", expectedTimeForDuty=" + expectedTimeForDuty +
+                '}';
+    }
 }

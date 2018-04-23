@@ -28,7 +28,6 @@ public class DeliverServiceTest {
     PositionService positionService;
 
     @Test
-//    @Rollback
     @Ignore
     public void copyDatabaseTest(){
         HashMap hashMap = deliverService.copyDocument();
@@ -36,7 +35,13 @@ public class DeliverServiceTest {
     }
 
     @Test
+    @Ignore
     public void getUnderwayPositionTest(){
         positionService.getUnderwayPositions(1);
+    }
+
+    @Test
+    public void deliverTest(){
+        deliverService.deliver(1L,4L);
     }
 }

@@ -7,7 +7,7 @@ import java.util.Objects;
 /**
  * @Author: guiyu
  * @Description:
- * @Date: Create in 下午4:24 2018/4/22
+ * @Date: Create in 下午7:16 2018/4/23
  **/
 @Entity
 @Table(name = "resume_deliver", schema = "xhwl", catalog = "")
@@ -17,6 +17,7 @@ public class ResumeDeliverEntity {
     private Long userId;
     private Long dwResumeId;
     private String authorityCode;
+    private Integer recruitmentState;
     private Timestamp gmtCreate;
     private Timestamp gmtModified;
 
@@ -72,6 +73,16 @@ public class ResumeDeliverEntity {
     }
 
     @Basic
+    @Column(name = "recruitment_state", nullable = true)
+    public Integer getRecruitmentState() {
+        return recruitmentState;
+    }
+
+    public void setRecruitmentState(Integer recruitmentState) {
+        this.recruitmentState = recruitmentState;
+    }
+
+    @Basic
     @Column(name = "gmt_create", nullable = true)
     public Timestamp getGmtCreate() {
         return gmtCreate;
@@ -101,6 +112,7 @@ public class ResumeDeliverEntity {
                 Objects.equals(userId, that.userId) &&
                 Objects.equals(dwResumeId, that.dwResumeId) &&
                 Objects.equals(authorityCode, that.authorityCode) &&
+                Objects.equals(recruitmentState, that.recruitmentState) &&
                 Objects.equals(gmtCreate, that.gmtCreate) &&
                 Objects.equals(gmtModified, that.gmtModified);
     }
@@ -108,6 +120,20 @@ public class ResumeDeliverEntity {
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, positionId, userId, dwResumeId, authorityCode, gmtCreate, gmtModified);
+        return Objects.hash(id, positionId, userId, dwResumeId, authorityCode, recruitmentState, gmtCreate, gmtModified);
+    }
+
+    @Override
+    public String toString() {
+        return "ResumeDeliverEntity{" +
+                "id=" + id +
+                ", positionId=" + positionId +
+                ", userId=" + userId +
+                ", dwResumeId=" + dwResumeId +
+                ", authorityCode='" + authorityCode + '\'' +
+                ", recruitmentState=" + recruitmentState +
+                ", gmtCreate=" + gmtCreate +
+                ", gmtModified=" + gmtModified +
+                '}';
     }
 }
