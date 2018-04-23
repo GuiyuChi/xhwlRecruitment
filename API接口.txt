@@ -464,7 +464,9 @@ get http://119.29.16.250:8080/selfAssessment
 返回一个字符串
 
 post http://119.29.16.250:8080/selfAssessment
-发送一个字符串
+{
+	"selfAssessment":"一般般的自我介绍"
+}
 返回一个字符串
 
 
@@ -483,3 +485,14 @@ post http://119.29.16.250:8080/upload-resume
 
 上传辅助材料
 post http://119.29.16.250:8080/upload-support-detail
+
+
+
+职位查看
+
+get .../position
+[
+    {
+
+    }
+]

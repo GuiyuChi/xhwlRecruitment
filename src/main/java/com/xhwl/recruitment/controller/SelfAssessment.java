@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+
 /**
  * @Author: guiyu
  * @Description:
@@ -35,13 +37,14 @@ public class SelfAssessment {
     /**
      * 修改用户的自我介绍
      * @param headers
-     * @param selfAssessment
+     * @param
      * @return
      */
     @PostMapping("/selfAssessment")
     @RequiresAuthentication
-    public String modifySelfAssessment(@RequestHeader HttpHeaders headers, @RequestBody String selfAssessment){
+    public String modifySelfAssessment(@RequestHeader HttpHeaders headers, @RequestBody HashMap hashMap){
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
+        String selfAssessment = (String)hashMap.get("selfAssessment");
         return resumeService.modifySelfAssessment(userId,selfAssessment);
     }
 }
