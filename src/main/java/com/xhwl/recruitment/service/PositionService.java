@@ -46,7 +46,7 @@ public class PositionService {
                     hashMap.put("id", new Long(position.getId()).toString());
                     hashMap.put("positionName", position.getPositionName());
                     hashMap.put("workPlace", position.getWorkPlace());
-                    hashMap.put("recruiting_numbers", position.getRecruitingNumbers().toString());
+                    hashMap.put("recruitingNumbers", position.getRecruitingNumbers().toString());
                     hashMap.put("publishDate", position.getPublishDate().toString());
                     hashMap.put("jobResponsibilities", position.getJobResponsibilities());
                     hashMap.put("jobRequirements", position.getJobRequirements());
@@ -73,7 +73,7 @@ public class PositionService {
             hashMap.put("positionName", position.getPositionName());
             hashMap.put("positionType", position.getPositionType());
             hashMap.put("department", position.getDepartment());
-            hashMap.put("recruiting_numbers", position.getRecruitingNumbers().toString());
+            hashMap.put("recruitingNumbers", position.getRecruitingNumbers().toString());
             hashMap.put("workPlace", position.getWorkPlace());
             hashMap.put("education", position.getEducation());
             hashMap.put("publishDate", position.getPublishDate().toString());

@@ -61,4 +61,19 @@ public class PositionController {
             throw new MException("重复投递");
         }
     }
+
+    /**
+     * 用户获取自己的投递信息
+     * @param headers
+     * @return
+     */
+    @GetMapping("/deliver")
+    public List<HashMap> findResumeDelivers(@RequestHeader HttpHeaders headers){
+        Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
+
+        List<HashMap> res = deliverService.findResumeDelivers(userId);
+
+        return res;
+
+    }
 }

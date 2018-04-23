@@ -9,12 +9,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
  * @Author: guiyu
- * @Description: 用户投递简历时的逻辑，复制文件和数据库
+ * @Description: 用户投递简历时的逻辑，复制文件和数据库 以及其他相关内容
  * @Date: Create in 下午4:32 2018/4/22
  **/
 @Service
@@ -364,4 +366,30 @@ public class DeliverService {
         if (resumeType == positionType) return true;
         else return false;
     }
+
+
+    /**
+     * 获取用户的投递情况
+     *
+     * @param userId
+     * @return
+     */
+    public List<HashMap> findResumeDelivers(Long userId) {
+        List<ResumeDeliverEntity> resumeDelivers = resumeDeliverRepository.findAllByUserId(userId);
+
+        if (resumeDelivers == null) return null;
+        List<HashMap> res = new ArrayList<>();
+        for (ResumeDeliverEntity resumeDeliver : resumeDelivers) {
+            HashMap<String, String> hashMap = new LinkedHashMap<>();
+            hashMap.put("id", String.valueOf(resumeDeliver.getId()));
+            Long positionId = resumeDeliver.getPositionId();
+            PositionEntity positionEntity = positionRepository.findOne(positionId);
+            hashMap.put("positionName", positionEntity.getPositionName());
+            hashMap.put("recruitmentType", String.valueOf(positionEntity.getRecruitmentType()));
+            hashMap.put("recruitmentState", resumeDeliver.getRecruitmentState().toString());
+            res.add(hashMap);
+        }
+        return res;
+    }
+
 }
