@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+
 /**
  * @Author: guiyu
  * @Description:
@@ -86,5 +88,9 @@ public class ResumeController {
         return resumeService.modifyResume(resumeVo);
     }
 
+//    @PutMapping("")
+//    public HashMap<String,String> modifyResumesForm(@RequestHeader HttpHeaders headers,@RequestParam("type") byte resumesForm){
+//        Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
+//    }
 
 }
