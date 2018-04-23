@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -26,7 +27,13 @@ public class PositionService {
 //        positionEntity.setResumeAuditPosition();
 //    }
 
-    public List<HashMap> getUnderwayPosition(Integer recruitmentType) {
+    /**
+     * 根据类型查询不同的校招岗位 1.校招 2.社招 3.实习
+     *
+     * @param recruitmentType
+     * @return
+     */
+    public List<HashMap> getUnderwayPositions(Integer recruitmentType) {
         List<PositionEntity> positions = positionRepository.findAll();
 
         List<HashMap> res = new ArrayList<>();
@@ -35,17 +42,44 @@ public class PositionService {
             if (position.getPublishType() == 1) {
                 //判断简历类型
                 if (position.getRecruitmentType() == recruitmentType) {
-                    HashMap<String, String> hashMap = new HashMap<>();
+                    HashMap<String, String> hashMap = new LinkedHashMap<>();
                     hashMap.put("id", new Long(position.getId()).toString());
-                    hashMap.put("positionName",position.getPositionName());
-                    hashMap.put("workPlace",position.getWorkPlace());
-                    hashMap.put("recruiting_numbers",position.getRecruitingNumbers().toString());
-                    hashMap.put("publishDate",position.getPublishDate().toString());
+                    hashMap.put("positionName", position.getPositionName());
+                    hashMap.put("workPlace", position.getWorkPlace());
+                    hashMap.put("recruiting_numbers", position.getRecruitingNumbers().toString());
+                    hashMap.put("publishDate", position.getPublishDate().toString());
                     res.add(hashMap);
                 }
             }
         }
         return res;
+    }
+
+    /**
+     * 按照岗位id号码发出岗位详细信息，用户访问
+     *
+     * @param positionId
+     * @return
+     */
+    public HashMap<String, String> getPosition(Long positionId) {
+        PositionEntity position = positionRepository.findOne(positionId);
+        if (position == null) return null;
+        if (position.getPublishType() == 1) {
+            //简历已经处于被发布状态
+            HashMap<String, String> hashMap = new LinkedHashMap<>();
+            hashMap.put("id", new Long(position.getId()).toString());
+            hashMap.put("positionName", position.getPositionName());
+            hashMap.put("positionType", position.getPositionType());
+            hashMap.put("department", position.getDepartment());
+            hashMap.put("recruiting_numbers", position.getRecruitingNumbers().toString());
+            hashMap.put("workPlace", position.getWorkPlace());
+            hashMap.put("education", position.getEducation());
+            hashMap.put("publishDate", position.getPublishDate().toString());
+            hashMap.put("jobResponsibilities", position.getJobResponsibilities());
+            hashMap.put("jobRequirements", position.getJobRequirements());
+            return hashMap;
+        }
+        return null;
     }
 
 

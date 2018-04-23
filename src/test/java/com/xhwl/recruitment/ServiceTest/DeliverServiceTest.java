@@ -37,6 +37,6 @@ public class DeliverServiceTest {
 
     @Test
     public void getUnderwayPositionTest(){
-        positionService.getUnderwayPosition(1);
+        positionService.getUnderwayPositions(1);
     }
 }

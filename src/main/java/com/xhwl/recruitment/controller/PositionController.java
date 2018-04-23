@@ -29,7 +29,14 @@ public class PositionController {
     @GetMapping("/positions/{typeId}")
     @RequiresAuthentication
     public List<HashMap> getUnderwayPositionsByType(@RequestHeader HttpHeaders headers, @PathVariable("typeId") Integer typeId) {
-        List<HashMap> res = positionService.getUnderwayPosition(typeId);
+        List<HashMap> res = positionService.getUnderwayPositions(typeId);
+        return res;
+    }
+
+    @GetMapping("/position/{positionId}")
+    @RequiresAuthentication
+    public HashMap getPositionById(@RequestHeader HttpHeaders headers, @PathVariable("positionId") Long positionId){
+        HashMap res = positionService.getPosition(positionId);
         return res;
     }
 }
