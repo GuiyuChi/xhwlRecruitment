@@ -7,20 +7,20 @@ package com.xhwl.recruitment.vo;
  **/
 public class PositionVo {
     private Long id;
-    private String positionName;
-    private String department;
-    private String resumeAuditDepartment;
-    private String assessmentDepartment;
-    private String positionType;
-    private Integer recruitmentType;
-    private String workPlace;
-    private String education;
-    private Integer recruitingNumbers;
-    private String deadline;
-    private String jobResponsibilities;
-    private String jobDescription;
-    private Integer publishType;
-    private String publishDate;
+    private String positionName;//职位名称
+    private String department;//所属部门
+    private String resumeAuditDepartment;//简历审核部门
+    private String assessmentDepartment;//考核部门
+    private String positionType;//职位类型
+    private Integer recruitmentType;//招聘类型
+    private String workPlace;//工作地点
+    private String education;//学历要求
+    private Integer recruitingNumbers;//招聘人数
+    private String deadline;//截止日期
+    private String jobResponsibilities;//工作职责
+    private String jobRequirements;//职位要求
+    private Integer publishType;//发布类型
+    private String publishDate;//发布日期
 
     public Long getId() {
         return id;
@@ -118,12 +118,12 @@ public class PositionVo {
         this.jobResponsibilities = jobResponsibilities;
     }
 
-    public String getJobDescription() {
-        return jobDescription;
+    public String getJobRequirements() {
+        return jobRequirements;
     }
 
-    public void setJobDescription(String jobDescription) {
-        this.jobDescription = jobDescription;
+    public void setJobRequirements(String jobRequirements) {
+        this.jobRequirements = jobRequirements;
     }
 
     public Integer getPublishType() {
@@ -157,7 +157,7 @@ public class PositionVo {
                 ", recruitingNumbers=" + recruitingNumbers +
                 ", deadline='" + deadline + '\'' +
                 ", jobResponsibilities='" + jobResponsibilities + '\'' +
-                ", jobDescription='" + jobDescription + '\'' +
+                ", jobRequirements='" + jobRequirements + '\'' +
                 ", publishType=" + publishType +
                 ", publishDate='" + publishDate + '\'' +
                 '}';

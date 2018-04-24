@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.HashMap;
 
 /**
  * @Author: guiyu
@@ -69,21 +70,27 @@ public class LoginController {
                                    @RequestParam("password") String password) {
         UserEntity userEntity = userService.getUser(username);
         if (userEntity.getPassword().equals(password)) {
-            if(userEntity.getRole().equals("normalAdmin")){
+            if (userEntity.getRole().equals("normalAdmin")) {
                 return new ResponseBean(200, "normalAdmin", JWTUtil.sign(username, password));
-            }
-            else if (userEntity.getRole().equals("seniorAdmin")){
+            } else if (userEntity.getRole().equals("seniorAdmin")) {
                 return new ResponseBean(200, "seniorAdmin", JWTUtil.sign(username, password));
-            }
-            else if (userEntity.getRole().equals("superAdmin")){
+            } else if (userEntity.getRole().equals("superAdmin")) {
                 return new ResponseBean(200, "superAdmin", JWTUtil.sign(username, password));
-            }
-            else{
+            } else {
                 throw new UnauthorizedException();
             }
         } else {
             throw new UnauthorizedException();
         }
+    }
+
+    /**
+     * 登录是否过期的检验
+     */
+    @GetMapping("/tokenCheck")
+    @RequiresAuthentication
+    public void tokenCheck() {
+
     }
 
     /**

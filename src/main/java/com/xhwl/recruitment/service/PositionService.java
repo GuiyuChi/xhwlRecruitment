@@ -3,6 +3,7 @@ package com.xhwl.recruitment.service;
 import com.xhwl.recruitment.dao.PositionRepository;
 import com.xhwl.recruitment.domain.PositionEntity;
 import com.xhwl.recruitment.vo.PositionVo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,11 +22,11 @@ public class PositionService {
     @Autowired
     PositionRepository positionRepository;
 
-//    public PositionEntity addPosition(PositionVo positionVo){
-//        PositionEntity positionEntity = new PositionEntity();
-//        positionEntity.setPositionName(positionVo.getPositionName());
-//        positionEntity.setResumeAuditPosition();
-//    }
+    public PositionEntity addPosition(PositionVo positionVo){
+        PositionEntity positionEntity = new PositionEntity();
+        BeanUtils.copyProperties(positionVo,positionEntity);
+        return positionEntity;
+    }
 
     /**
      * 根据类型查询不同的校招岗位 1.校招 2.社招 3.实习
@@ -86,6 +87,6 @@ public class PositionService {
         return null;
     }
 
-    
+
 
 }
