@@ -45,6 +45,7 @@ public class PositionService {
                     HashMap<String, String> hashMap = new LinkedHashMap<>();
                     hashMap.put("id", new Long(position.getId()).toString());
                     hashMap.put("positionName", position.getPositionName());
+                    hashMap.put("positionType", position.getPositionType());
                     hashMap.put("workPlace", position.getWorkPlace());
                     hashMap.put("recruitingNumbers", position.getRecruitingNumbers().toString());
                     hashMap.put("publishDate", position.getPublishDate().toString());
