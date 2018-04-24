@@ -70,13 +70,13 @@ public class LoginController {
         UserEntity userEntity = userService.getUser(username);
         if (userEntity.getPassword().equals(password)) {
             if(userEntity.getRole().equals("normalAdmin")){
-                return new ResponseBean(200, "normalAdmin login success", JWTUtil.sign(username, password));
+                return new ResponseBean(200, "normalAdmin", JWTUtil.sign(username, password));
             }
             else if (userEntity.getRole().equals("seniorAdmin")){
-                return new ResponseBean(200, "seniorAdmin login success", JWTUtil.sign(username, password));
+                return new ResponseBean(200, "seniorAdmin", JWTUtil.sign(username, password));
             }
             else if (userEntity.getRole().equals("superAdmin")){
-                return new ResponseBean(200, "seniorAdmin login success", JWTUtil.sign(username, password));
+                return new ResponseBean(200, "superAdmin", JWTUtil.sign(username, password));
             }
             else{
                 throw new UnauthorizedException();
