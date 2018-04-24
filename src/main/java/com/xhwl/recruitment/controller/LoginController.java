@@ -38,6 +38,13 @@ public class LoginController {
     FileService fileService;
 
 
+    /**
+     * 用户登录的接口
+     *
+     * @param username
+     * @param password
+     * @return
+     */
     @PostMapping("/login")
     public ResponseBean login(@RequestParam("username") String username,
                               @RequestParam("password") String password) {
@@ -50,16 +57,47 @@ public class LoginController {
     }
 
     /**
+     * 管理员登录的接口
+     * normalAdmin 普通管理员   seniorAdmin 高级管理员   superAdmin 超级管理员
+     *
+     * @param username
+     * @param password
+     * @return
+     */
+    @PostMapping("/adminLogin")
+    public ResponseBean adminLogin(@RequestParam("username") String username,
+                                   @RequestParam("password") String password) {
+        UserEntity userEntity = userService.getUser(username);
+        if (userEntity.getPassword().equals(password)) {
+            if(userEntity.getRole().equals("normalAdmin")){
+                return new ResponseBean(200, "normalAdmin login success", JWTUtil.sign(username, password));
+            }
+            else if (userEntity.getRole().equals("seniorAdmin")){
+                return new ResponseBean(200, "seniorAdmin login success", JWTUtil.sign(username, password));
+            }
+            else if (userEntity.getRole().equals("superAdmin")){
+                return new ResponseBean(200, "seniorAdmin login success", JWTUtil.sign(username, password));
+            }
+            else{
+                throw new UnauthorizedException();
+            }
+        } else {
+            throw new UnauthorizedException();
+        }
+    }
+
+    /**
      * 登录并获取用户名的测试接口
+     *
      * @param headers
      * @return
      */
     @GetMapping("/article")
     public ResponseBean article(@RequestHeader HttpHeaders headers) {
 
-        if(headers.getFirst("authorization")!=null){
+        if (headers.getFirst("authorization") != null) {
             String username = JWTUtil.getUsername(headers.getFirst("authorization"));
-            log.info("username:{}",username);
+            log.info("username:{}", username);
         }
 
         Subject subject = SecurityUtils.getSubject();
@@ -72,6 +110,7 @@ public class LoginController {
 
     /**
      * 权限控制的登录接口
+     *
      * @return
      */
     @GetMapping("/require_auth")
@@ -82,14 +121,15 @@ public class LoginController {
 
     /**
      * 测试接口，获取admin
+     *
      * @return
      */
     @GetMapping("/article2")
-    public ResponseBean getUser(@RequestHeader HttpHeaders headers){
+    public ResponseBean getUser(@RequestHeader HttpHeaders headers) {
 
-        if(headers.getFirst("authorization")!=null){
+        if (headers.getFirst("authorization") != null) {
             String username = JWTUtil.getUsername(headers.getFirst("authorization"));
-            log.info("username:{}",username);
+            log.info("username:{}", username);
         }
 
         Subject subject = SecurityUtils.getSubject();
@@ -102,18 +142,18 @@ public class LoginController {
 
     /**
      * 文件上传测试接口
-     * @param file
      *
+     * @param file
      */
     @PostMapping("upload-file")
     @Transactional(rollbackFor = Exception.class)
     public void uploadFile(@RequestParam("file") MultipartFile file) {
         String userId = "1";
-        log.info(String.format("temp team \"%s\" uploads a file \"%s\", size %d Byte",userId,file
+        log.info(String.format("temp team \"%s\" uploads a file \"%s\", size %d Byte", userId, file
                 .getOriginalFilename(), file.getSize()));
 
         try {
-            fileService.saveResume(file,userId);
+            fileService.saveResume(file, userId);
         } catch (IOException e) {
             e.printStackTrace();
             log.error(String.format("error occurred on attempting to save temp team \"%s\"'s uploaded file \"%s\"",
@@ -148,7 +188,7 @@ public class LoginController {
 
 
     @GetMapping("down-png")
-    public ResponseEntity<byte[]> down(){
+    public ResponseEntity<byte[]> down() {
 
         try {
             byte[] fileByteArray = fileService.getFileEntity("1", "a.png");
