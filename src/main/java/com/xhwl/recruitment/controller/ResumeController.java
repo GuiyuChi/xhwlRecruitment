@@ -12,6 +12,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  * @Author: guiyu
@@ -28,13 +29,14 @@ public class ResumeController {
 
     /**
      * 获取简历,没有具体的信息
+     *
      * @return
      */
     @GetMapping("/resume")
     @RequiresAuthentication
-    public ResumeEntity getResume(@RequestHeader HttpHeaders headers){
+    public ResumeEntity getResume(@RequestHeader HttpHeaders headers) {
         String username = null;
-        if(headers.getFirst("authorization")!=null){
+        if (headers.getFirst("authorization") != null) {
             username = JWTUtil.getUsername(headers.getFirst("authorization"));
         }
         Long userId = userService.getUserId(username);
@@ -46,51 +48,67 @@ public class ResumeController {
      */
     @PutMapping("/resume")
     @RequiresAuthentication
-    public ResumeEntity createResume(@RequestHeader HttpHeaders headers,@RequestParam("form") int resumesForm){
+    public ResumeEntity createResume(@RequestHeader HttpHeaders headers, @RequestParam("form") int resumesForm) {
         String username = null;
-        if(headers.getFirst("authorization")!=null){
+        if (headers.getFirst("authorization") != null) {
             username = JWTUtil.getUsername(headers.getFirst("authorization"));
         }
         Long userId = userService.getUserId(username);
 
         //已经创建过该用户的简历
-        if(resumeService.getResume(userId)!=null){
+        if (resumeService.getResume(userId) != null) {
             throw new MException("已经创建过该用户的简历");
 
         }
 
-        return resumeService.createNewResume(userId,resumesForm);
+        return resumeService.createNewResume(userId, resumesForm);
     }
 
     /**
      * 修改简历类型，或者上传文件
+     *
      * @param headers
      * @param resumeVo
      * @return
      */
     @PostMapping("/resume")
     @RequiresAuthentication
-    public ResumeEntity modifyResume(@RequestHeader HttpHeaders headers, @RequestBody ResumeVo resumeVo){
+    public ResumeEntity modifyResume(@RequestHeader HttpHeaders headers, @RequestBody ResumeVo resumeVo) {
 
         String username = null;
-        if(headers.getFirst("authorization")!=null){
+        if (headers.getFirst("authorization") != null) {
             username = JWTUtil.getUsername(headers.getFirst("authorization"));
         }
         Long userId = userService.getUserId(username);
 
-        if(resumeService.getResume(userId) == null){
+        if (resumeService.getResume(userId) == null) {
             throw new MException("需要先创建用户的简历表再修改");
         }
 
-        if(userId != resumeVo.getUserId()){
+        if (userId != resumeVo.getUserId()) {
             throw new MException("无修改权限");
         }
         return resumeService.modifyResume(resumeVo);
     }
 
-//    @PutMapping("")
-//    public HashMap<String,String> modifyResumesForm(@RequestHeader HttpHeaders headers,@RequestParam("type") byte resumesForm){
-//        Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
-//    }
+    /**
+     * 用户修改简历类型
+     *
+     * @param headers
+     * @param resumesForm
+     * @return
+     */
+    @PutMapping("/resumesForm/{type}")
+    @RequiresAuthentication
+    public HashMap<String, String> modifyResumesForm(@RequestHeader HttpHeaders headers, @PathVariable("type") Integer resumesForm) {
+        Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
+
+        if (resumeService.getResume(userId) == null) throw new MException("未创建简历");
+        if (!(resumesForm == 1 || resumesForm == 2 || resumesForm == 3)) throw new MException("简历类型选择错误");
+        HashMap<String, String> res = new LinkedHashMap<>();
+
+        res.put("resumesForm", String.valueOf(resumeService.modifyResumesForm(userId, resumesForm)));
+        return res;
+    }
 
 }

@@ -933,5 +933,16 @@ public class ResumeService {
         return selfAssessment;
     }
 
+    /**
+     * 修改用户的简历类型
+     * @param userId
+     * @param type
+     * @return
+     */
+    public Integer modifyResumesForm(Long userId, Integer type) {
+        ResumeEntity resumeEntity = resumeRepository.findByUserId(userId);
+        resumeEntity.setResumesForm(type.byteValue());
+        return Integer.valueOf(resumeRepository.saveAndFlush(resumeEntity).getResumesForm());
+    }
 
 }

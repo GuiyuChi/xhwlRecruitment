@@ -6,7 +6,7 @@ import java.util.Objects;
 /**
  * @Author: guiyu
  * @Description:
- * @Date: Create in 上午9:47 2018/4/20
+ * @Date: Create in 上午8:36 2018/4/24
  **/
 @Entity
 @Table(name = "resume", schema = "xhwl", catalog = "")
