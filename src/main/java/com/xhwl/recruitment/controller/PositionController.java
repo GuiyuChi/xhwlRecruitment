@@ -4,7 +4,11 @@ import com.xhwl.recruitment.exception.MException;
 import com.xhwl.recruitment.service.DeliverService;
 import com.xhwl.recruitment.service.PositionService;
 import com.xhwl.recruitment.service.UserService;
+import com.xhwl.recruitment.vo.PositionVo;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
@@ -42,6 +46,7 @@ public class PositionController {
 
     /**
      * 用户投递岗位
+     *
      * @param headers
      * @param positionId
      * @return
@@ -50,30 +55,42 @@ public class PositionController {
     public Long deliver(@RequestHeader HttpHeaders headers, @PathVariable("positionId") Long positionId) {
 
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
-        if(!deliverService.checkResumeType(userId,positionId)) throw new MException("简历类型不符");
+        if (!deliverService.checkResumeType(userId, positionId)) throw new MException("简历类型不符");
 
         //判断重复投递
         if (deliverService.isFirst(userId, positionId)) {
             Long id = deliverService.deliver(positionId, userId);
             return id;
-        }
-        else{
+        } else {
             throw new MException("重复投递");
         }
     }
 
     /**
      * 用户获取自己的投递信息
+     *
      * @param headers
      * @return
      */
     @GetMapping("/deliver")
-    public List<HashMap> findResumeDelivers(@RequestHeader HttpHeaders headers){
+    public List<HashMap> findResumeDelivers(@RequestHeader HttpHeaders headers) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
 
         List<HashMap> res = deliverService.findResumeDelivers(userId);
 
         return res;
 
+    }
+
+    /**
+     * 管理员添加和修改职位,前端判断全部非空
+     *
+     * @param headers
+     * @param positionVo
+     */
+    @PostMapping("/admin/position")
+    @RequiresPermissions(logical = Logical.AND, value = {"position"})
+    public void publishPosition(@RequestHeader HttpHeaders headers, @RequestBody PositionVo positionVo) {
+        positionService.addPosition(positionVo);
     }
 }

@@ -230,4 +230,27 @@ public class PositionEntity {
 
         return Objects.hash(id, positionName, department, resumeAuditDepartment, assessmentDepartment, positionType, recruitmentType, workPlace, education, recruitingNumbers, deadline, jobResponsibilities, jobRequirements, publishType, publishDate, gmtCreate, gmtModified);
     }
+
+    @Override
+    public String toString() {
+        return "PositionEntity{" +
+                "id=" + id +
+                ", positionName='" + positionName + '\'' +
+                ", department='" + department + '\'' +
+                ", resumeAuditDepartment='" + resumeAuditDepartment + '\'' +
+                ", assessmentDepartment='" + assessmentDepartment + '\'' +
+                ", positionType='" + positionType + '\'' +
+                ", recruitmentType=" + recruitmentType +
+                ", workPlace='" + workPlace + '\'' +
+                ", education='" + education + '\'' +
+                ", recruitingNumbers=" + recruitingNumbers +
+                ", deadline=" + deadline +
+                ", jobResponsibilities='" + jobResponsibilities + '\'' +
+                ", jobRequirements='" + jobRequirements + '\'' +
+                ", publishType=" + publishType +
+                ", publishDate=" + publishDate +
+                ", gmtCreate=" + gmtCreate +
+                ", gmtModified=" + gmtModified +
+                '}';
+    }
 }
