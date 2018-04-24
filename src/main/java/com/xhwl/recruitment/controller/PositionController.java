@@ -93,4 +93,6 @@ public class PositionController {
     public void publishPosition(@RequestHeader HttpHeaders headers, @RequestBody PositionVo positionVo) {
         positionService.addPosition(positionVo);
     }
+
+
 }

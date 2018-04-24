@@ -111,4 +111,16 @@ public class ResumeController {
         return res;
     }
 
+    @GetMapping("/resumetest/{form}")
+    public ResumeEntity createResume2(@RequestHeader HttpHeaders headers, @PathVariable("form") int resumesForm) {
+        Long userId = 9L;
+
+        //已经创建过该用户的简历
+        if (resumeService.getResume(userId) != null) {
+            throw new MException("已经创建过该用户的简历");
+
+        }
+
+        return resumeService.createNewResume(userId, resumesForm);
+    }
 }
