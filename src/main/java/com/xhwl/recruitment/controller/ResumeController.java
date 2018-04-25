@@ -2,6 +2,7 @@ package com.xhwl.recruitment.controller;
 
 import com.xhwl.recruitment.domain.ResumeEntity;
 import com.xhwl.recruitment.exception.MException;
+import com.xhwl.recruitment.service.DwResumeService;
 import com.xhwl.recruitment.service.ResumeService;
 import com.xhwl.recruitment.service.UserService;
 import com.xhwl.recruitment.util.JWTUtil;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  * @Author: guiyu
@@ -26,6 +28,9 @@ public class ResumeController {
 
     @Autowired
     ResumeService resumeService;
+
+    @Autowired
+    DwResumeService dwResumeService;
 
     /**
      * 获取简历,没有具体的信息
@@ -122,5 +127,16 @@ public class ResumeController {
         }
 
         return resumeService.createNewResume(userId, resumesForm);
+    }
+
+
+    /**
+     * 管理员从投递记录获取用户的简历信息
+     * @param deliverId
+     * @return
+     */
+    @GetMapping("/admin/getResume/{deliverId}")
+    public List<Object> adminGetResumeBydeliver(@PathVariable("deliverId") Long deliverId) {
+       return dwResumeService.adminGetResume(deliverId);
     }
 }

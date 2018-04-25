@@ -117,6 +117,7 @@ public class DeliverService {
         copyTrainingExperience(oldResumeId, newResumeId);
         copyProjectExperience(oldResumeId, newResumeId);
         copyWorkExperience(oldResumeId, newResumeId);
+        copyInternshipExperience(oldResumeId,newResumeId);
         copyAward(oldResumeId, newResumeId);
         copyJobIntention(oldResumeId, newResumeId);
         return newResumeId;

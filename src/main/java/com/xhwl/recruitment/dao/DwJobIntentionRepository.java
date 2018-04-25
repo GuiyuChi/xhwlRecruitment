@@ -13,5 +13,5 @@ import java.util.List;
  **/
 @Repository
 public interface DwJobIntentionRepository extends JpaRepository<DwJobIntentionEntity, Long> {
-    List<DwJobIntentionEntity> findAllByResumeId(Long resumeId);
+    DwJobIntentionEntity findByResumeId(Long resumeId);
 }

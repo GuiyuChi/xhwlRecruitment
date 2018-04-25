@@ -126,4 +126,5 @@ public class PositionController {
     public void deletePosition(@PathVariable("positionId") Long positionId){
         positionService.adminDeletePosition(positionId);
     }
+
 }
