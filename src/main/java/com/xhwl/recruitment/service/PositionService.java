@@ -30,7 +30,7 @@ public class PositionService {
     PositionRepository positionRepository;
 
     /**
-     * 添加或修改职位，添加传入id为null
+     * 添加或修改职位，添加时传入id为null
      *
      * @param positionVo
      * @return
@@ -199,6 +199,7 @@ public class PositionService {
         }
         return null;
     }
+
 
 
 }
