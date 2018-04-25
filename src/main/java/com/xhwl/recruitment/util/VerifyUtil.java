@@ -41,7 +41,7 @@ public class VerifyUtil {
         // 2.获取图片画笔
         Graphics graphic = image.getGraphics();
         // 3.设置画笔颜色
-        graphic.setColor(Color.LIGHT_GRAY);
+        graphic.setColor(Color.WHITE);
         // 4.绘制矩形背景
         graphic.fillRect(0, 0, WIDTH, HEIGHT);
         // 5.画随机字符

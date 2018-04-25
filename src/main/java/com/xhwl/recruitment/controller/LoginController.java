@@ -2,9 +2,11 @@ package com.xhwl.recruitment.controller;
 
 import com.xhwl.recruitment.bean.ResponseBean;
 import com.xhwl.recruitment.domain.UserEntity;
+import com.xhwl.recruitment.exception.MException;
 import com.xhwl.recruitment.service.FileService;
 import com.xhwl.recruitment.service.UserService;
 import com.xhwl.recruitment.util.JWTUtil;
+import com.xhwl.recruitment.util.VerifyUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.UnauthorizedException;
@@ -19,10 +21,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.HashMap;
 
 /**
  * @Author: guiyu
@@ -32,12 +35,40 @@ import java.util.HashMap;
 @RestController
 @Slf4j
 public class LoginController {
+    private String Captcha = null;//图片验证码的字符串
     @Autowired
     UserService userService;
 
     @Autowired
     FileService fileService;
 
+    /**
+     * 获取验证码
+     * @return
+     */
+    @GetMapping("/loginCaptcha")
+    public ResponseEntity<byte[]> getCaptchaImage() //生成验证码
+    {
+        Object[] objs = VerifyUtil.createImage();
+
+        Captcha = (String) objs[0];
+
+        try {
+            BufferedImage image = (BufferedImage) objs[1];
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(image, "jpg", baos);//写入流中
+            byte[] bytes = baos.toByteArray();
+
+            //设置下载头
+            HttpHeaders header = new HttpHeaders();
+            header.setContentType(MediaType.IMAGE_PNG);
+            return new ResponseEntity<>(bytes, header, HttpStatus.OK);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+       return null;
+    }
+    //objs[1]为验证码字符串，objs[2]为验证码图片
 
     /**
      * 用户登录的接口
@@ -49,6 +80,26 @@ public class LoginController {
     @PostMapping("/login")
     public ResponseBean login(@RequestParam("username") String username,
                               @RequestParam("password") String password) {
+        UserEntity userEntity = userService.getUser(username);
+        if (userEntity.getPassword().equals(password)) {
+            return new ResponseBean(200, "Login success", JWTUtil.sign(username, password));
+        } else {
+            throw new UnauthorizedException();
+        }
+    }
+
+    /**
+     * 用户登录，带验证码版
+     * @param username
+     * @param password
+     * @param check
+     * @return
+     */
+    @PostMapping("/loginWithCaptcha")
+    public ResponseBean login(@RequestParam("username") String username,
+                              @RequestParam("password") String password,
+                              @RequestParam("captcha") String check) {
+        if(!check.equalsIgnoreCase(Captcha)) throw new MException("验证码认证失败");
         UserEntity userEntity = userService.getUser(username);
         if (userEntity.getPassword().equals(password)) {
             return new ResponseBean(200, "Login success", JWTUtil.sign(username, password));
