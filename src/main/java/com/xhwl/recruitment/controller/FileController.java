@@ -122,10 +122,10 @@ public class FileController {
      * @param supportDetail
      * @param headers
      */
-    @PostMapping("git")
+    @PostMapping("upload-support-detail")
     public void uploadSupportDetail(@RequestParam("file") MultipartFile supportDetail,@RequestHeader HttpHeaders headers){
-//        Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
-        Long userId = 4L;
+        Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
+
         String strUserId = userId.toString();
 
         try {
