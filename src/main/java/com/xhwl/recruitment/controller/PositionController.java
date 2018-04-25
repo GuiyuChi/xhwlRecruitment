@@ -83,7 +83,7 @@ public class PositionController {
     }
 
     /**
-     * 管理员添加和修改职位,前端判断全部非空
+     * 管理员（人事）添加和修改职位,前端判断全部非空
      *
      * @param headers
      * @param positionVo
@@ -94,5 +94,36 @@ public class PositionController {
         positionService.addPosition(positionVo);
     }
 
+    /**
+     * 管理员（人事）获取岗位详情
+     * @param positionId
+     * @return
+     */
+    @GetMapping("/admin/position/{positionId}")
+    @RequiresPermissions(logical = Logical.AND, value = {"position"})
+    public HashMap adminGetPosition(@PathVariable("positionId") Long positionId){
+        return positionService.adminGetPosition(positionId);
+    }
 
+    /**
+     * 管理员（人事）获取全部处于招聘中的岗位
+     * @return
+     */
+    @GetMapping("/admin/positions")
+    @RequiresPermissions(logical = Logical.AND, value = {"position"})
+    public List<HashMap> adminGetPositions(){
+        return positionService.adminGetPositions();
+    }
+
+//    管理员（人事）获取全部处于招聘中的岗位
+
+    /**
+     * 管理员（人事）按ID删除岗位
+     * @param positionId
+     */
+    @DeleteMapping("/admin/position/{positionId}")
+    @RequiresPermissions(logical = Logical.AND, value = {"position"})
+    public void deletePosition(@PathVariable("positionId") Long positionId){
+        positionService.adminDeletePosition(positionId);
+    }
 }

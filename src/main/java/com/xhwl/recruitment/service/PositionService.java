@@ -54,16 +54,21 @@ public class PositionService {
         //写入发布状态,直接发布
         positionEntity.setPublishType(1);
 
-        //写入发布时间，就是当前时间
-        Date currentDate = new java.sql.Date(System.currentTimeMillis());
-        positionEntity.setPublishDate(currentDate);
+        //创建时，写入发布时间，就是当前时间
+        if (positionVo.getId() == 0) {
+            Date currentDate = new java.sql.Date(System.currentTimeMillis());
+            positionEntity.setPublishDate(currentDate);
+        } else {
+            positionEntity.setPublishDate(positionRepository.findOne(positionVo.getId()).getPublishDate());
+        }
 
         //写入创建时间和修改时间
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
+        //第一次创建修改GmtCreate
         if (positionVo.getId() == 0) {
             positionEntity.setGmtCreate(timestamp);
-        }else{
+        } else {
             positionEntity.setGmtCreate(positionRepository.findOne(positionVo.getId()).getGmtCreate());
         }
 
@@ -71,6 +76,68 @@ public class PositionService {
 
 //        log.info("the result of addPosition:{}", positionEntity);
         return positionRepository.save(positionEntity);
+    }
+
+    /**
+     * 管理员按position获取岗位详情，较用户获取更多的信息
+     *
+     * @param positionId
+     * @return
+     */
+    public HashMap<String, String> adminGetPosition(Long positionId) {
+        PositionEntity position = positionRepository.findOne(positionId);
+        if (position == null) return null;
+
+        HashMap<String, String> hashMap = new LinkedHashMap<>();
+        hashMap.put("id", new Long(position.getId()).toString());
+        hashMap.put("positionName", position.getPositionName());
+        hashMap.put("department", position.getDepartment());
+        hashMap.put("resumeAuditDepartment", position.getResumeAuditDepartment());
+        hashMap.put("assessmentDepartment", position.getAssessmentDepartment());
+        hashMap.put("positionType", position.getPositionType());
+        hashMap.put("recruitmentType", String.valueOf(position.getRecruitmentType()));
+        hashMap.put("workPlace", position.getWorkPlace());
+        hashMap.put("education", position.getEducation());
+        hashMap.put("recruitingNumbers", position.getRecruitingNumbers().toString());
+        hashMap.put("deadline", String.valueOf(position.getDeadline()));
+        hashMap.put("jobResponsibilities", position.getJobResponsibilities());
+        hashMap.put("jobRequirements", position.getJobRequirements());
+        return hashMap;
+    }
+
+    /**
+     * 管理员查看招聘中的岗位信息
+     *
+     * @return
+     */
+    public List<HashMap> adminGetPositions() {
+        List<PositionEntity> positions = positionRepository.findAll();
+
+        List<HashMap> res = new ArrayList<>();
+        for (PositionEntity position : positions) {
+            //简历已经发布
+            if (position.getPublishType() == 1) {
+                HashMap<String, String> hashMap = new LinkedHashMap<>();
+                hashMap.put("id", new Long(position.getId()).toString());
+                hashMap.put("positionName", position.getPositionName());
+                hashMap.put("department", position.getDepartment());
+                hashMap.put("recruitmentType", String.valueOf(position.getRecruitmentType()));
+                hashMap.put("workPlace", position.getWorkPlace());
+                hashMap.put("publishDate", String.valueOf(position.getPublishDate()));
+                hashMap.put("deadline", String.valueOf(position.getDeadline()));
+                res.add(hashMap);
+            }
+        }
+        return res;
+    }
+
+    /**
+     * 管理员删除岗位
+     *
+     * @param positionId
+     */
+    public void adminDeletePosition(Long positionId) {
+        positionRepository.delete(positionId);
     }
 
 
