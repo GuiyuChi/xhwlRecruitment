@@ -133,7 +133,7 @@ public class LoginController {
     }
 
     /**
-     * 登录是否过期的检验
+     * 登录是否过期的检验,只需要shiro验证即可，所有为空函数
      */
     @GetMapping("/tokenCheck")
     @RequiresAuthentication

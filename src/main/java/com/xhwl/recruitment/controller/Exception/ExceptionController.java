@@ -1,6 +1,7 @@
-package com.xhwl.recruitment.controller;
+package com.xhwl.recruitment.controller.Exception;
 
 import com.xhwl.recruitment.bean.ResponseBean;
+import com.xhwl.recruitment.exception.DepartmentException;
 import org.apache.shiro.ShiroException;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,17 @@ public class ExceptionController {
         return new ResponseBean(401, "Unauthorized", null);
     }
 
+    //捕获 DepartmentException 岗位相关错误
+    @ExceptionHandler(DepartmentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseBean catchDepartmentException(HttpServletRequest request, Throwable ex) {
+        return new ResponseBean(422, ex.getMessage(), null);
+    }
+
+    //捕获 UserRepeatException
+    public ResponseBean catchUserRepeatException(Throwable ex){
+        return new ResponseBean(423, ex.getMessage(), null);
+    }
     // 捕捉其他所有异常
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
