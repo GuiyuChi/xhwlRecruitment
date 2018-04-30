@@ -7,7 +7,7 @@ import java.util.Objects;
 /**
  * @Author: guiyu
  * @Description:
- * @Date: Create in 下午7:16 2018/4/23
+ * @Date: Create in 下午8:16 2018/4/26
  **/
 @Entity
 @Table(name = "resume_deliver", schema = "xhwl", catalog = "")
@@ -17,7 +17,7 @@ public class ResumeDeliverEntity {
     private Long userId;
     private Long dwResumeId;
     private String authorityCode;
-    private Integer recruitmentState;
+    private String recruitmentState;
     private Timestamp gmtCreate;
     private Timestamp gmtModified;
 
@@ -73,12 +73,12 @@ public class ResumeDeliverEntity {
     }
 
     @Basic
-    @Column(name = "recruitment_state", nullable = true)
-    public Integer getRecruitmentState() {
+    @Column(name = "recruitment_state", nullable = true, length = 255)
+    public String getRecruitmentState() {
         return recruitmentState;
     }
 
-    public void setRecruitmentState(Integer recruitmentState) {
+    public void setRecruitmentState(String recruitmentState) {
         this.recruitmentState = recruitmentState;
     }
 
@@ -121,19 +121,5 @@ public class ResumeDeliverEntity {
     public int hashCode() {
 
         return Objects.hash(id, positionId, userId, dwResumeId, authorityCode, recruitmentState, gmtCreate, gmtModified);
-    }
-
-    @Override
-    public String toString() {
-        return "ResumeDeliverEntity{" +
-                "id=" + id +
-                ", positionId=" + positionId +
-                ", userId=" + userId +
-                ", dwResumeId=" + dwResumeId +
-                ", authorityCode='" + authorityCode + '\'' +
-                ", recruitmentState=" + recruitmentState +
-                ", gmtCreate=" + gmtCreate +
-                ", gmtModified=" + gmtModified +
-                '}';
     }
 }

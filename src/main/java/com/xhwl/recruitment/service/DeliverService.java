@@ -308,8 +308,8 @@ public class DeliverService {
         resumeDeliverEntity.setUserId(userId);
         resumeDeliverEntity.setDwResumeId(newResumeId);
 
-        //投递时进度为0 及简历待审核状态
-        resumeDeliverEntity.setRecruitmentState(0);
+        //投递时进度为 121212
+        resumeDeliverEntity.setRecruitmentState("1212");
 
         PositionEntity positionEntity = positionRepository.findOne(positionId);
         //todo 验证字段未输入
@@ -387,7 +387,7 @@ public class DeliverService {
             PositionEntity positionEntity = positionRepository.findOne(positionId);
             hashMap.put("positionName", positionEntity.getPositionName());
             hashMap.put("recruitmentType", String.valueOf(positionEntity.getRecruitmentType()));
-            hashMap.put("recruitmentState", resumeDeliver.getRecruitmentState().toString());
+            hashMap.put("recruitmentState", resumeDeliver.getRecruitmentState());
             res.add(hashMap);
         }
         return res;

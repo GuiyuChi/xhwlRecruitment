@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * @Author: guiyu
- * @Description:
+ * @Description: 用户的权限服务
  * @Date: Create in 下午1:46 2018/4/13
  **/
 @Service
