@@ -108,9 +108,10 @@ public class LoginController {
         }
     }
 
+
     /**
      * 管理员登录的接口
-     * normalAdmin 普通管理员   seniorAdmin 高级管理员   superAdmin 超级管理员
+     * 所有管理员都通过此处登录
      *
      * @param username
      * @param password
@@ -121,13 +122,9 @@ public class LoginController {
                                    @RequestParam("password") String password) {
         UserEntity userEntity = userService.getUser(username);
         if (userEntity.getPassword().equals(password)) {
-            if (userEntity.getRole().equals("normalAdmin")) {
-                return new ResponseBean(200, "normalAdmin", JWTUtil.sign(username, password));
-            } else if (userEntity.getRole().equals("seniorAdmin")) {
-                return new ResponseBean(200, "seniorAdmin", JWTUtil.sign(username, password));
-            } else if (userEntity.getRole().equals("superAdmin")) {
-                return new ResponseBean(200, "superAdmin", JWTUtil.sign(username, password));
-            } else {
+            if (userEntity.getRole().equals("admin")) {
+                return new ResponseBean(200, "admin Login success", JWTUtil.sign(username, password));
+            }  else {
                 throw new UnauthorizedException();
             }
         } else {
