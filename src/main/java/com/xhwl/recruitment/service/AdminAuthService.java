@@ -162,6 +162,7 @@ public class AdminAuthService {
      */
     public AdminAuthDto searchAdmin(String adminName) {
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserName(adminName);
+        if(adminAuthEntity == null) return null;
 
         AdminAuthDto adminAuthDto = new AdminAuthDto();
         adminAuthDto.setId(adminAuthEntity.getId());
