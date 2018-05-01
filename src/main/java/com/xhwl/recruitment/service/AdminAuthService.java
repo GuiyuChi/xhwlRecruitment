@@ -88,7 +88,7 @@ public class AdminAuthService {
             String username = adminAuthEntityList.get(i).getUserName();
 
             adminAuthDto.setId(adminAuthEntityList.get(i).getId());
-            adminAuthDto.setUserName(username);
+            adminAuthDto.setUsername(username);
             adminAuthDto.setDepartment(department);
             adminAuthDto.setPassword(password);
 
