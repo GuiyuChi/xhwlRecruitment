@@ -24,7 +24,7 @@ import java.util.Set;
  * @Date: Create in 下午12:49 2018/4/8
  **/
 @Service
-public class MyRealm extends AuthorizingRealm{
+public class MyRealm extends AuthorizingRealm {
 
     @Autowired
     private UserService userService;
@@ -46,8 +46,11 @@ public class MyRealm extends AuthorizingRealm{
         UserEntity userEntity = userService.getUser(username);
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
         simpleAuthorizationInfo.addRole(userEntity.getRole());
-        Set<String> permission = new HashSet<>(Arrays.asList(userEntity.getPermission().split(",")));
-        simpleAuthorizationInfo.addStringPermissions(permission);
+
+        if (userEntity.getPermission() != null) {
+            Set<String> permission = new HashSet<>(Arrays.asList(userEntity.getPermission().split(",")));
+            simpleAuthorizationInfo.addStringPermissions(permission);
+        }
         return simpleAuthorizationInfo;
     }
 
@@ -66,11 +69,11 @@ public class MyRealm extends AuthorizingRealm{
         }
 
         UserEntity userEntity = userService.getUser(username);
-        if(userEntity == null){
+        if (userEntity == null) {
             throw new AuthenticationException("token invalid");
         }
 
-        if (! JWTUtil.verify(token, username, userEntity.getPassword())) {
+        if (!JWTUtil.verify(token, username, userEntity.getPassword())) {
             throw new AuthenticationException("Username or password error");
         }
 

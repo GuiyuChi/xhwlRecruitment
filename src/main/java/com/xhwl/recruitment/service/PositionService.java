@@ -1,11 +1,15 @@
 package com.xhwl.recruitment.service;
 
 import com.xhwl.recruitment.dao.PositionRepository;
+import com.xhwl.recruitment.domain.AdminAuthEntity;
 import com.xhwl.recruitment.domain.PositionEntity;
 import com.xhwl.recruitment.vo.PositionVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
@@ -106,29 +110,55 @@ public class PositionService {
     }
 
     /**
-     * 管理员查看招聘中的岗位信息
+     * 普通管理员查看发布中的工作，限本部门
      *
      * @return
      */
-    public List<HashMap> adminGetPositions() {
-        List<PositionEntity> positions = positionRepository.findAll();
+    public Page<HashMap> adminGetDepartmentPositions(Pageable pageable, Long department, Integer publicType) {
+        Page<PositionEntity> positionEntityPage = positionRepository.findAllByDepartmentAndPublishType(pageable, department, publicType);
+        List<PositionEntity> positions = positionEntityPage.getContent();
 
         List<HashMap> res = new ArrayList<>();
         for (PositionEntity position : positions) {
-            //简历已经发布
-            if (position.getPublishType() == 1) {
-                HashMap<String, String> hashMap = new LinkedHashMap<>();
-                hashMap.put("id", new Long(position.getId()).toString());
-                hashMap.put("positionName", position.getPositionName());
-                hashMap.put("department", String.valueOf(position.getDepartment()));
-                hashMap.put("recruitmentType", String.valueOf(position.getRecruitmentType()));
-                hashMap.put("workPlace", position.getWorkPlace());
-                hashMap.put("publishDate", String.valueOf(position.getPublishDate()));
-                hashMap.put("deadline", String.valueOf(position.getDeadline()));
-                res.add(hashMap);
-            }
+            HashMap<String, String> hashMap = new LinkedHashMap<>();
+            hashMap.put("id", new Long(position.getId()).toString());
+            hashMap.put("positionName", position.getPositionName());
+            hashMap.put("department", String.valueOf(position.getDepartment()));
+            hashMap.put("recruitmentType", String.valueOf(position.getRecruitmentType()));
+            hashMap.put("workPlace", position.getWorkPlace());
+            hashMap.put("publishDate", String.valueOf(position.getPublishDate()));
+            hashMap.put("deadline", String.valueOf(position.getDeadline()));
+            res.add(hashMap);
         }
-        return res;
+        Page<HashMap> resPage = new PageImpl<>(res, pageable, positionEntityPage.getTotalElements());
+        return resPage;
+    }
+
+    /**
+     * 人事部门查看所有已经发布的工作
+     *
+     * @param pageable
+     * @param publicType
+     * @return
+     */
+    public Page<HashMap> adminGetAllPublishPositions(Pageable pageable, Integer publicType) {
+        Page<PositionEntity> positionEntityPage = positionRepository.findAllByPublishType(pageable, publicType);
+        List<PositionEntity> positions = positionEntityPage.getContent();
+
+        List<HashMap> res = new ArrayList<>();
+        for (PositionEntity position : positions) {
+            HashMap<String, String> hashMap = new LinkedHashMap<>();
+            hashMap.put("id", new Long(position.getId()).toString());
+            hashMap.put("positionName", position.getPositionName());
+            hashMap.put("department", String.valueOf(position.getDepartment()));
+            hashMap.put("recruitmentType", String.valueOf(position.getRecruitmentType()));
+            hashMap.put("workPlace", position.getWorkPlace());
+            hashMap.put("publishDate", String.valueOf(position.getPublishDate()));
+            hashMap.put("deadline", String.valueOf(position.getDeadline()));
+            res.add(hashMap);
+        }
+        Page<HashMap> resPage = new PageImpl<>(res, pageable, positionEntityPage.getTotalElements());
+        return resPage;
     }
 
     /**
@@ -199,9 +229,6 @@ public class PositionService {
         }
         return null;
     }
-
-
-
 
 
 }
