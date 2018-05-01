@@ -2,6 +2,7 @@ package com.xhwl.recruitment.service;
 
 import com.xhwl.recruitment.dao.*;
 import com.xhwl.recruitment.domain.*;
+import com.xhwl.recruitment.util.StatusCodeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,7 +129,7 @@ public class DeliverService {
      *
      * @param userId
      */
-    public DwResumeEntity copyResumeTable(Long userId, HashMap<String, String> address) {
+    private DwResumeEntity copyResumeTable(Long userId, HashMap<String, String> address) {
         ResumeEntity resumeEntity = resumeRepository.findByUserId(userId);
 
         DwResumeEntity dwResumeEntity = new DwResumeEntity();
@@ -149,7 +150,7 @@ public class DeliverService {
      * @param userId
      * @param newResumeId
      */
-    public void copyPersonalInformation(Long userId, Long newResumeId) {
+    private void copyPersonalInformation(Long userId, Long newResumeId) {
         Long oldResumeId = findResumeIdByUserId(userId);
 
         PersonalInformationEntity personalInformationEntity = personalInformationRepository.findByResumeId(oldResumeId);
@@ -172,7 +173,7 @@ public class DeliverService {
      * @param oldResumeId
      * @param newResumeId
      */
-    public void copyEducationExperience(Long oldResumeId, Long newResumeId) {
+    private void copyEducationExperience(Long oldResumeId, Long newResumeId) {
 
         List<EducationExperienceEntity> educations = educationRepository.findAllByResumeId(oldResumeId);
 
@@ -191,7 +192,7 @@ public class DeliverService {
      * @param oldResumeId
      * @param newResumeId
      */
-    public void copyTrainingExperience(Long oldResumeId, Long newResumeId) {
+    private void copyTrainingExperience(Long oldResumeId, Long newResumeId) {
 
         List<TrainingExperienceEntity> trains = trainingRepository.findAllByResumeId(oldResumeId);
 
@@ -210,7 +211,7 @@ public class DeliverService {
      * @param oldResumeId
      * @param newResumeId
      */
-    public void copyProjectExperience(Long oldResumeId, Long newResumeId) {
+    private void copyProjectExperience(Long oldResumeId, Long newResumeId) {
         List<ProjectExperienceEntity> projects = projectExperienceRepository.findAllByResumeId(oldResumeId);
 
         for (int i = 0; i < projects.size(); i++) {
@@ -229,7 +230,7 @@ public class DeliverService {
      * @param oldResumeId
      * @param newResumeId
      */
-    public void copyWorkExperience(Long oldResumeId, Long newResumeId) {
+    private void copyWorkExperience(Long oldResumeId, Long newResumeId) {
         List<WorkExperienceEntity> works = workExperienceRepository.findAllByResumeId(oldResumeId);
 
         for (int i = 0; i < works.size(); i++) {
@@ -247,7 +248,7 @@ public class DeliverService {
      * @param oldResumeId
      * @param newResumeId
      */
-    public void copyInternshipExperience(Long oldResumeId, Long newResumeId) {
+    private void copyInternshipExperience(Long oldResumeId, Long newResumeId) {
         List<InternshipExperienceEntity> internships = internshipExperienceRepository.findAllByResumeId(oldResumeId);
 
         for (int i = 0; i < internships.size(); i++) {
@@ -266,7 +267,7 @@ public class DeliverService {
      * @param oldResumeId
      * @param newResumeId
      */
-    public void copyAward(Long oldResumeId, Long newResumeId) {
+    private void copyAward(Long oldResumeId, Long newResumeId) {
         List<AwardEntity> awards = awardRepository.findAllByResumeId(oldResumeId);
 
         for (int i = 0; i < awards.size(); i++) {
@@ -284,7 +285,7 @@ public class DeliverService {
      * @param oldResumeId
      * @param newResumeId
      */
-    public void copyJobIntention(Long oldResumeId, Long newResumeId) {
+    private void copyJobIntention(Long oldResumeId, Long newResumeId) {
         JobIntentionEntity jobIntention = jobIntentionRepository.findByResumeId(oldResumeId);
 
         DwJobIntentionEntity dwJobIntention = new DwJobIntentionEntity();
@@ -301,15 +302,15 @@ public class DeliverService {
      * @param userId
      * @param newResumeId
      */
-    public Long addResumeDeliver(Long positionId, Long userId, Long newResumeId) {
+    private Long addResumeDeliver(Long positionId, Long userId, Long newResumeId) {
         ResumeDeliverEntity resumeDeliverEntity = new ResumeDeliverEntity();
 
         resumeDeliverEntity.setPositionId(positionId);
         resumeDeliverEntity.setUserId(userId);
         resumeDeliverEntity.setDwResumeId(newResumeId);
 
-        //投递时进度为 121212
-        resumeDeliverEntity.setRecruitmentState("1212");
+        //初始化投递进度
+        resumeDeliverEntity.setRecruitmentState(StatusCodeUtil.initCode());
 
         PositionEntity positionEntity = positionRepository.findOne(positionId);
         //todo 验证字段未输入
@@ -387,7 +388,7 @@ public class DeliverService {
             PositionEntity positionEntity = positionRepository.findOne(positionId);
             hashMap.put("positionName", positionEntity.getPositionName());
             hashMap.put("recruitmentType", String.valueOf(positionEntity.getRecruitmentType()));
-            hashMap.put("recruitmentState", resumeDeliver.getRecruitmentState());
+            hashMap.put("recruitmentState", StatusCodeUtil.code2View(resumeDeliver.getRecruitmentState()));
             res.add(hashMap);
         }
         return res;
