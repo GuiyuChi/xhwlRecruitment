@@ -62,7 +62,7 @@ public class AdminAuthService {
 
         if (departmentId == PersonnelDepartmentId) {
             adminAuthEntity.setRole(SeniorAdminRole);
-        }else {
+        } else {
             adminAuthEntity.setRole(NormalAdminRole);
         }
 
@@ -72,15 +72,16 @@ public class AdminAuthService {
 
     /**
      * 超级管理员查看全部人员信息，分页
+     *
      * @param pageable
      * @return
      */
-    public Page<AdminAuthDto> findAll(Pageable pageable){
+    public Page<AdminAuthDto> findAll(Pageable pageable) {
         Page<AdminAuthEntity> adminAuthEntityPage = adminAuthRepository.findAll(pageable);
         List<AdminAuthEntity> adminAuthEntityList = adminAuthEntityPage.getContent();
 
         List<AdminAuthDto> adminAuthDtoList = new ArrayList<>();
-        for(int i=0;i<adminAuthEntityList.size();i++){
+        for (int i = 0; i < adminAuthEntityList.size(); i++) {
             AdminAuthDto adminAuthDto = new AdminAuthDto();
 
             String department = String.valueOf(departmentRepository.findOne(adminAuthEntityList.get(i).getDepartmentId()).getId());
@@ -95,9 +96,44 @@ public class AdminAuthService {
             adminAuthDtoList.add(adminAuthDto);
         }
 
-        Page<AdminAuthDto> adminAuthDtoPage = new PageImpl<AdminAuthDto>(adminAuthDtoList,pageable,adminAuthEntityPage.getTotalElements());
+        Page<AdminAuthDto> adminAuthDtoPage = new PageImpl<AdminAuthDto>(adminAuthDtoList, pageable, adminAuthEntityPage.getTotalElements());
 
 
         return adminAuthDtoPage;
+    }
+
+    /**
+     * 超级管理员修改管理员部门或密码
+     *
+     * @param username
+     * @param passWord
+     * @param departmentId
+     */
+    @Transactional
+    public AdminAuthDto modifyAdmin(String username, String passWord, Long departmentId) {
+        AdminAuthEntity admin = adminAuthRepository.findByUserName(username);
+        Long userId = admin.getUserId();
+
+        //修改user表
+        UserEntity user = userRepository.findOne(userId);
+        user.setPassword(passWord);
+        UserEntity userEntity = userRepository.save(user);
+
+        //修改管理员表
+        admin.setDepartmentId(departmentId);
+        if (departmentId == PersonnelDepartmentId) {
+            admin.setRole(SeniorAdminRole);
+        } else {
+            admin.setRole(NormalAdminRole);
+        }
+        AdminAuthEntity adminAuthEntity = adminAuthRepository.saveAndFlush(admin);
+
+        AdminAuthDto adminAuthDto = new AdminAuthDto();
+        adminAuthDto.setId(adminAuthEntity.getId());
+        adminAuthDto.setUsername(adminAuthEntity.getUserName());
+        adminAuthDto.setPassword(userEntity.getPassword());
+        adminAuthDto.setDepartment(String.valueOf(adminAuthEntity.getDepartmentId()));
+        return adminAuthDto;
+
     }
 }

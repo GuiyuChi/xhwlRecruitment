@@ -60,6 +60,7 @@ public class AuthController {
         if (!adminAuthRepository.findByUserId(userId).getRole().equalsIgnoreCase(SuperAdminRole)) {
             throw new NoPermissionException("需要超级管理员权限");
         }
+
         String username = hashMap.get("username");
         String password = hashMap.get("password");
         Long departmentId = Long.valueOf(hashMap.get("department"));
@@ -97,5 +98,30 @@ public class AuthController {
         PageRequest request = new PageRequest(page - 1, size);
         Page<AdminAuthDto> adminAuthDtoPage = adminAuthService.findAll(request);
         return adminAuthDtoPage;
+    }
+
+    /**
+     * 超级管理员修改管理员的密码和岗位
+     * @param headers
+     * @param hashMap
+     * @return
+     */
+    @PostMapping("/super/modifyAdmin")
+    @RequiresRoles("admin")
+    public AdminAuthDto modifyAdmin(@RequestHeader HttpHeaders headers,@RequestBody HashMap<String, String> hashMap){
+        Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
+        if (!adminAuthRepository.findByUserId(userId).getRole().equalsIgnoreCase(SuperAdminRole)) {
+            throw new NoPermissionException("需要超级管理员权限");
+        }
+
+        String username = hashMap.get("username");
+        String password = hashMap.get("password");
+        Long departmentId = Long.valueOf(hashMap.get("department"));
+
+        if (departmentRepository.findOne(departmentId) == null) {
+            throw new DepartmentException("岗位错误");
+        }
+
+        return adminAuthService.modifyAdmin(username,password,departmentId);
     }
 }

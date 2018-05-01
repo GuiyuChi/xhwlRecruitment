@@ -16,4 +16,6 @@ public interface AdminAuthRepository extends JpaRepository<AdminAuthEntity, Long
     Page<AdminAuthEntity> findAll(Pageable pageable);
 
     AdminAuthEntity findByUserId(Long userId);
+
+    AdminAuthEntity findByUserName(String username);
 }
