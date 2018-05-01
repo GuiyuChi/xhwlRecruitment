@@ -102,13 +102,14 @@ public class AuthController {
 
     /**
      * 超级管理员修改管理员的密码和岗位
+     *
      * @param headers
      * @param hashMap
      * @return
      */
     @PostMapping("/super/modifyAdmin")
     @RequiresRoles("admin")
-    public AdminAuthDto modifyAdmin(@RequestHeader HttpHeaders headers,@RequestBody HashMap<String, String> hashMap){
+    public AdminAuthDto modifyAdmin(@RequestHeader HttpHeaders headers, @RequestBody HashMap<String, String> hashMap) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         if (!adminAuthRepository.findByUserId(userId).getRole().equalsIgnoreCase(SuperAdminRole)) {
             throw new NoPermissionException("需要超级管理员权限");
@@ -122,6 +123,41 @@ public class AuthController {
             throw new DepartmentException("岗位错误");
         }
 
-        return adminAuthService.modifyAdmin(username,password,departmentId);
+        return adminAuthService.modifyAdmin(username, password, departmentId);
+    }
+
+    /**
+     * 超级管理员召回权限
+     *
+     * @param headers
+     * @param adminName
+     */
+    @DeleteMapping("/super/recallPermission/{adminName}")
+    @RequiresRoles("admin")
+    public void recallPermission(@RequestHeader HttpHeaders headers, @PathVariable("adminName") String adminName) {
+        Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
+        if (!adminAuthRepository.findByUserId(userId).getRole().equalsIgnoreCase(SuperAdminRole)) {
+            throw new NoPermissionException("需要超级管理员权限");
+        }
+
+        adminAuthService.deleteAdmin(adminName);
+    }
+
+    /**
+     * 超级管理员按工号查找管理员
+     *
+     * @param headers
+     * @param adminName
+     * @return
+     */
+    @PutMapping("/super/searchAdmin/{adminName}")
+    @RequiresRoles("admin")
+    public AdminAuthDto searchAdmin(@RequestHeader HttpHeaders headers, @PathVariable("adminName") String adminName) {
+        Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
+        if (!adminAuthRepository.findByUserId(userId).getRole().equalsIgnoreCase(SuperAdminRole)) {
+            throw new NoPermissionException("需要超级管理员权限");
+        }
+
+        return adminAuthService.searchAdmin(adminName);
     }
 }

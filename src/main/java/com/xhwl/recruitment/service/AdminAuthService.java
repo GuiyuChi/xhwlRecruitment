@@ -109,7 +109,6 @@ public class AdminAuthService {
      * @param passWord
      * @param departmentId
      */
-    @Transactional
     public AdminAuthDto modifyAdmin(String username, String passWord, Long departmentId) {
         AdminAuthEntity admin = adminAuthRepository.findByUserName(username);
         Long userId = admin.getUserId();
@@ -135,5 +134,41 @@ public class AdminAuthService {
         adminAuthDto.setDepartment(String.valueOf(adminAuthEntity.getDepartmentId()));
         return adminAuthDto;
 
+    }
+
+    /**
+     * 超级管理员删除管理员
+     *
+     * @param username
+     */
+    public void deleteAdmin(String username) {
+        AdminAuthEntity admin = adminAuthRepository.findByUserName(username);
+        Long userId = admin.getUserId();
+        Long adminId = admin.getId();
+
+        //删除user表记录
+        userRepository.delete(userId);
+
+        //删除管理员表记录
+        adminAuthRepository.delete(adminId);
+
+    }
+
+    /**
+     * 超级管理员按工号查看管理员
+     *
+     * @param adminName
+     * @return
+     */
+    public AdminAuthDto searchAdmin(String adminName) {
+        AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserName(adminName);
+
+        AdminAuthDto adminAuthDto = new AdminAuthDto();
+        adminAuthDto.setId(adminAuthEntity.getId());
+        adminAuthDto.setUsername(adminAuthEntity.getUserName());
+        adminAuthDto.setPassword(userRepository.findOne(adminAuthEntity.getUserId()).getPassword());
+        adminAuthDto.setDepartment(String.valueOf(adminAuthEntity.getDepartmentId()));
+
+        return adminAuthDto;
     }
 }
