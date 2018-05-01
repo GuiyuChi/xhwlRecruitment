@@ -30,7 +30,7 @@ public class PositionService {
     PositionRepository positionRepository;
 
     /**
-     * 添加或修改职位，添加时传入id为null
+     * 管理员添加或修改职位，添加时传入id为null
      *
      * @param positionVo
      * @return
@@ -91,9 +91,9 @@ public class PositionService {
         HashMap<String, String> hashMap = new LinkedHashMap<>();
         hashMap.put("id", new Long(position.getId()).toString());
         hashMap.put("positionName", position.getPositionName());
-        hashMap.put("department", position.getDepartment());
-        hashMap.put("resumeAuditDepartment", position.getResumeAuditDepartment());
-        hashMap.put("assessmentDepartment", position.getAssessmentDepartment());
+        hashMap.put("department", String.valueOf(position.getDepartment()));
+        hashMap.put("resumeAuditDepartment", String.valueOf(position.getResumeAuditDepartment()));
+        hashMap.put("assessmentDepartment", String.valueOf(position.getAssessmentDepartment()));
         hashMap.put("positionType", position.getPositionType());
         hashMap.put("recruitmentType", String.valueOf(position.getRecruitmentType()));
         hashMap.put("workPlace", position.getWorkPlace());
@@ -120,7 +120,7 @@ public class PositionService {
                 HashMap<String, String> hashMap = new LinkedHashMap<>();
                 hashMap.put("id", new Long(position.getId()).toString());
                 hashMap.put("positionName", position.getPositionName());
-                hashMap.put("department", position.getDepartment());
+                hashMap.put("department", String.valueOf(position.getDepartment()));
                 hashMap.put("recruitmentType", String.valueOf(position.getRecruitmentType()));
                 hashMap.put("workPlace", position.getWorkPlace());
                 hashMap.put("publishDate", String.valueOf(position.getPublishDate()));
@@ -163,7 +163,7 @@ public class PositionService {
                     hashMap.put("workPlace", position.getWorkPlace());
                     hashMap.put("recruitingNumbers", position.getRecruitingNumbers().toString());
                     hashMap.put("publishDate", position.getPublishDate().toString());
-                    hashMap.put("department", position.getDepartment());
+                    hashMap.put("department", String.valueOf(position.getDepartment()));
                     hashMap.put("jobResponsibilities", position.getJobResponsibilities());
                     hashMap.put("jobRequirements", position.getJobRequirements());
                     res.add(hashMap);
@@ -188,7 +188,7 @@ public class PositionService {
             hashMap.put("id", new Long(position.getId()).toString());
             hashMap.put("positionName", position.getPositionName());
             hashMap.put("positionType", position.getPositionType());
-            hashMap.put("department", position.getDepartment());
+            hashMap.put("department", String.valueOf(position.getDepartment()));
             hashMap.put("recruitingNumbers", position.getRecruitingNumbers().toString());
             hashMap.put("workPlace", position.getWorkPlace());
             hashMap.put("education", position.getEducation());

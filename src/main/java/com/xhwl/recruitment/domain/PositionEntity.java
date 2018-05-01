@@ -8,16 +8,16 @@ import java.util.Objects;
 /**
  * @Author: guiyu
  * @Description:
- * @Date: Create in 下午12:36 2018/4/23
+ * @Date: Create in 上午11:19 2018/5/1
  **/
 @Entity
 @Table(name = "position", schema = "xhwl", catalog = "")
 public class PositionEntity {
     private long id;
     private String positionName;
-    private String department;
-    private String resumeAuditDepartment;
-    private String assessmentDepartment;
+    private Long department;
+    private Long resumeAuditDepartment;
+    private Long assessmentDepartment;
     private String positionType;
     private Integer recruitmentType;
     private String workPlace;
@@ -33,6 +33,7 @@ public class PositionEntity {
 
     @Id
     @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     public long getId() {
         return id;
     }
@@ -52,32 +53,32 @@ public class PositionEntity {
     }
 
     @Basic
-    @Column(name = "department", nullable = true, length = 255)
-    public String getDepartment() {
+    @Column(name = "department", nullable = true)
+    public Long getDepartment() {
         return department;
     }
 
-    public void setDepartment(String department) {
+    public void setDepartment(Long department) {
         this.department = department;
     }
 
     @Basic
-    @Column(name = "resume_audit_department", nullable = true, length = 255)
-    public String getResumeAuditDepartment() {
+    @Column(name = "resume_audit_department", nullable = true)
+    public Long getResumeAuditDepartment() {
         return resumeAuditDepartment;
     }
 
-    public void setResumeAuditDepartment(String resumeAuditDepartment) {
+    public void setResumeAuditDepartment(Long resumeAuditDepartment) {
         this.resumeAuditDepartment = resumeAuditDepartment;
     }
 
     @Basic
-    @Column(name = "assessment_department", nullable = true, length = 255)
-    public String getAssessmentDepartment() {
+    @Column(name = "assessment_department", nullable = true)
+    public Long getAssessmentDepartment() {
         return assessmentDepartment;
     }
 
-    public void setAssessmentDepartment(String assessmentDepartment) {
+    public void setAssessmentDepartment(Long assessmentDepartment) {
         this.assessmentDepartment = assessmentDepartment;
     }
 
@@ -236,9 +237,9 @@ public class PositionEntity {
         return "PositionEntity{" +
                 "id=" + id +
                 ", positionName='" + positionName + '\'' +
-                ", department='" + department + '\'' +
-                ", resumeAuditDepartment='" + resumeAuditDepartment + '\'' +
-                ", assessmentDepartment='" + assessmentDepartment + '\'' +
+                ", department=" + department +
+                ", resumeAuditDepartment=" + resumeAuditDepartment +
+                ", assessmentDepartment=" + assessmentDepartment +
                 ", positionType='" + positionType + '\'' +
                 ", recruitmentType=" + recruitmentType +
                 ", workPlace='" + workPlace + '\'' +

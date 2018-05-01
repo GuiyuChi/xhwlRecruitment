@@ -150,7 +150,7 @@ public class AuthController {
      * @param adminName
      * @return
      */
-    @PutMapping("/super/searchAdmin/{adminName}")
+    @GetMapping("/super/searchAdmin/{adminName}")
     @RequiresRoles("admin")
     public AdminAuthDto searchAdmin(@RequestHeader HttpHeaders headers, @PathVariable("adminName") String adminName) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));

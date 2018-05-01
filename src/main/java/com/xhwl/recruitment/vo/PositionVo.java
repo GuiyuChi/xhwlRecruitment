@@ -8,9 +8,9 @@ package com.xhwl.recruitment.vo;
 public class PositionVo {
     private Long id;
     private String positionName;//职位名称
-    private String department;//所属部门
-    private String resumeAuditDepartment;//简历审核部门
-    private String assessmentDepartment;//考核部门
+    private Long department;//所属部门
+    private Long resumeAuditDepartment;//简历审核部门
+    private Long assessmentDepartment;//考核部门
     private String positionType;//职位类型
     private Integer recruitmentType;//招聘类型
     private String workPlace;//工作地点
@@ -38,27 +38,27 @@ public class PositionVo {
         this.positionName = positionName;
     }
 
-    public String getDepartment() {
+    public Long getDepartment() {
         return department;
     }
 
-    public void setDepartment(String department) {
+    public void setDepartment(Long department) {
         this.department = department;
     }
 
-    public String getResumeAuditDepartment() {
+    public Long getResumeAuditDepartment() {
         return resumeAuditDepartment;
     }
 
-    public void setResumeAuditDepartment(String resumeAuditDepartment) {
+    public void setResumeAuditDepartment(Long resumeAuditDepartment) {
         this.resumeAuditDepartment = resumeAuditDepartment;
     }
 
-    public String getAssessmentDepartment() {
+    public Long getAssessmentDepartment() {
         return assessmentDepartment;
     }
 
-    public void setAssessmentDepartment(String assessmentDepartment) {
+    public void setAssessmentDepartment(Long assessmentDepartment) {
         this.assessmentDepartment = assessmentDepartment;
     }
 
@@ -147,9 +147,9 @@ public class PositionVo {
         return "PositionVo{" +
                 "id=" + id +
                 ", positionName='" + positionName + '\'' +
-                ", department='" + department + '\'' +
-                ", resumeAuditDepartment='" + resumeAuditDepartment + '\'' +
-                ", assessmentDepartment='" + assessmentDepartment + '\'' +
+                ", department=" + department +
+                ", resumeAuditDepartment=" + resumeAuditDepartment +
+                ", assessmentDepartment=" + assessmentDepartment +
                 ", positionType='" + positionType + '\'' +
                 ", recruitmentType=" + recruitmentType +
                 ", workPlace='" + workPlace + '\'' +
