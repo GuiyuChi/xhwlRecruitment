@@ -45,6 +45,11 @@ public class ExceptionController {
     public ResponseBean catchUserRepeatException(Throwable ex){
         return new ResponseBean(423, ex.getMessage(), null);
     }
+
+    //捕获 NoPermissionException 管理员权限不足
+    public ResponseBean catchNoPermissionException(Throwable ex){
+        return new ResponseBean(402, ex.getMessage(), null);
+    }
     // 捕捉其他所有异常
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)

@@ -5,9 +5,16 @@ import com.xhwl.recruitment.dao.DepartmentRepository;
 import com.xhwl.recruitment.dao.UserRepository;
 import com.xhwl.recruitment.domain.AdminAuthEntity;
 import com.xhwl.recruitment.domain.UserEntity;
+import com.xhwl.recruitment.dto.AdminAuthDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @Author: guiyu
@@ -61,5 +68,36 @@ public class AdminAuthService {
 
         adminAuthRepository.save(adminAuthEntity);
 
+    }
+
+    /**
+     * 超级管理员查看全部人员信息，分页
+     * @param pageable
+     * @return
+     */
+    public Page<AdminAuthDto> findAll(Pageable pageable){
+        Page<AdminAuthEntity> adminAuthEntityPage = adminAuthRepository.findAll(pageable);
+        List<AdminAuthEntity> adminAuthEntityList = adminAuthEntityPage.getContent();
+
+        List<AdminAuthDto> adminAuthDtoList = new ArrayList<>();
+        for(int i=0;i<adminAuthEntityList.size();i++){
+            AdminAuthDto adminAuthDto = new AdminAuthDto();
+
+            String department = String.valueOf(departmentRepository.findOne(adminAuthEntityList.get(i).getDepartmentId()).getId());
+            String password = userRepository.findOne(adminAuthEntityList.get(i).getUserId()).getPassword();
+            String username = adminAuthEntityList.get(i).getUserName();
+
+            adminAuthDto.setId(adminAuthEntityList.get(i).getId());
+            adminAuthDto.setUserName(username);
+            adminAuthDto.setDepartment(department);
+            adminAuthDto.setPassword(password);
+
+            adminAuthDtoList.add(adminAuthDto);
+        }
+
+        Page<AdminAuthDto> adminAuthDtoPage = new PageImpl<AdminAuthDto>(adminAuthDtoList,pageable,adminAuthEntityPage.getTotalElements());
+
+
+        return adminAuthDtoPage;
     }
 }
