@@ -14,4 +14,7 @@ import java.util.List;
 @Repository
 public interface ResumeDeliverRepository extends JpaRepository<ResumeDeliverEntity, Long> {
     List<ResumeDeliverEntity> findAllByUserId(Long userId);
+
+    List<ResumeDeliverEntity> findAllByPositionId(Long positionId);
+
 }

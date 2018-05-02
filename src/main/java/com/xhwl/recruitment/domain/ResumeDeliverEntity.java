@@ -1,13 +1,13 @@
 package com.xhwl.recruitment.domain;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
+import java.sql.Date;
 import java.util.Objects;
 
 /**
  * @Author: guiyu
  * @Description:
- * @Date: Create in 下午8:16 2018/4/26
+ * @Date: Create in 下午9:56 2018/5/1
  **/
 @Entity
 @Table(name = "resume_deliver", schema = "xhwl", catalog = "")
@@ -18,8 +18,7 @@ public class ResumeDeliverEntity {
     private Long dwResumeId;
     private String authorityCode;
     private String recruitmentState;
-    private Timestamp gmtCreate;
-    private Timestamp gmtModified;
+    private Date deliverDate;
 
     @Id
     @Column(name = "id", nullable = false)
@@ -83,23 +82,13 @@ public class ResumeDeliverEntity {
     }
 
     @Basic
-    @Column(name = "gmt_create", nullable = true)
-    public Timestamp getGmtCreate() {
-        return gmtCreate;
+    @Column(name = "deliver_date", nullable = true)
+    public Date getDeliverDate() {
+        return deliverDate;
     }
 
-    public void setGmtCreate(Timestamp gmtCreate) {
-        this.gmtCreate = gmtCreate;
-    }
-
-    @Basic
-    @Column(name = "gmt_modified", nullable = true)
-    public Timestamp getGmtModified() {
-        return gmtModified;
-    }
-
-    public void setGmtModified(Timestamp gmtModified) {
-        this.gmtModified = gmtModified;
+    public void setDeliverDate(Date deliverDate) {
+        this.deliverDate = deliverDate;
     }
 
     @Override
@@ -113,13 +102,12 @@ public class ResumeDeliverEntity {
                 Objects.equals(dwResumeId, that.dwResumeId) &&
                 Objects.equals(authorityCode, that.authorityCode) &&
                 Objects.equals(recruitmentState, that.recruitmentState) &&
-                Objects.equals(gmtCreate, that.gmtCreate) &&
-                Objects.equals(gmtModified, that.gmtModified);
+                Objects.equals(deliverDate, that.deliverDate);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, positionId, userId, dwResumeId, authorityCode, recruitmentState, gmtCreate, gmtModified);
+        return Objects.hash(id, positionId, userId, dwResumeId, authorityCode, recruitmentState, deliverDate);
     }
 }

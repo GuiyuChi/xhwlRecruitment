@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -313,7 +314,9 @@ public class DeliverService {
         resumeDeliverEntity.setRecruitmentState(StatusCodeUtil.initCode());
 
         PositionEntity positionEntity = positionRepository.findOne(positionId);
-        //todo 验证字段未输入
+
+        Date currentDate = new java.sql.Date(System.currentTimeMillis());
+        resumeDeliverEntity.setDeliverDate(currentDate);
 
         ResumeDeliverEntity rde = resumeDeliverRepository.save(resumeDeliverEntity);
 //        log.info("the result of copy addResumeDeliver: {}", rde);
