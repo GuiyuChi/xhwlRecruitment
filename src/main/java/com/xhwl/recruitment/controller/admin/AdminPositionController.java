@@ -113,7 +113,7 @@ public class AdminPositionController {
 
         PageRequest request = new PageRequest(page - 1, size);
         if(adminAuthEntity.getDepartmentId()==PersonnelDepartmentId){
-            return positionService.adminGetAllPublishPositions(request,2);
+            return positionService.adminGetAllPublishPositions(request,1);
         }else{
             return positionService.adminGetDepartmentPositions(request,adminAuthEntity.getDepartmentId(),PositionisPublish);
         }
