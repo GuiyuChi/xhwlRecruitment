@@ -102,30 +102,61 @@ public class StatusCodeUtil {
             return "3441";
         } else if (status == Pass) {
             return "3443";
-        }
-        else{
+        } else {
             //拒绝的情况
             Integer refuseStep = 0;
-            for(int i=0;i<code.length();i++){
-                if(code.charAt(i)=='2'){
-                    refuseStep=i;
+            for (int i = 0; i < code.length(); i++) {
+                if (code.charAt(i) == '2') {
+                    refuseStep = i;
                     break;
                 }
             }
-            if(refuseStep==ResumeReview || refuseStep==HRFristReview){
+            if (refuseStep == ResumeReview || refuseStep == HRFristReview) {
                 return "5221";
-            }
-            else if(refuseStep == DepartmentWrittenExamination){
+            } else if (refuseStep == DepartmentWrittenExamination) {
                 return "3621";
-            }
-            else if(refuseStep == DepartmentInterview){
+            } else if (refuseStep == DepartmentInterview) {
                 return "3461";
-            }
-            else if(refuseStep == HRInterview){
+            } else if (refuseStep == HRInterview) {
                 return "3445";
             }
         }
         return "1221";
+    }
+
+    /**
+     * 获取回绝时状态
+     *
+     * @param code
+     * @return
+     */
+    public static String getRefuseStep(String code) {
+        Integer status = codeAnalysis(code);
+        if (status == Refuse) {
+            Integer refuseStep = 0;
+            for (int i = 0; i < code.length(); i++) {
+                if (code.charAt(i) == '2') {
+                    refuseStep = i;
+                    break;
+                }
+            }
+
+            if (refuseStep == ResumeReview) {
+                return "简历审核";
+            } else if (refuseStep == HRFristReview) {
+                return "HR初审";
+            } else if (refuseStep == DepartmentWrittenExamination) {
+                return "部门笔试";
+            } else if (refuseStep == DepartmentInterview) {
+                return "部门面试";
+            } else if (refuseStep == HRInterview) {
+                return "HR面试";
+            } else {
+                return "其他步骤";
+            }
+        } else {
+            return "未被拒绝";
+        }
     }
 
 }
