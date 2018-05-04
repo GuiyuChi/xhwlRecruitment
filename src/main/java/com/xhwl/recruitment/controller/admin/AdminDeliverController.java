@@ -235,7 +235,7 @@ public class AdminDeliverController {
     }
 
     /**
-     * 管理员从撤销回绝，回滚到拒绝前状态
+     * 管理员撤销回绝，回滚到拒绝前状态
      *
      * @param headers
      * @param deliverId
