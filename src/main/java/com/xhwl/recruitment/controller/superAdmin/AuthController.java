@@ -5,7 +5,7 @@ import com.xhwl.recruitment.dao.DepartmentRepository;
 import com.xhwl.recruitment.dao.UserRepository;
 import com.xhwl.recruitment.dto.AdminAuthDto;
 import com.xhwl.recruitment.exception.DepartmentException;
-import com.xhwl.recruitment.exception.NoPermissionException;
+import com.xhwl.recruitment.exception.MyNoPermissionException;
 import com.xhwl.recruitment.exception.UserRepeatException;
 import com.xhwl.recruitment.service.AdminAuthService;
 import com.xhwl.recruitment.service.UserService;
@@ -56,7 +56,7 @@ public class AuthController {
     public void addAdmin(@RequestHeader HttpHeaders headers, @RequestBody HashMap<String, String> hashMap) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         if (!adminAuthRepository.findByUserId(userId).getRole().equalsIgnoreCase(SuperAdminRole)) {
-            throw new NoPermissionException("需要超级管理员权限");
+            throw new MyNoPermissionException("需要超级管理员权限");
         }
 
         String username = hashMap.get("username");
@@ -90,7 +90,7 @@ public class AuthController {
                                         @RequestParam(value = "size", defaultValue = "20") Integer size) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         if (!adminAuthRepository.findByUserId(userId).getRole().equalsIgnoreCase(SuperAdminRole)) {
-            throw new NoPermissionException("需要超级管理员权限");
+            throw new MyNoPermissionException("需要超级管理员权限");
         }
 
         PageRequest request = new PageRequest(page - 1, size);
@@ -110,7 +110,7 @@ public class AuthController {
     public AdminAuthDto modifyAdmin(@RequestHeader HttpHeaders headers, @RequestBody HashMap<String, String> hashMap) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         if (!adminAuthRepository.findByUserId(userId).getRole().equalsIgnoreCase(SuperAdminRole)) {
-            throw new NoPermissionException("需要超级管理员权限");
+            throw new MyNoPermissionException("需要超级管理员权限");
         }
 
         String username = hashMap.get("username");
@@ -135,7 +135,7 @@ public class AuthController {
     public void recallPermission(@RequestHeader HttpHeaders headers, @PathVariable("adminName") String adminName) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         if (!adminAuthRepository.findByUserId(userId).getRole().equalsIgnoreCase(SuperAdminRole)) {
-            throw new NoPermissionException("需要超级管理员权限");
+            throw new MyNoPermissionException("需要超级管理员权限");
         }
 
         adminAuthService.deleteAdmin(adminName);
@@ -153,7 +153,7 @@ public class AuthController {
     public AdminAuthDto searchAdmin(@RequestHeader HttpHeaders headers, @PathVariable("adminName") String adminName) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         if (!adminAuthRepository.findByUserId(userId).getRole().equalsIgnoreCase(SuperAdminRole)) {
-            throw new NoPermissionException("需要超级管理员权限");
+            throw new MyNoPermissionException("需要超级管理员权限");
         }
 
         return adminAuthService.searchAdmin(adminName);

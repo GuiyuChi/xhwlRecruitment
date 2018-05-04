@@ -2,6 +2,8 @@ package com.xhwl.recruitment.controller.Exception;
 
 import com.xhwl.recruitment.bean.ResponseBean;
 import com.xhwl.recruitment.exception.DepartmentException;
+import com.xhwl.recruitment.exception.MyNoPermissionException;
+import com.xhwl.recruitment.exception.UserRepeatException;
 import org.apache.shiro.ShiroException;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.springframework.http.HttpStatus;
@@ -41,12 +43,16 @@ public class ExceptionController {
         return new ResponseBean(422, ex.getMessage(), null);
     }
 
-    //捕获 UserRepeatException
+    //捕获 UserRepeatException 用户或管理员重复注册的异常
+    @ExceptionHandler(UserRepeatException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseBean catchUserRepeatException(Throwable ex){
         return new ResponseBean(423, ex.getMessage(), null);
     }
 
     //捕获 NoPermissionException 管理员权限不足
+    @ExceptionHandler(MyNoPermissionException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseBean catchNoPermissionException(Throwable ex){
         return new ResponseBean(402, ex.getMessage(), null);
     }

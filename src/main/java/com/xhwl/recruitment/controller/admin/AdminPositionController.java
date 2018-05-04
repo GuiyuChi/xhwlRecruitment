@@ -3,9 +3,8 @@ package com.xhwl.recruitment.controller.admin;
 import com.xhwl.recruitment.dao.AdminAuthRepository;
 import com.xhwl.recruitment.dao.DepartmentRepository;
 import com.xhwl.recruitment.domain.AdminAuthEntity;
-import com.xhwl.recruitment.domain.PositionEntity;
 import com.xhwl.recruitment.exception.DepartmentException;
-import com.xhwl.recruitment.exception.NoPermissionException;
+import com.xhwl.recruitment.exception.MyNoPermissionException;
 import com.xhwl.recruitment.service.DeliverService;
 import com.xhwl.recruitment.service.PositionService;
 import com.xhwl.recruitment.service.UserService;
@@ -20,7 +19,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * @Author: guiyu
@@ -72,7 +70,7 @@ public class AdminPositionController {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
         if (!(adminAuthEntity.getRole().equalsIgnoreCase(SeniorAdminRole) || adminAuthEntity.getRole().equalsIgnoreCase(SuperAdminRole))) {
-            throw new NoPermissionException("需要中级管理员以上权限");
+            throw new MyNoPermissionException("需要中级管理员以上权限");
         }
 
         Long department = positionVo.getDepartment();

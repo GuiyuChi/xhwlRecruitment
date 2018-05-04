@@ -6,7 +6,7 @@ import com.xhwl.recruitment.dao.PositionRepository;
 import com.xhwl.recruitment.dao.ResumeDeliverRepository;
 import com.xhwl.recruitment.domain.AdminAuthEntity;
 import com.xhwl.recruitment.dto.DeliverDto;
-import com.xhwl.recruitment.exception.NoPermissionException;
+import com.xhwl.recruitment.exception.MyNoPermissionException;
 import com.xhwl.recruitment.service.AuditDeliverService;
 import com.xhwl.recruitment.service.DeliverService;
 import com.xhwl.recruitment.service.PositionService;
@@ -70,7 +70,7 @@ public class AdminDeliverController {
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
         Long departmentId = adminAuthEntity.getDepartmentId();
         if (departmentId != PersonnelDepartmentId && departmentId != positionRepository.findOne(positionId).getDepartment()) {
-            throw new NoPermissionException("没有权限");
+            throw new MyNoPermissionException("没有权限");
         }
         return auditDeliverService.findDeliverInResumeReview(positionId, departmentId);
     }
@@ -89,7 +89,7 @@ public class AdminDeliverController {
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
         Long departmentId = adminAuthEntity.getDepartmentId();
         if (departmentId != PersonnelDepartmentId && departmentId != positionRepository.findOne(positionId).getDepartment()) {
-            throw new NoPermissionException("没有权限");
+            throw new MyNoPermissionException("没有权限");
         }
 
         return auditDeliverService.findDeliverInHRFristReview(positionId, departmentId);
@@ -110,7 +110,7 @@ public class AdminDeliverController {
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
         Long departmentId = adminAuthEntity.getDepartmentId();
         if (departmentId != PersonnelDepartmentId && departmentId != positionRepository.findOne(positionId).getDepartment()) {
-            throw new NoPermissionException("没有权限");
+            throw new MyNoPermissionException("没有权限");
         }
 
         return auditDeliverService.findDeliverInDepartmentWrittenExamination(positionId, departmentId);
@@ -130,7 +130,7 @@ public class AdminDeliverController {
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
         Long departmentId = adminAuthEntity.getDepartmentId();
         if (departmentId != PersonnelDepartmentId && departmentId != positionRepository.findOne(positionId).getDepartment()) {
-            throw new NoPermissionException("没有权限");
+            throw new MyNoPermissionException("没有权限");
         }
 
         return auditDeliverService.findDeliverInDepartmentInterview(positionId, departmentId);
@@ -150,7 +150,7 @@ public class AdminDeliverController {
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
         Long departmentId = adminAuthEntity.getDepartmentId();
         if (departmentId != PersonnelDepartmentId && departmentId != positionRepository.findOne(positionId).getDepartment()) {
-            throw new NoPermissionException("没有权限");
+            throw new MyNoPermissionException("没有权限");
         }
 
         return auditDeliverService.findDeliverInHRInterview(positionId, departmentId);
@@ -170,7 +170,7 @@ public class AdminDeliverController {
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
         Long departmentId = adminAuthEntity.getDepartmentId();
         if (departmentId != PersonnelDepartmentId && departmentId != positionRepository.findOne(positionId).getDepartment()) {
-            throw new NoPermissionException("没有权限");
+            throw new MyNoPermissionException("没有权限");
         }
 
         return auditDeliverService.findDeliverInPass(positionId, departmentId);
@@ -190,7 +190,7 @@ public class AdminDeliverController {
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
         Long departmentId = adminAuthEntity.getDepartmentId();
         if (departmentId != PersonnelDepartmentId && departmentId != positionRepository.findOne(positionId).getDepartment()) {
-            throw new NoPermissionException("没有权限");
+            throw new MyNoPermissionException("没有权限");
         }
 
         return auditDeliverService.findDeliverInRefuse(positionId, departmentId);
@@ -210,7 +210,7 @@ public class AdminDeliverController {
         Long departmentId = adminAuthEntity.getDepartmentId();
         Long positionId = resumeDeliverRepository.findOne(deliverId).getPositionId();
         if (departmentId != PersonnelDepartmentId && departmentId != positionRepository.findOne(positionId).getDepartment()) {
-            throw new NoPermissionException("没有权限");
+            throw new MyNoPermissionException("没有权限");
         }
         auditDeliverService.deliverToNextStep(deliverId);
     }
@@ -229,7 +229,7 @@ public class AdminDeliverController {
         Long departmentId = adminAuthEntity.getDepartmentId();
         Long positionId = resumeDeliverRepository.findOne(deliverId).getPositionId();
         if (departmentId != PersonnelDepartmentId && departmentId != positionRepository.findOne(positionId).getDepartment()) {
-            throw new NoPermissionException("没有权限");
+            throw new MyNoPermissionException("没有权限");
         }
         auditDeliverService.refuseDeliver(deliverId);
     }
@@ -248,7 +248,7 @@ public class AdminDeliverController {
         Long departmentId = adminAuthEntity.getDepartmentId();
 
         if (departmentId != PersonnelDepartmentId) {
-            throw new NoPermissionException("没有权限");
+            throw new MyNoPermissionException("没有权限");
         }
         auditDeliverService.cancelRefuse(deliverId);
     }
