@@ -3,6 +3,7 @@ package com.xhwl.recruitment.controller.admin;
 import com.xhwl.recruitment.dao.AdminAuthRepository;
 import com.xhwl.recruitment.dao.DepartmentRepository;
 import com.xhwl.recruitment.dao.PositionRepository;
+import com.xhwl.recruitment.dao.ResumeDeliverRepository;
 import com.xhwl.recruitment.domain.AdminAuthEntity;
 import com.xhwl.recruitment.dto.DeliverDto;
 import com.xhwl.recruitment.exception.NoPermissionException;
@@ -51,6 +52,9 @@ public class AdminDeliverController {
 
     @Autowired
     private PositionRepository positionRepository;
+
+    @Autowired
+    private ResumeDeliverRepository resumeDeliverRepository;
 
     /**
      * 管理员查看岗位中的 简历初审 记录
@@ -114,6 +118,7 @@ public class AdminDeliverController {
 
     /**
      * 管理员查看岗位中的 部门面试 记录
+     *
      * @param headers
      * @param positionId
      * @return
@@ -133,6 +138,7 @@ public class AdminDeliverController {
 
     /**
      * 管理员查看岗位中的 HR面试 记录
+     *
      * @param headers
      * @param positionId
      * @return
@@ -152,6 +158,7 @@ public class AdminDeliverController {
 
     /**
      * 管理员查看岗位中的 已通过 记录
+     *
      * @param headers
      * @param positionId
      * @return
@@ -169,6 +176,13 @@ public class AdminDeliverController {
         return auditDeliverService.findDeliverInPass(positionId, departmentId);
     }
 
+    /**
+     * 管理员查看岗位中的 已拒绝 记录
+     *
+     * @param headers
+     * @param positionId
+     * @return
+     */
     @GetMapping("/admin/Refuse/{positionId}")
     @RequiresRoles("admin")
     public List<HashMap> findDeliverInRefuse(@RequestHeader HttpHeaders headers, @PathVariable("positionId") Long positionId) {
@@ -188,10 +202,54 @@ public class AdminDeliverController {
      * @param headers
      * @param deliverId
      */
-    @PutMapping("/admin/{deliverId}")
+    @PutMapping("/admin/passToNext/{deliverId}")
     @RequiresRoles("admin")
     public void passToNextStep(@RequestHeader HttpHeaders headers, @PathVariable("deliverId") Long deliverId) {
-        //todo 重复点击检验
+        Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
+        AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
+        Long departmentId = adminAuthEntity.getDepartmentId();
+        Long positionId = resumeDeliverRepository.findOne(deliverId).getPositionId();
+        if (departmentId != PersonnelDepartmentId && departmentId != positionRepository.findOne(positionId).getDepartment()) {
+            throw new NoPermissionException("没有权限");
+        }
         auditDeliverService.deliverToNextStep(deliverId);
+    }
+
+    /**
+     * 管理员回绝简历
+     *
+     * @param headers
+     * @param deliverId
+     */
+    @PutMapping("/admin/giveRefuse/{deliverId}")
+    @RequiresRoles("admin")
+    public void refuseDeliver(@RequestHeader HttpHeaders headers, @PathVariable("deliverId") Long deliverId) {
+        Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
+        AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
+        Long departmentId = adminAuthEntity.getDepartmentId();
+        Long positionId = resumeDeliverRepository.findOne(deliverId).getPositionId();
+        if (departmentId != PersonnelDepartmentId && departmentId != positionRepository.findOne(positionId).getDepartment()) {
+            throw new NoPermissionException("没有权限");
+        }
+        auditDeliverService.refuseDeliver(deliverId);
+    }
+
+    /**
+     * 管理员从撤销回绝，回滚到拒绝前状态
+     *
+     * @param headers
+     * @param deliverId
+     */
+    @PutMapping("/admin/cancelRefuse/{deliverId}")
+    @RequiresRoles("admin")
+    public void cancelRefuse(@RequestHeader HttpHeaders headers, @PathVariable("deliverId") Long deliverId) {
+        Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
+        AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
+        Long departmentId = adminAuthEntity.getDepartmentId();
+
+        if (departmentId != PersonnelDepartmentId) {
+            throw new NoPermissionException("没有权限");
+        }
+        auditDeliverService.cancelRefuse(deliverId);
     }
 }

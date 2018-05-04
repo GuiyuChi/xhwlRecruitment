@@ -3,7 +3,6 @@ package com.xhwl.recruitment.service;
 import com.xhwl.recruitment.dao.*;
 import com.xhwl.recruitment.domain.DwEducationExperienceEntity;
 import com.xhwl.recruitment.domain.DwPersonalInformationEntity;
-import com.xhwl.recruitment.domain.DwResumeEntity;
 import com.xhwl.recruitment.domain.ResumeDeliverEntity;
 import com.xhwl.recruitment.dto.DeliverDto;
 import com.xhwl.recruitment.util.StatusCodeUtil;
@@ -107,7 +106,7 @@ public class AuditDeliverService {
     }
 
     /**
-     * 管理员让一条投递记录进入下一个流程
+     * 管理员让一条投递记录进入下一个流程,通过
      *
      * @param deliverId
      */
@@ -115,6 +114,30 @@ public class AuditDeliverService {
         ResumeDeliverEntity deliver = resumeDeliverRepository.findOne(deliverId);
         String oldCode = deliver.getRecruitmentState();
         deliver.setRecruitmentState(StatusCodeUtil.codeChange(oldCode, 1));
+        resumeDeliverRepository.save(deliver);
+    }
+
+    /**
+     * 管理员回绝一条投递
+     *
+     * @param deliverId
+     */
+    public void refuseDeliver(Long deliverId) {
+        ResumeDeliverEntity deliver = resumeDeliverRepository.findOne(deliverId);
+        String oldCode = deliver.getRecruitmentState();
+        deliver.setRecruitmentState(StatusCodeUtil.codeChange(oldCode, 2));
+        resumeDeliverRepository.save(deliver);
+    }
+
+    /**
+     * 管理员从拒绝池中捞取记录
+     *
+     * @param deliverId
+     */
+    public void cancelRefuse(Long deliverId) {
+        ResumeDeliverEntity deliver = resumeDeliverRepository.findOne(deliverId);
+        String oldCode = deliver.getRecruitmentState();
+        deliver.setRecruitmentState(StatusCodeUtil.cancelRefuse(oldCode));
         resumeDeliverRepository.save(deliver);
     }
 
@@ -145,6 +168,7 @@ public class AuditDeliverService {
         }
         return deliverDtos;
     }
+
     private List<ResumeDeliverEntity> findAllResumeReview(Long positionId) {
         List<ResumeDeliverEntity> resumeDeliverEntities = resumeDeliverRepository.findAllByPositionId(positionId);
         List<ResumeDeliverEntity> resumeReviewList = new ArrayList<>();
@@ -160,6 +184,7 @@ public class AuditDeliverService {
 
     /**
      * 管理员获取正在 HR初审 中的简历
+     *
      * @param positionId
      * @param department
      * @return
@@ -184,7 +209,8 @@ public class AuditDeliverService {
         }
         return deliverDtos;
     }
-    private List<ResumeDeliverEntity> findAllHRFristReview(Long positionId){
+
+    private List<ResumeDeliverEntity> findAllHRFristReview(Long positionId) {
         List<ResumeDeliverEntity> resumeDeliverEntities = resumeDeliverRepository.findAllByPositionId(positionId);
         List<ResumeDeliverEntity> resumeReviewList = new ArrayList<>();
 
@@ -199,11 +225,12 @@ public class AuditDeliverService {
 
     /**
      * 管理员获取正在 部门笔试 中的简历
+     *
      * @param positionId
      * @param department
      * @return
      */
-    public List<DeliverDto> findDeliverInDepartmentWrittenExamination(Long positionId, Long department){
+    public List<DeliverDto> findDeliverInDepartmentWrittenExamination(Long positionId, Long department) {
         List<ResumeDeliverEntity> delivers = findAllDepartmentWrittenExamination(positionId);
         Integer auth = 0;
         if (department == positionRepository.findOne(positionId).getDepartment()) {
@@ -223,7 +250,8 @@ public class AuditDeliverService {
         }
         return deliverDtos;
     }
-    private List<ResumeDeliverEntity> findAllDepartmentWrittenExamination(Long positionId){
+
+    private List<ResumeDeliverEntity> findAllDepartmentWrittenExamination(Long positionId) {
         List<ResumeDeliverEntity> resumeDeliverEntities = resumeDeliverRepository.findAllByPositionId(positionId);
         List<ResumeDeliverEntity> resumeReviewList = new ArrayList<>();
 
@@ -238,11 +266,12 @@ public class AuditDeliverService {
 
     /**
      * 管理员获取正在 部门面试 中的简历
+     *
      * @param positionId
      * @param department
      * @return
      */
-    public List<DeliverDto> findDeliverInDepartmentInterview (Long positionId, Long department){
+    public List<DeliverDto> findDeliverInDepartmentInterview(Long positionId, Long department) {
         List<ResumeDeliverEntity> delivers = findAllDepartmentInterview(positionId);
         Integer auth = 0;
         if (department == positionRepository.findOne(positionId).getDepartment()) {
@@ -262,7 +291,8 @@ public class AuditDeliverService {
         }
         return deliverDtos;
     }
-    private List<ResumeDeliverEntity> findAllDepartmentInterview(Long positionId){
+
+    private List<ResumeDeliverEntity> findAllDepartmentInterview(Long positionId) {
         List<ResumeDeliverEntity> resumeDeliverEntities = resumeDeliverRepository.findAllByPositionId(positionId);
         List<ResumeDeliverEntity> resumeReviewList = new ArrayList<>();
 
@@ -277,11 +307,12 @@ public class AuditDeliverService {
 
     /**
      * 管理员获取正在 HR面试 中的简历
+     *
      * @param positionId
      * @param department
      * @return
      */
-    public List<DeliverDto> findDeliverInHRInterview (Long positionId, Long department){
+    public List<DeliverDto> findDeliverInHRInterview(Long positionId, Long department) {
         List<ResumeDeliverEntity> delivers = findAllHRInterview(positionId);
         Integer auth = 0;
         if (department == PersonnelDepartmentId) {
@@ -301,7 +332,8 @@ public class AuditDeliverService {
         }
         return deliverDtos;
     }
-    private List<ResumeDeliverEntity> findAllHRInterview (Long positionId){
+
+    private List<ResumeDeliverEntity> findAllHRInterview(Long positionId) {
         List<ResumeDeliverEntity> resumeDeliverEntities = resumeDeliverRepository.findAllByPositionId(positionId);
         List<ResumeDeliverEntity> resumeReviewList = new ArrayList<>();
 
@@ -317,11 +349,12 @@ public class AuditDeliverService {
 
     /**
      * 管理员获取正在 已通过 的简历
+     *
      * @param positionId
      * @param department
      * @return
      */
-    public List<DeliverDto> findDeliverInPass(Long positionId, Long department){
+    public List<DeliverDto> findDeliverInPass(Long positionId, Long department) {
         List<ResumeDeliverEntity> delivers = findAllPass(positionId);
         Integer auth = 0;
         if (department == positionRepository.findOne(positionId).getDepartment()) {
@@ -341,7 +374,8 @@ public class AuditDeliverService {
         }
         return deliverDtos;
     }
-    private List<ResumeDeliverEntity> findAllPass (Long positionId){
+
+    private List<ResumeDeliverEntity> findAllPass(Long positionId) {
         List<ResumeDeliverEntity> resumeDeliverEntities = resumeDeliverRepository.findAllByPositionId(positionId);
         List<ResumeDeliverEntity> resumeReviewList = new ArrayList<>();
 
@@ -356,11 +390,12 @@ public class AuditDeliverService {
 
     /**
      * 管理员获取正在 已回绝 的简历
+     *
      * @param positionId
      * @param department
      * @return
      */
-    public List<HashMap> findDeliverInRefuse(Long positionId, Long department){
+    public List<HashMap> findDeliverInRefuse(Long positionId, Long department) {
         List<ResumeDeliverEntity> delivers = findAllRefuse(positionId);
         Integer auth = 0;
         if (department == PersonnelDepartmentId) {
@@ -371,20 +406,21 @@ public class AuditDeliverService {
         List<HashMap> res = new ArrayList<>();
 
         for (ResumeDeliverEntity resumeDeliverEntity : delivers) {
-            HashMap<String,String> hashMap = new LinkedHashMap<>();
+            HashMap<String, String> hashMap = new LinkedHashMap<>();
             hashMap.put("id", String.valueOf(resumeDeliverEntity.getId()));
-            hashMap.put("username",getUsernameByDeliver(resumeDeliverEntity));
-            hashMap.put("sex",getSexByDeliver(resumeDeliverEntity));
-            hashMap.put("highestEducation",getMaxHighEducationByDeliver(resumeDeliverEntity));
+            hashMap.put("username", getUsernameByDeliver(resumeDeliverEntity));
+            hashMap.put("sex", getSexByDeliver(resumeDeliverEntity));
+            hashMap.put("highestEducation", getMaxHighEducationByDeliver(resumeDeliverEntity));
             hashMap.put("deliverDate", String.valueOf(resumeDeliverEntity.getDeliverDate()));
-            hashMap.put("refuseStep",StatusCodeUtil.getRefuseStep(resumeDeliverEntity.getRecruitmentState()));
+            hashMap.put("refuseStep", StatusCodeUtil.getRefuseStep(resumeDeliverEntity.getRecruitmentState()));
             hashMap.put("auth", String.valueOf(auth));
 
             res.add(hashMap);
         }
         return res;
     }
-    private List<ResumeDeliverEntity> findAllRefuse (Long positionId){
+
+    private List<ResumeDeliverEntity> findAllRefuse(Long positionId) {
         List<ResumeDeliverEntity> resumeDeliverEntities = resumeDeliverRepository.findAllByPositionId(positionId);
         List<ResumeDeliverEntity> resumeReviewList = new ArrayList<>();
 

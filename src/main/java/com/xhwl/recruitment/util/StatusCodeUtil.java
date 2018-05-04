@@ -76,7 +76,7 @@ public class StatusCodeUtil {
     }
 
     /**
-     * 投递状态编码,用于投递时初始或者从拒绝中捞取
+     * 投递状态编码,用于投递时初始
      *
      * @return
      */
@@ -156,6 +156,28 @@ public class StatusCodeUtil {
             }
         } else {
             return "未被拒绝";
+        }
+    }
+
+    /**
+     * 从拒绝池中捞取，回退到拒绝前状态
+     *
+     * @param code
+     * @return
+     */
+    public static String cancelRefuse(String code) {
+        Integer status = codeAnalysis(code);
+        StringBuilder newCode = new StringBuilder(code);
+        if (status == Refuse) {
+            for (int i = 0; i < newCode.length(); i++) {
+                if (code.charAt(i) == '2') {
+                    newCode.setCharAt(i, '0');
+                    break;
+                }
+            }
+            return String.valueOf(newCode);
+        } else {
+            return code;
         }
     }
 
