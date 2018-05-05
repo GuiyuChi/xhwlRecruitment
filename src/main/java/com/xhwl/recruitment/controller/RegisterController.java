@@ -1,17 +1,31 @@
 package com.xhwl.recruitment.controller;
 
+import com.xhwl.recruitment.bean.PhoneCaptchaResponseBean;
 import com.xhwl.recruitment.bean.ResponseBean;
 import com.xhwl.recruitment.dao.UserRepository;
 import com.xhwl.recruitment.domain.UserEntity;
-import com.xhwl.recruitment.exception.MException;
-import com.xhwl.recruitment.util.JWTUtil;
+import com.xhwl.recruitment.exception.*;
+import com.xhwl.recruitment.util.UUIDUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.http.*;
+import org.springframework.http.converter.FormHttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 import sun.misc.BASE64Encoder;
 import org.springframework.web.bind.annotation.*;
 import com.xhwl.recruitment.util.VerifyUtil;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.URISyntaxException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.*;
 import javax.imageio.ImageIO;
 
 @RestController
@@ -20,90 +34,215 @@ public class RegisterController {
     private String PhoneCaptcha = "1";//手机验证码
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     private UserEntity userEntity;
 
-    @GetMapping("/register")
-    public String getCaptchaImage() throws IOException//生成验证码
-    {
+    /**
+     * 获取图像验证码
+     *
+     *
+     * @return 验证码的图形
+     */
+    @GetMapping("/createPictureCaptcha")
+    public HashMap<String, Object> getCaptchaImage() {
+        HashMap<String, Object> hashMap = new LinkedHashMap<>();
+
         Object[] objs = VerifyUtil.createImage();
-        BufferedImage image = (BufferedImage) objs[1];
-        Captcha = (String) objs[0];
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(image, "jpg", baos);//写入流中
-        byte[] bytes = baos.toByteArray();
-        BASE64Encoder encoder = new BASE64Encoder();
-        String png_base64 = encoder.encodeBuffer(bytes).trim();//转换成base64串
-        png_base64 = png_base64.replaceAll("\n", "").replaceAll("\r", "");//删除 \r\n
-        return png_base64;
+        String uuid = UUIDUtil.getUUID();
+        hashMap.put("uuid", uuid);
+        //操作redis
+        ValueOperations<String, String> operations = redisTemplate.opsForValue();
+        operations.set(uuid, String.valueOf(objs[0]));
+
+        try {
+            BufferedImage image = (BufferedImage) objs[1];
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(image, "jpg", baos);//写入流中
+            byte[] bytes = baos.toByteArray();
+
+            hashMap.put("picture", bytes);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return hashMap;
     }
-    //objs[1]为验证码字符串，objs[2]为验证码图片
+
+    /**
+     * 获取图像验证码的测试接口
+     *
+     * @param uuid
+     * @return
+     */
+    @PostMapping("/captchaTest")
+    public String captchaTest(@RequestParam("uuid") String uuid) {
+        ValueOperations<String, String> operations = redisTemplate.opsForValue();
+        return operations.get(uuid);
+    }
+
+    /**
+     * 获取短信验证码
+     *
+     * @param username
+     * @return
+     * @throws URISyntaxException
+     */
+    @PostMapping("/createPhoneCaptcha")
+    public PhoneCaptchaResponseBean sendPhoneCaptcha(@RequestParam("username") String username, @RequestParam("captcha") String captcha, @RequestParam("uuid") String uuid) throws URISyntaxException {
+        ValueOperations<String, String> operations = redisTemplate.opsForValue();
+        String savedCaptcha = operations.get(uuid);
+        if (!captcha.equalsIgnoreCase(savedCaptcha)) {
+            throw new CaptchaException("图形验证码输入错误");
+        } else {
+            Random ran = new Random();
+            RestTemplate restTemplate = new RestTemplate();
+
+            List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>();
+            //Add the Jackson Message converter
+            MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+            // Note: here we are making this converter to process any kind of response,
+            // not only application/*json, which is the default behaviour
+            converter.setSupportedMediaTypes(Collections.singletonList(MediaType.TEXT_HTML));
+            FormHttpMessageConverter formHttpMessageConverter = new FormHttpMessageConverter();
+            messageConverters.add(converter);
+            messageConverters.add(formHttpMessageConverter);
+            restTemplate.setMessageConverters(messageConverters);
+            MultiValueMap<String, String> requestParam = new LinkedMultiValueMap<>();
+            requestParam.set("cmd", "send");
+            requestParam.set("eprId", "619");
+            requestParam.set("userId", "xhwlxyzp");
+            requestParam.set("timestamp", String.valueOf(System.currentTimeMillis()));
+            requestParam.set("key", encryption("619" + "xhwlxyzp" + "xyzp00" + requestParam.getFirst("timestamp")));
+            requestParam.set("msgId", String.valueOf(ran.nextInt()));
+            requestParam.set("format", "1");
+            requestParam.set("mobile", username);
+            int phoneCaptcha = ran.nextInt(899999) + 100000;
+            requestParam.set("content", "您好，您的验证码为" + Integer.toString(phoneCaptcha));
+            HttpHeaders requestHeaders = new HttpHeaders();
+
+            //存短信验证码到redis
+            String key = username + "_PhoneCaptcha";
+            operations.set(key, String.valueOf(phoneCaptcha));
 
 
-//    @PostMapping("/createphoneCaptcha")
-//    public void sendPhoneCaptcha(@RequestParam("username") String username, @RequestParam("captcha") String captcha) throws ClientException//发送验证码
-//    {
-//        /** if(!this.Captcha.equals(captcha))
-//         throw new MException("验证码与图片不符");
-//         else {
-//         PhoneCaptcha=Integer.toString((int)(Math.random()+9999)+1000);//生成手机验证码
-//         //设置超时时间-可自行调整
-//         System.setProperty("sun.net.client.defaultConnectTimeout", "10000");
-//         System.setProperty("sun.net.client.defaultReadTimeout", "10000");
-//         //初始化ascClient需要的几个参数
-//         final String product = "Dysmsapi";//短信API产品名称（短信产品名固定，无需修改）
-//         final String domain = "dysmsapi.aliyuncs.com";//短信API产品域名（接口地址固定，无需修改）
-//         //替换成你的AK
-//         final String accessKeyId = "yourAccessKeyId";//你的accessKeyId,参考本文档步骤2
-//         final String accessKeySecret = "yourAccessKeySecret";//你的accessKeySecret，参考本文档步骤2
-//         //初始化ascClient,暂时不支持多region（请勿修改）
-//         IClientProfile profile = DefaultProfile.getProfile("cn-hangzhou", accessKeyId,
-//         accessKeySecret);
-//         DefaultProfile.addEndpoint("cn-hangzhou", "cn-hangzhou", product, domain);
-//         IAcsClient acsClient = new DefaultAcsClient(profile);
-//         //组装请求对象
-//         SendSmsRequest request = new SendSmsRequest();
-//         //使用post提交
-//         request.setMethod(POST);
-//         //必填:待发送手机号。支持以逗号分隔的形式进行批量调用，批量上限为1000个手机号码,批量调用相对于单条调用及时性稍有延迟,验证码类型的短信推荐使用单条调用的方式
-//         request.setPhoneNumbers(username);
-//         //必填:短信签名-可在短信控制台中找到
-//         request.setSignName("云通信");
-//         //必填:短信模板-可在短信控制台中找到
-//         request.setTemplateCode("SMS_1000000");
-//         //可选:模板中的变量替换JSON串,如模板内容为"亲爱的${name},您的验证码为${code}"时,此处的值为
-//         //友情提示:如果JSON中需要带换行符,请参照标准的JSON协议对换行符的要求,比如短信内容中包含\r\n的情况在JSON中需要表示成\\r\\n,否则会导致JSON在服务端解析失败
-//         request.setTemplateParam("{\"name\":\""+username+"\", \"code\":\""+PhoneCaptcha+"\"}");
-//         //可选-上行短信扩展码(扩展码字段控制在7位或以下，无特殊需求用户请忽略此字段)
-//         //request.setSmsUpExtendCode("90997");
-//         //可选:outId为提供给业务方扩展字段,最终在短信回执消息中将此值带回给调用者
-//         request.setOutId("yourOutId");
-//         //请求失败这里会抛ClientException异常
-//         SendSmsResponse sendSmsResponse = acsClient.getAcsResponse(request);
-//         if (sendSmsResponse.getCode() != null && sendSmsResponse.getCode().equals("OK")) {
-//         //请求成功
-//         }
-//         else{}//请求失败
-//         }**/
-//    }
+            requestHeaders.add(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded");
+            HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(requestParam, requestHeaders);
+            ResponseEntity<PhoneCaptchaResponseBean> responseEntity = restTemplate.postForEntity("http://client.sms10000.com/api/webservice", httpEntity, PhoneCaptchaResponseBean.class);
+            return responseEntity.getBody();
+        }
+    }
 
+    /**
+     * 获取图像验证码的测试接口
+     *
+     * @param username
+     * @return
+     */
+    @PostMapping("/phoneCaptchaTest")
+    public String phoneCaptchaTest(@RequestParam("username") String username) {
+        ValueOperations<String, String> operations = redisTemplate.opsForValue();
+        String key = username + "_PhoneCaptcha";
+        return operations.get(key);
+    }
+
+    /**
+     * 引入md5加密
+     *
+     * @param text
+     * @return
+     */
+    public String encryption(String text) {
+        String re_md5 = new String();
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(text.getBytes());
+            byte b[] = md.digest();
+
+            int i;
+
+            StringBuffer buf = new StringBuffer("");
+            for (int offset = 0; offset < b.length; offset++) {
+                i = b[offset];
+                if (i < 0)
+                    i += 256;
+                if (i < 16)
+                    buf.append("0");
+                buf.append(Integer.toHexString(i));
+            }
+
+            re_md5 = buf.toString();
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return re_md5.toUpperCase();
+    }
+
+    /**
+     * 用户注册
+     *
+     * @param username
+     * @param password
+     * @param phoneCaptcha
+     * @return
+     */
     @PostMapping("/register")
     public ResponseBean register(@RequestParam("username") String username,
                                  @RequestParam("password") String password,
-                                 @RequestParam("phoneCaptcha") String phoneCaptcha)//注册
-    {
+                                 @RequestParam("phoneCaptcha") String phoneCaptcha) {
         if (username == null || password == null | phoneCaptcha == null)
-            throw new MException("信息填写不全");
-        if (!phoneCaptcha.equals(this.PhoneCaptcha))
-            throw new MException("验证码输入错误");
-        else if (userRepository.findByUsername(username) != null)
-            throw new MException("该手机号已被注册");
-        else {
+            throw new ImperfectException("信息未填写完整");
+
+        //从redis缓存中获取验证码
+        ValueOperations<String, String> operations = redisTemplate.opsForValue();
+        String key = username + "_PhoneCaptcha";
+        String savedPhoneCaptcha = operations.get(key);
+
+        if (!phoneCaptcha.equals(savedPhoneCaptcha)) {
+            throw new PhoneCaptchaException("手机验证码输入错误");
+        } else if (userRepository.findByUsername(username) != null) {
+            throw new UserRepeatException("该手机已被注册");
+        } else {
             userEntity = new UserEntity();
             userEntity.setUsername(username);
             userEntity.setPassword(password);
+            userEntity.setRole("user");
             userRepository.save(userEntity);
             return new ResponseBean(200, "register success", null);
         }
+    }
 
+    /**
+     * 用户重置密码
+     *
+     * @param username
+     * @param password
+     * @param phoneCaptcha
+     * @return
+     */
+    @PostMapping("/resetPassword")
+    public ResponseBean resetPassword(@RequestParam("username") String username,
+                                      @RequestParam("password") String password,
+                                      @RequestParam("phoneCaptcha") String phoneCaptcha) {
+        if (username == null || password == null | phoneCaptcha == null)
+            throw new ImperfectException("信息未填写完整");
+        //从redis缓存中获取验证码
+        ValueOperations<String, String> operations = redisTemplate.opsForValue();
+        String key = username + "_PhoneCaptcha";
+        String savedPhoneCaptcha = operations.get(key);
+
+        if (userRepository.findByUsername(username) == null) {
+            throw new UserNoExistException("用户未注册");
+        } else if (!phoneCaptcha.equals(savedPhoneCaptcha)) {
+            throw new PhoneCaptchaException("手机验证码输入错误");
+        } else {
+            UserEntity userEntity = userRepository.findByUsername(username);
+            userEntity.setPassword(password);
+            userRepository.save(userEntity);
+            return new ResponseBean(200, "resetPassword success", null);
+        }
     }
 }

@@ -1,9 +1,7 @@
 package com.xhwl.recruitment.controller.Exception;
 
 import com.xhwl.recruitment.bean.ResponseBean;
-import com.xhwl.recruitment.exception.DepartmentException;
-import com.xhwl.recruitment.exception.MyNoPermissionException;
-import com.xhwl.recruitment.exception.UserRepeatException;
+import com.xhwl.recruitment.exception.*;
 import org.apache.shiro.ShiroException;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.springframework.http.HttpStatus;
@@ -55,6 +53,33 @@ public class ExceptionController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseBean catchNoPermissionException(Throwable ex){
         return new ResponseBean(402, ex.getMessage(), null);
+    }
+
+    //捕获 CaptchaException 图像验证码异常
+    @ExceptionHandler(CaptchaException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseBean catchCaptchaException(Throwable ex){
+        return new ResponseBean(423, ex.getMessage(), null);
+    }
+
+    //捕获 PhoneCaptchaException 短信验证码异常
+    @ExceptionHandler(PhoneCaptchaException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseBean catchPhoneCaptchaException(Throwable ex){
+        return new ResponseBean(424, ex.getMessage(), null);
+    }
+
+    //捕获 ImperfectException 信息不完整异常
+    @ExceptionHandler(ImperfectException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseBean catchImperfectException(Throwable ex){
+        return new ResponseBean(425, ex.getMessage(), null);
+    }
+    //捕获 UserNoExistException 用户不存在异常
+    @ExceptionHandler(UserNoExistException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseBean catchUserNoExistException(Throwable ex){
+        return new ResponseBean(426, ex.getMessage(), null);
     }
     // 捕捉其他所有异常
     @ExceptionHandler(Exception.class)
