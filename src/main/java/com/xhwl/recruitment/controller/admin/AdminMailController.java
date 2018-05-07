@@ -15,9 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminMailController {
     @Autowired
     MailService mailService;
-    @PostMapping("/admin/resume/{resumeId}")
-    public void sendMail(@PathVariable("resumeId")Long resumeId)
+    @PostMapping("/admin/onMail/{resumeId}")//发送通过邮件
+    public void sendOnMail(@PathVariable("resumeId")Long resumeId)
     {
-        mailService.sendMailByResumeId(resumeId);
+        mailService.sendOnMailByResumeId(resumeId);
+    }
+    @PostMapping("/admin/offMail/resumeId")//发送回绝邮件
+    public void sendOffMail(@PathVariable("resumeId")Long resumeId)
+    {
+        mailService.sendOffMailByResumeId(resumeId);
     }
 }

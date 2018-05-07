@@ -21,18 +21,39 @@ public class MailService {
     PersonalInformationRepository personalInformationRepository;
     @Autowired
     JavaMailSender mailSender;
-    public void sendMailByResumeId(Long ResumeId)
+    public void sendOnMailByResumeId(Long ResumeId)//发送通过邮件
     {
         PersonalInformationEntity personalInformationEntity=personalInformationRepository.findByResumeId(ResumeId);
         String mail=personalInformationEntity.getEmail();
+        String name=personalInformationEntity.getName();
         try
         {
             final MimeMessage mimeMessage = this.mailSender.createMimeMessage();
             final MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
-            message.setFrom("714479658@qq.com");
+            message.setFrom("wudan1@copm.com.cn");
             message.setTo(mail);
-            message.setSubject("测试邮件主题");
-            message.setText("测试邮件内容");
+            message.setSubject("兴海物联");
+            message.setText(name+":\n"+"  您好！\n"+"  恭喜您成功通过本公司的笔试面试环节！请您于XX月XX日XX时XX分准时到岗，期待您的加入！\n"+"  进一步了解公司请点击下方链接：");
+            this.mailSender.send(mimeMessage);
+
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+
+    }
+    public void sendOffMailByResumeId(Long ResumeId)//发送回绝邮件
+    {
+        PersonalInformationEntity personalInformationEntity=personalInformationRepository.findByResumeId(ResumeId);
+        String mail=personalInformationEntity.getEmail();
+        String name=personalInformationEntity.getName();
+        try
+        {
+            final MimeMessage mimeMessage = this.mailSender.createMimeMessage();
+            final MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
+            message.setFrom("wudan1@copm.com.cn");
+            message.setTo(mail);
+            message.setSubject("兴海物联");
+            message.setText(name+":\n"+"  您好！\n"+"  很遗憾您没有通过该岗位的招聘！希望未来还有合作机会，祝您今后求职顺利\n"+"  进一步了解公司请点击下方链接：");
             this.mailSender.send(mimeMessage);
 
         } catch (MessagingException e) {
