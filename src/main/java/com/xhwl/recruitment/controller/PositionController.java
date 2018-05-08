@@ -1,6 +1,11 @@
 package com.xhwl.recruitment.controller;
 
-import com.xhwl.recruitment.exception.MException;
+import com.xhwl.recruitment.dao.EducationRepository;
+import com.xhwl.recruitment.dao.JobIntentionRepository;
+import com.xhwl.recruitment.dao.PersonalInformationRepository;
+import com.xhwl.recruitment.dao.ResumeRepository;
+import com.xhwl.recruitment.domain.ResumeEntity;
+import com.xhwl.recruitment.exception.*;
 import com.xhwl.recruitment.service.DeliverService;
 import com.xhwl.recruitment.service.PositionService;
 import com.xhwl.recruitment.service.UserService;
@@ -32,6 +37,18 @@ public class PositionController {
     @Autowired
     DeliverService deliverService;
 
+    @Autowired
+    ResumeRepository resumeRepository;
+
+    @Autowired
+    PersonalInformationRepository personalInformationRepository;
+
+    @Autowired
+    EducationRepository educationRepository;
+
+    @Autowired
+    JobIntentionRepository jobIntentionRepository;
+
     @GetMapping("/positions/{typeId}")
     public List<HashMap> getUnderwayPositionsByType(@RequestHeader HttpHeaders headers, @PathVariable("typeId") Integer typeId) {
         List<HashMap> res = positionService.getUnderwayPositions(typeId);
@@ -44,43 +61,7 @@ public class PositionController {
         return res;
     }
 
-    /**
-     * 用户投递岗位
-     *
-     * @param headers
-     * @param positionId
-     * @return
-     */
-    @PutMapping("/deliver/{positionId}")
-    public Long deliver(@RequestHeader HttpHeaders headers, @PathVariable("positionId") Long positionId) {
 
-        Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
-        if (!deliverService.checkResumeType(userId, positionId)) throw new MException("简历类型不符");
-
-        //判断重复投递
-        if (deliverService.isFirst(userId, positionId)) {
-            Long id = deliverService.deliver(positionId, userId);
-            return id;
-        } else {
-            throw new MException("重复投递");
-        }
-    }
-
-    /**
-     * 用户获取自己的投递信息
-     *
-     * @param headers
-     * @return
-     */
-    @GetMapping("/deliver")
-    public List<HashMap> findResumeDelivers(@RequestHeader HttpHeaders headers) {
-        Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
-
-        List<HashMap> res = deliverService.findResumeDelivers(userId);
-
-        return res;
-
-    }
 
 
 }

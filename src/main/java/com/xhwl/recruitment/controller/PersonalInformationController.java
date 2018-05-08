@@ -45,9 +45,6 @@ public class PersonalInformationController {
 
         PersonalInformationEntity personalInformationEntity = resumeService.getPersonalInformation(userId);
 
-//        if(personalInformationEntity == null){
-//            throw new MException("未创建个人信息表");
-//        }
 
         return personalInformationEntity;
     }

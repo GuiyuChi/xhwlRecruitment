@@ -75,12 +75,49 @@ public class ExceptionController {
     public ResponseBean catchImperfectException(Throwable ex){
         return new ResponseBean(425, ex.getMessage(), null);
     }
+
     //捕获 UserNoExistException 用户不存在异常
     @ExceptionHandler(UserNoExistException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseBean catchUserNoExistException(Throwable ex){
         return new ResponseBean(426, ex.getMessage(), null);
     }
+
+    //捕获 ResumeNoExistException 投递时简历不存在异常
+    @ExceptionHandler(ResumeNoExistException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseBean catchResumeNoExistException(Throwable ex){
+        return new ResponseBean(440, ex.getMessage(), null);
+    }
+
+    //捕获 PersonalInformationNoExistException 用户投递简历时未填写个人信息异常
+    @ExceptionHandler(PersonalInformationNoExistException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseBean catchPersonalInformationNoExistException(Throwable ex){
+        return new ResponseBean(441, ex.getMessage(), null);
+    }
+
+    //捕获 EducationNoExistException 用户投递简历时未填写教育经历异常
+    @ExceptionHandler(EducationNoExistException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseBean catchEducationNoExistException(Throwable ex){
+        return new ResponseBean(442, ex.getMessage(), null);
+    }
+
+    //捕获 JobIntentionNoExistException 用户投递时未填写就业意向的异常
+    @ExceptionHandler(JobIntentionNoExistException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseBean catchJobIntentionNoExistException(Throwable ex){
+        return new ResponseBean(443, ex.getMessage(), null);
+    }
+
+    //捕获 UploadResumeNoExistException 用户投递时未上传简历附件的异常
+    @ExceptionHandler(UploadResumeNoExistException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseBean catchUploadResumeNoExistException(Throwable ex){
+        return new ResponseBean(444, ex.getMessage(), null);
+    }
+
     // 捕捉其他所有异常
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
