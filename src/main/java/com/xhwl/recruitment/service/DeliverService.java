@@ -83,6 +83,11 @@ public class DeliverService {
     @Autowired
     private PositionRepository positionRepository;
 
+    @Autowired
+    private FileService fileService;
+
+
+
     /**
      * 查找用户原先的resumeId
      *
@@ -93,15 +98,6 @@ public class DeliverService {
         return resumeRepository.findByUserId(userId).getId();
     }
 
-    //todo 文件转移
-    public HashMap<String, String> copyDocument() {
-        HashMap<String, String> address = new HashMap<>();
-        //测试的输入
-        address.put("uploadResumePath", "dw/resume/321.docx");
-        address.put("supportDetailPath", "dw/support/4fsaer.zip");
-        address.put("photoPath", "dw/photo/45283.png");
-        return address;
-    }
 
     /**
      * 数据库的信息复制到仓库
@@ -324,14 +320,14 @@ public class DeliverService {
     }
 
     /**
-     * 用户投递简历
+     * 用户投递简历,调用fileService
      *
      * @param positionId
      * @param userId
      * @return 投递表的ID
      */
     public Long deliver(Long positionId, Long userId) {
-        HashMap<String, String> filespath = copyDocument();
+        HashMap<String, String> filespath = fileService.copyDocument(userId);
         Long newResumeId = copyDatabase(userId, filespath);
         Long resumeDeliverId = addResumeDeliver(positionId, userId, newResumeId);
         return resumeDeliverId;

@@ -32,21 +32,22 @@ public class FileController {
 
     /**
      * 上传照片
+     *
      * @param photo
      * @param headers
      */
     @PostMapping("upload-photo")
     @RequiresAuthentication
-    public void uploadPhoto(@RequestParam("file") MultipartFile photo,@RequestHeader HttpHeaders headers){
+    public void uploadPhoto(@RequestParam("file") MultipartFile photo, @RequestHeader HttpHeaders headers) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
 //        Long userId = 4L;
         String strUserId = userId.toString();
 
-        log.info(String.format("temp team \"%s\" uploads a file \"%s\", size %d Byte",userId,photo
+        log.info(String.format("temp team \"%s\" uploads a file \"%s\", size %d Byte", userId, photo
                 .getOriginalFilename(), photo.getSize()));
 
         try {
-            fileService.savePhoto(photo,strUserId);
+            fileService.savePhoto(photo, strUserId);
         } catch (IOException e) {
             e.printStackTrace();
             log.error(String.format("error occurred on attempting to save temp team \"%s\"'s uploaded file \"%s\"",
@@ -56,17 +57,18 @@ public class FileController {
 
     /**
      * 下载照片,用户自用
+     *
      * @return
      */
     @GetMapping("download-photo")
     @RequiresAuthentication
-    public ResponseEntity<byte[]> downloadPhoto(@RequestHeader HttpHeaders headers){
+    public ResponseEntity<byte[]> downloadPhoto(@RequestHeader HttpHeaders headers) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         try {
             byte[] photoByteArray = fileService.getPhoto(userId);
 
             //设置下载头
-            HttpHeaders header  = new HttpHeaders();
+            HttpHeaders header = new HttpHeaders();
             header.setContentType(MediaType.IMAGE_PNG);
             return new ResponseEntity<>(photoByteArray, header, HttpStatus.OK);
         } catch (IOException e) {
@@ -77,17 +79,18 @@ public class FileController {
 
     /**
      * 上传简历附件
+     *
      * @param resume
      * @param headers
      */
     @PostMapping("upload-resume")
     @RequiresAuthentication
-    public void uploadResume(@RequestParam("file") MultipartFile resume,@RequestHeader HttpHeaders headers){
+    public void uploadResume(@RequestParam("file") MultipartFile resume, @RequestHeader HttpHeaders headers) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         String strUserId = userId.toString();
 
         try {
-            fileService.saveResume(resume,strUserId);
+            fileService.saveResume(resume, strUserId);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -95,11 +98,12 @@ public class FileController {
 
     /**
      * 下载某用户的简历附件,测试接口
+     *
      * @param headers
      * @return
      */
     @GetMapping("download-resume/{userId}")
-    public ResponseEntity<byte[]> downloadResume(@RequestHeader HttpHeaders headers,@PathVariable("userId") Long userId){
+    public ResponseEntity<byte[]> downloadResume(@RequestHeader HttpHeaders headers, @PathVariable("userId") Long userId) {
 //        Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         try {
             byte[] resumeByteArray = fileService.getResume(userId);
@@ -107,9 +111,9 @@ public class FileController {
             // 设置下载响应头
             HttpHeaders header = new HttpHeaders();
             header.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-            header.setContentDispositionFormData("attachment", getUUID()+".doc", Charset.forName("utf-8"));
+            header.setContentDispositionFormData("attachment", getUUID() + ".doc", Charset.forName("utf-8"));
 
-            return new ResponseEntity<>(resumeByteArray,header,HttpStatus.OK);
+            return new ResponseEntity<>(resumeByteArray, header, HttpStatus.OK);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -119,19 +123,45 @@ public class FileController {
 
     /**
      * 上传其他辅助材料
+     *
      * @param supportDetail
      * @param headers
      */
     @PostMapping("upload-support-detail")
-    public void uploadSupportDetail(@RequestParam("file") MultipartFile supportDetail,@RequestHeader HttpHeaders headers){
+    public void uploadSupportDetail(@RequestParam("file") MultipartFile supportDetail, @RequestHeader HttpHeaders headers) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
 
         String strUserId = userId.toString();
 
         try {
-            fileService.saveSupportDetail(supportDetail,strUserId);
+            fileService.saveSupportDetail(supportDetail, strUserId);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * 上传文件测试接口
+     *
+     * @param photo
+     * @param headers
+     */
+    @PostMapping("upload-photo-test")
+    public void uploadPhotoTest(@RequestParam("file") MultipartFile photo, @RequestHeader HttpHeaders headers) {
+//        Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
+        Long userId = 2L;
+        String strUserId = userId.toString();
+
+        log.info(String.format("temp team \"%s\" uploads a file \"%s\", size %d Byte", userId, photo
+                .getOriginalFilename(), photo.getSize()));
+
+        try {
+            fileService.savePhoto(photo, strUserId);
+        } catch (IOException e) {
+            e.printStackTrace();
+            log.error(String.format("error occurred on attempting to save temp team \"%s\"'s uploaded file \"%s\"",
+                    userId, photo.getOriginalFilename()));
         }
     }
 

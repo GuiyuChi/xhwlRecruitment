@@ -29,19 +29,19 @@
 //
 //    @Test
 //    @Ignore
-//    public void copyDatabaseTest(){
-//        HashMap hashMap = deliverService.copyDocument();
-//        deliverService.copyDatabase(4L,hashMap);
+//    public void copyDatabaseTest() {
+//        HashMap hashMap = deliverService.copyDocument(4L);
+//        deliverService.copyDatabase(4L, hashMap);
 //    }
 //
 //    @Test
 //    @Ignore
-//    public void getUnderwayPositionTest(){
+//    public void getUnderwayPositionTest() {
 //        positionService.getUnderwayPositions(1);
 //    }
 //
 //    @Test
-//    public void deliverTest(){
-//        deliverService.deliver(1L,4L);
+//    public void deliverTest() {
+//        deliverService.deliver(1L, 4L);
 //    }
 //}

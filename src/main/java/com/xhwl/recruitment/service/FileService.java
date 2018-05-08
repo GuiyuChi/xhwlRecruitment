@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 
 /**
  * @Author: guiyu
@@ -27,8 +28,8 @@ public class FileService {
     /**
      * 服务器存放文件的位置
      */
-//    private final String ROOT = "/Users/chikatsurasakai/";
-    private final String ROOT = "/home/ubuntu/";
+    private final String ROOT = "/Users/chikatsurasakai/";
+//    private final String ROOT = "/home/ubuntu/";
 
 
     /**
@@ -37,7 +38,7 @@ public class FileService {
     private final String ResumeAccessoryFileFolderPath = ROOT + "ResumeAccessory/";
 
     /**
-     * 用户上传辅助材料的
+     * 用户上传辅助材料的位置
      */
     private final String SupportDetailFileFolderPath = ROOT + "SupportDetail/";
 
@@ -45,6 +46,21 @@ public class FileService {
      * 用户上传照片的位置
      */
     private final String PhotoFileFolderPath = ROOT + "Photo/";
+
+    /**
+     * 用户投递时 存储简历附件的位置
+     */
+    private final String DwResumeAccessoryFileFolderPath = ROOT + "DwFile/" + "ResumeAccessory/";
+
+    /**
+     * 用户投递时 存储辅助材料的位置
+     */
+    private final String DwSupportDetailFileFolderPath = ROOT + "DwFile/" + "SupportDetail/";
+
+    /**
+     * 用户投递时 存储照片的位置
+     */
+    private final String DwPhotoFileFolderPath = ROOT + "DwFile/" + "Photo/";
 
 
     /**
@@ -60,6 +76,10 @@ public class FileService {
         String name = FileUtil.saveMultipartFileToLocal(file, PhotoFileFolderPath + userId);
         String path = PhotoFileFolderPath + userId + "/" + name;
         log.info("photo save path:{}", path);
+
+        //获取文件的后缀
+        String filename = file.getOriginalFilename();
+        String type = filename.substring(filename.lastIndexOf('.') + 1);
 
         //将照片文件夹下的具体位置写入数据表 resume表
         ResumeEntity resumeEntity = resumeRepository.findByUserId(new Long(userId));
@@ -125,6 +145,7 @@ public class FileService {
 
     /**
      * 辅助材料上传，并写入数据库
+     *
      * @param file
      * @param userId
      * @return
@@ -153,6 +174,72 @@ public class FileService {
      */
     public byte[] getFileEntity(String userId, String fileName) throws IOException {
         return FileUtils.readFileToByteArray(new File(String.format("%s/%s/%s", ResumeAccessoryFileFolderPath, userId, fileName)));
+    }
+
+    /**
+     * 投递简历时复制 照片 到仓库文件夹,返回 userId+/+文件名
+     *
+     * @param userId
+     * @return
+     */
+    private String movePhotoToDw(Long userId) {
+        //从数据库找到文件路径
+        String lp = resumeRepository.findByUserId(userId).getPhotoPath();
+        if (lp == null) return null;
+        String oldPath = PhotoFileFolderPath + lp;
+
+        FileUtil.moveFile(oldPath, DwPhotoFileFolderPath + userId);
+        log.info(DwPhotoFileFolderPath + lp);
+        return lp;
+    }
+
+    /**
+     * 投递简历时复制 简历附件 到仓库文件夹,返回 userId+/+文件名
+     * @param userId
+     * @return
+     */
+    private String moveResumeAccessoryToDw(Long userId){
+        //从数据库找到文件路径
+        String lp = resumeRepository.findByUserId(userId).getUploadResumePath();
+        if (lp == null) return null;
+        String oldPath = ResumeAccessoryFileFolderPath + lp;
+
+        FileUtil.moveFile(oldPath, DwResumeAccessoryFileFolderPath + userId);
+        log.info(DwResumeAccessoryFileFolderPath + lp);
+        return lp;
+    }
+
+    /**
+     * 投递简历时复制 辅助材料 到仓库文件夹,返回 userId+/+文件名
+     * @param userId
+     * @return
+     */
+    private String moveSupportDetailToDw(Long userId){
+        //从数据库找到文件路径
+        String lp = resumeRepository.findByUserId(userId).getSupportDetailPath();
+        if (lp == null) return null;
+        String oldPath = SupportDetailFileFolderPath + lp;
+
+        FileUtil.moveFile(oldPath, DwSupportDetailFileFolderPath + userId);
+        log.info(DwSupportDetailFileFolderPath + lp);
+        return lp;
+    }
+
+    /**
+     * 投递简历时复制文件
+     * @param userId
+     * @return
+     */
+    public HashMap<String, String> copyDocument(Long userId) {
+        HashMap<String, String> address = new HashMap<>();
+        //测试的输入
+        String photoPath = movePhotoToDw(userId);
+        String uploadResumePath = moveResumeAccessoryToDw(userId);
+        String supportDetailPath = moveSupportDetailToDw(userId);
+        address.put("uploadResumePath", "dw/resume/321.docx");
+        address.put("supportDetailPath", "dw/support/4fsaer.zip");
+        address.put("photoPath", "dw/photo/45283.png");
+        return address;
     }
 
 }

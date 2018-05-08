@@ -86,11 +86,16 @@ public class FileUtil {
         if (!destFolder.exists()) {
             destFolder.mkdirs();
         }
-        String outPath = destFolder.getAbsolutePath() + "/" + srcFile.getOriginalFilename() ;
+        //获取文件的后缀
+        String filename = srcFile.getOriginalFilename();
+        String type = filename.substring(filename.lastIndexOf('.')+1);
+
+        String newName = getUUID()+"."+type;
+        String outPath = destFolder.getAbsolutePath() + "/" + newName ;
         FileOutputStream out = new FileOutputStream(outPath);
 
         FileCopyUtils.copy(srcFile.getInputStream(), out);
-        return srcFile.getOriginalFilename();
+        return newName;
     }
 
     public static String saveMultipartFileToLocal(MultipartFile srcFile, String destFolderPath) throws IOException {
