@@ -28,8 +28,8 @@ public class FileService {
     /**
      * 服务器存放文件的位置
      */
-    private final String ROOT = "/Users/chikatsurasakai/";
-//    private final String ROOT = "/home/ubuntu/";
+//    private final String ROOT = "/Users/chikatsurasakai/";
+    private final String ROOT = "/home/ubuntu/";
 
 
     /**
@@ -195,10 +195,11 @@ public class FileService {
 
     /**
      * 投递简历时复制 简历附件 到仓库文件夹,返回 userId+/+文件名
+     *
      * @param userId
      * @return
      */
-    private String moveResumeAccessoryToDw(Long userId){
+    private String moveResumeAccessoryToDw(Long userId) {
         //从数据库找到文件路径
         String lp = resumeRepository.findByUserId(userId).getUploadResumePath();
         if (lp == null) return null;
@@ -211,10 +212,11 @@ public class FileService {
 
     /**
      * 投递简历时复制 辅助材料 到仓库文件夹,返回 userId+/+文件名
+     *
      * @param userId
      * @return
      */
-    private String moveSupportDetailToDw(Long userId){
+    private String moveSupportDetailToDw(Long userId) {
         //从数据库找到文件路径
         String lp = resumeRepository.findByUserId(userId).getSupportDetailPath();
         if (lp == null) return null;
@@ -227,6 +229,7 @@ public class FileService {
 
     /**
      * 投递简历时复制文件
+     *
      * @param userId
      * @return
      */
@@ -236,9 +239,9 @@ public class FileService {
         String photoPath = movePhotoToDw(userId);
         String uploadResumePath = moveResumeAccessoryToDw(userId);
         String supportDetailPath = moveSupportDetailToDw(userId);
-        address.put("uploadResumePath", "dw/resume/321.docx");
-        address.put("supportDetailPath", "dw/support/4fsaer.zip");
-        address.put("photoPath", "dw/photo/45283.png");
+        address.put("uploadResumePath", uploadResumePath);
+        address.put("supportDetailPath", supportDetailPath);
+        address.put("photoPath", photoPath);
         return address;
     }
 

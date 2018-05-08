@@ -1,5 +1,6 @@
 package com.xhwl.recruitment.util;
 
+import org.apache.commons.io.FileUtils;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,7 +37,7 @@ public class FileUtil {
     }
 
     /**
-     * 移动文件至某个目录下
+     * 复制文件至某个目录下
      *
      * @param srcFile    需要移动的文件
      * @param destFolder 目标文件夹路径,结尾不需要加/
@@ -45,8 +46,12 @@ public class FileUtil {
         if (!destFolder.exists()) {
             destFolder.mkdirs();
         }
-
-        srcFile.renameTo(new File(destFolder + "/" + srcFile.getName()));
+        try {
+            FileUtils.copyFileToDirectory(srcFile,destFolder);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+//        srcFile.renameTo(new File(destFolder + "/" + srcFile.getName()));
     }
 
 
