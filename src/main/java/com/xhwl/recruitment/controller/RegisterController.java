@@ -120,7 +120,7 @@ public class RegisterController {
             requestParam.set("format", "1");
             requestParam.set("mobile", username);
             int phoneCaptcha = ran.nextInt(899999) + 100000;
-            requestParam.set("content", "您好，您的验证码为" + Integer.toString(phoneCaptcha));
+            requestParam.set("content", "欢迎使用兴海物联招聘网站，您的注册验证码为" + Integer.toString(phoneCaptcha)+",如果不是本人操作，请忽略这条信息");
             HttpHeaders requestHeaders = new HttpHeaders();
 
             //存短信验证码到redis
