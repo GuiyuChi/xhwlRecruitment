@@ -1,4 +1,4 @@
-package com.xhwl.recruitment.controller;
+package com.xhwl.recruitment.controller.user;
 
 import com.xhwl.recruitment.exception.MException;
 import com.xhwl.recruitment.service.ResumeService;

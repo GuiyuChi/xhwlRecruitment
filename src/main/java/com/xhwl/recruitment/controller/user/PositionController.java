@@ -1,4 +1,4 @@
-package com.xhwl.recruitment.controller;
+package com.xhwl.recruitment.controller.user;
 
 import com.xhwl.recruitment.dao.EducationRepository;
 import com.xhwl.recruitment.dao.JobIntentionRepository;
@@ -49,19 +49,31 @@ public class PositionController {
     @Autowired
     JobIntentionRepository jobIntentionRepository;
 
+    /**
+     * 用户按类型获取所有岗位的信息
+     *
+     * @param headers
+     * @param typeId
+     * @return
+     */
     @GetMapping("/positions/{typeId}")
     public List<HashMap> getUnderwayPositionsByType(@RequestHeader HttpHeaders headers, @PathVariable("typeId") Integer typeId) {
         List<HashMap> res = positionService.getUnderwayPositions(typeId);
         return res;
     }
 
+    /**
+     * 用户获取岗位详情
+     *
+     * @param headers
+     * @param positionId
+     * @return
+     */
     @GetMapping("/position/{positionId}")
     public HashMap getPositionById(@RequestHeader HttpHeaders headers, @PathVariable("positionId") Long positionId) {
         HashMap res = positionService.getPosition(positionId);
         return res;
     }
-
-
 
 
 }

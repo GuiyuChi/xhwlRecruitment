@@ -1,10 +1,10 @@
-package com.xhwl.recruitment.controller;
+package com.xhwl.recruitment.controller.user;
 
+import com.xhwl.recruitment.domain.PersonalInformationEntity;
 import com.xhwl.recruitment.exception.MException;
+import com.xhwl.recruitment.service.ResumeService;
 import com.xhwl.recruitment.service.UserService;
 import com.xhwl.recruitment.util.JWTUtil;
-import com.xhwl.recruitment.domain.PersonalInformationEntity;
-import com.xhwl.recruitment.service.ResumeService;
 import com.xhwl.recruitment.vo.PersonalInformationVo;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package com.xhwl.recruitment.controller;
+package com.xhwl.recruitment.controller.user;
 
 import com.xhwl.recruitment.domain.EducationExperienceEntity;
 import com.xhwl.recruitment.exception.MException;
