@@ -15,9 +15,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.security.MessageDigest;
@@ -36,8 +34,9 @@ import java.util.Random;
 public class AdminNoteController {
     @Autowired
     PersonalInformationRepository personalInformationRepository;
-    @GetMapping("/admin/onNote/{resumeId}")//发送通过短信
-    public PhoneCaptchaResponseBean sendOnNoteByResumeId(@PathVariable("resumeId") Long resumeId){
+    @PostMapping("/admin/onNote/{resumeId}")//发送通过短信
+    public PhoneCaptchaResponseBean sendOnNoteByResumeId(@PathVariable("resumeId") Long resumeId, @RequestParam("month") String month,
+                                                         @RequestParam("day")String day,@RequestParam("hour")String hour,@RequestParam("minute")String minute){
         PersonalInformationEntity personalInformationEntity=personalInformationRepository.findByResumeId(resumeId);
         String name=personalInformationEntity.getName();
         String phone=personalInformationEntity.getTelephone();
@@ -64,7 +63,7 @@ public class AdminNoteController {
         requestParam.set("format", "1");
         requestParam.set("mobile", phone);
 
-        requestParam.set("content", name+"您好，恭喜您成功通过本公司的笔试及面试环节！请您于XX年XX日XX时XX分准时到岗，期待您的加入" );
+        requestParam.set("content", name+"您好，恭喜您成功通过本公司的笔试及面试环节！请您于"+month+"月"+day+"日"+hour+"时"+minute+"分准时到岗，期待您的加入" );
         HttpHeaders requestHeaders = new HttpHeaders();
 
         /**存短信验证码到redis

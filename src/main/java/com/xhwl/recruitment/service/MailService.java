@@ -21,7 +21,7 @@ public class MailService {
     PersonalInformationRepository personalInformationRepository;
     @Autowired
     JavaMailSender mailSender;
-    public void sendOnMailByResumeId(Long ResumeId)//发送通过邮件
+    public void sendOnMailByResumeId(Long ResumeId ,String month,String day,String hour,String minute )//发送通过邮件
     {
         PersonalInformationEntity personalInformationEntity=personalInformationRepository.findByResumeId(ResumeId);
         String mail=personalInformationEntity.getEmail();
@@ -33,7 +33,7 @@ public class MailService {
             message.setFrom("wudan1@copm.com.cn");
             message.setTo(mail);
             message.setSubject("兴海物联");
-            message.setText(name+":\n"+"  您好！\n"+"  恭喜您成功通过本公司的笔试面试环节！请您于XX月XX日XX时XX分准时到岗，期待您的加入！\n"+"  进一步了解公司请点击下方链接：");
+            message.setText(name+":\n"+"  您好！\n"+"  恭喜您成功通过本公司的笔试面试环节！请您于"+month+"月"+day+"日"+hour+"时"+minute+"分准时到岗，期待您的加入！\n"+"  进一步了解公司请点击下方链接：");
             this.mailSender.send(mimeMessage);
 
         } catch (MessagingException e) {

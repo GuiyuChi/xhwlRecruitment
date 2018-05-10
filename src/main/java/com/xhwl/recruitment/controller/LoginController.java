@@ -1,6 +1,8 @@
 package com.xhwl.recruitment.controller;
 
 import com.xhwl.recruitment.bean.ResponseBean;
+import com.xhwl.recruitment.dao.AdminAuthRepository;
+import com.xhwl.recruitment.domain.AdminAuthEntity;
 import com.xhwl.recruitment.domain.UserEntity;
 import com.xhwl.recruitment.exception.MException;
 import com.xhwl.recruitment.service.FileService;
@@ -11,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -26,6 +29,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  * @Author: guiyu
@@ -42,8 +47,12 @@ public class LoginController {
     @Autowired
     FileService fileService;
 
+    @Autowired
+    AdminAuthRepository adminAuthRepository;
+
     /**
      * 获取验证码
+     *
      * @return
      */
     @GetMapping("/loginCaptcha")
@@ -66,7 +75,7 @@ public class LoginController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-       return null;
+        return null;
     }
     //objs[1]为验证码字符串，objs[2]为验证码图片
 
@@ -90,6 +99,7 @@ public class LoginController {
 
     /**
      * 用户登录，带验证码版
+     *
      * @param username
      * @param password
      * @param check
@@ -99,7 +109,7 @@ public class LoginController {
     public ResponseBean login(@RequestParam("username") String username,
                               @RequestParam("password") String password,
                               @RequestParam("captcha") String check) {
-        if(!check.equalsIgnoreCase(Captcha)) throw new MException("验证码认证失败");
+        if (!check.equalsIgnoreCase(Captcha)) throw new MException("验证码认证失败");
         UserEntity userEntity = userService.getUser(username);
         if (userEntity.getPassword().equals(password)) {
             return new ResponseBean(200, "Login success", JWTUtil.sign(username, password));
@@ -124,7 +134,7 @@ public class LoginController {
         if (userEntity.getPassword().equals(password)) {
             if (userEntity.getRole().equals("admin")) {
                 return new ResponseBean(200, "admin Login success", JWTUtil.sign(username, password));
-            }  else {
+            } else {
                 throw new UnauthorizedException();
             }
         } else {
@@ -138,7 +148,24 @@ public class LoginController {
     @GetMapping("/tokenCheck")
     @RequiresAuthentication
     public void tokenCheck() {
+        //nothing
+    }
 
+    /**
+     * 管理员登录后，获取管理员类型
+     * normalAdmin seniorAdmin superAdmin
+     * @param headers
+     * @return
+     */
+    @GetMapping("/adminType")
+    @RequiresRoles("admin")
+    public HashMap getAdminType(@RequestHeader HttpHeaders headers) {
+        Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
+        HashMap<String, String> res = new LinkedHashMap<>();
+
+        AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
+        res.put("adminType", adminAuthEntity.getRole());
+        return res;
     }
 
     /**
