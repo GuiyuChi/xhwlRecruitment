@@ -130,14 +130,5 @@ public class ResumeController {
     }
 
 
-    /**
-     * 管理员从投递记录获取用户的简历信息
-     *
-     * @param deliverId
-     * @return
-     */
-    @GetMapping("/admin/getResume/{deliverId}")
-    public List<Object> adminGetResumeBydeliver(@PathVariable("deliverId") Long deliverId) {
-        return dwResumeService.adminGetResume(deliverId);
-    }
+
 }

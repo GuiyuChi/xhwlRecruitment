@@ -133,7 +133,9 @@ public class LoginController {
         UserEntity userEntity = userService.getUser(username);
         if (userEntity.getPassword().equals(password)) {
             if (userEntity.getRole().equals("admin")) {
-                return new ResponseBean(200, "admin Login success", JWTUtil.sign(username, password));
+                Long userId = userEntity.getId();
+                AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
+                return new ResponseBean(200, adminAuthEntity.getRole(), JWTUtil.sign(username, password));
             } else {
                 throw new UnauthorizedException();
             }
