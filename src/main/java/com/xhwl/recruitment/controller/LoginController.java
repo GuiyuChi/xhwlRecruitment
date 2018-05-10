@@ -154,6 +154,7 @@ public class LoginController {
     /**
      * 管理员登录后，获取管理员类型
      * normalAdmin seniorAdmin superAdmin
+     *
      * @param headers
      * @return
      */
