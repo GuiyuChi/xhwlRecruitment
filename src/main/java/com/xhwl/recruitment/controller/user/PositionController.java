@@ -51,14 +51,21 @@ public class PositionController {
 
     /**
      * 用户按类型获取所有岗位的信息
+     * typeId 招聘类型 1校招 2社招 3实习生
+     * workPlace 工作地点
+     * positionType 职位类型 类似于 研发 设计...
+     * positionName 职位名称
      *
      * @param headers
      * @param typeId
      * @return
      */
     @GetMapping("/positions/{typeId}")
-    public List<HashMap> getUnderwayPositionsByType(@RequestHeader HttpHeaders headers, @PathVariable("typeId") Integer typeId) {
-        List<HashMap> res = positionService.getUnderwayPositions(typeId);
+    public List<HashMap> getUnderwayPositionsByType(@RequestHeader HttpHeaders headers, @PathVariable("typeId") Integer typeId,
+                                                    @RequestParam(value="workPlace", required = false, defaultValue = "") String workPlace,
+                                                    @RequestParam(value="positionType", required = false, defaultValue = "") String positionType,
+                                                    @RequestParam(value="positionName", required = false, defaultValue = "") String positionName) {
+        List<HashMap> res = positionService.getLikePositions(workPlace,positionName,positionType,typeId);
         return res;
     }
 

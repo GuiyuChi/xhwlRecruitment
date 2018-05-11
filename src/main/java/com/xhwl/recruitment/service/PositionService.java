@@ -120,8 +120,8 @@ public class PositionService {
 
         //排除可能出现的过期但是type没有更改的情况
         List<PositionEntity> publicPositions = new ArrayList<>();
-        for(PositionEntity position:positions){
-            if(isUnderwayPosition(position)){
+        for (PositionEntity position : positions) {
+            if (isUnderwayPosition(position)) {
                 publicPositions.add(position);
             }
         }
@@ -155,8 +155,8 @@ public class PositionService {
 
         //排除可能出现的过期但是type没有更改的情况
         List<PositionEntity> publicPositions = new ArrayList<>();
-        for(PositionEntity position:positions){
-            if(isUnderwayPosition(position)){
+        for (PositionEntity position : positions) {
+            if (isUnderwayPosition(position)) {
                 publicPositions.add(position);
             }
         }
@@ -248,20 +248,36 @@ public class PositionService {
 
     /**
      * 用户对岗位进行模糊查询
+     * 根据类型查询不同的校招岗位 1.校招 2.社招 3.实习,用户访问
      *
      * @param partOfName
      * @return
      */
-    public List<PositionEntity> getLikePositions(String workPlace, String partOfName, String positionType) {
+    public List<HashMap> getLikePositions(String workPlace, String partOfName, String positionType, Integer recruitmentType) {
         List<PositionEntity> positions = positionRepository.
                 findAllByWorkPlaceContainingAndPositionNameContainingAndPositionTypeContaining(workPlace, partOfName, positionType);
-        List<PositionEntity> publicPositions = new ArrayList<>();
+
+        List<HashMap> res = new ArrayList<>();
         for (PositionEntity position : positions) {
+            //简历已经发布
             if (isUnderwayPosition(position)) {
-                publicPositions.add(position);
+                //判断简历类型
+                if (position.getRecruitmentType() == recruitmentType) {
+                    HashMap<String, String> hashMap = new LinkedHashMap<>();
+                    hashMap.put("id", new Long(position.getId()).toString());
+                    hashMap.put("positionName", position.getPositionName());
+                    hashMap.put("positionType", position.getPositionType());
+                    hashMap.put("workPlace", position.getWorkPlace());
+                    hashMap.put("recruitingNumbers", position.getRecruitingNumbers().toString());
+                    hashMap.put("publishDate", position.getPublishDate().toString());
+                    hashMap.put("department", String.valueOf(position.getDepartment()));
+                    hashMap.put("jobResponsibilities", position.getJobResponsibilities());
+                    hashMap.put("jobRequirements", position.getJobRequirements());
+                    res.add(hashMap);
+                }
             }
         }
-        return publicPositions;
+        return res;
     }
 
     /**
