@@ -20,4 +20,8 @@ public interface PositionRepository extends JpaRepository<PositionEntity, Long> 
 
 
     Page<PositionEntity> findAllByPublishType(Pageable pageable,Integer publishType);
+
+    //根据岗位进行模糊查询
+    List<PositionEntity> findAllByWorkPlaceContainingAndPositionNameContainingAndPositionTypeContaining
+    (String workPlace, String name,String positionType);
 }

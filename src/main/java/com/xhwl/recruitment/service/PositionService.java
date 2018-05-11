@@ -118,8 +118,16 @@ public class PositionService {
         Page<PositionEntity> positionEntityPage = positionRepository.findAllByDepartmentAndPublishType(pageable, department, publicType);
         List<PositionEntity> positions = positionEntityPage.getContent();
 
+        //排除可能出现的过期但是type没有更改的情况
+        List<PositionEntity> publicPositions = new ArrayList<>();
+        for(PositionEntity position:positions){
+            if(isUnderwayPosition(position)){
+                publicPositions.add(position);
+            }
+        }
+
         List<HashMap> res = new ArrayList<>();
-        for (PositionEntity position : positions) {
+        for (PositionEntity position : publicPositions) {
             HashMap<String, String> hashMap = new LinkedHashMap<>();
             hashMap.put("id", new Long(position.getId()).toString());
             hashMap.put("positionName", position.getPositionName());
@@ -130,7 +138,7 @@ public class PositionService {
             hashMap.put("deadline", String.valueOf(position.getDeadline()));
             res.add(hashMap);
         }
-        Page<HashMap> resPage = new PageImpl<>(res, pageable, positionEntityPage.getTotalElements());
+        Page<HashMap> resPage = new PageImpl<>(res, pageable, publicPositions.size());
         return resPage;
     }
 
@@ -145,8 +153,16 @@ public class PositionService {
         Page<PositionEntity> positionEntityPage = positionRepository.findAllByPublishType(pageable, publicType);
         List<PositionEntity> positions = positionEntityPage.getContent();
 
+        //排除可能出现的过期但是type没有更改的情况
+        List<PositionEntity> publicPositions = new ArrayList<>();
+        for(PositionEntity position:positions){
+            if(isUnderwayPosition(position)){
+                publicPositions.add(position);
+            }
+        }
+
         List<HashMap> res = new ArrayList<>();
-        for (PositionEntity position : positions) {
+        for (PositionEntity position : publicPositions) {
             HashMap<String, String> hashMap = new LinkedHashMap<>();
             hashMap.put("id", new Long(position.getId()).toString());
             hashMap.put("positionName", position.getPositionName());
@@ -157,7 +173,7 @@ public class PositionService {
             hashMap.put("deadline", String.valueOf(position.getDeadline()));
             res.add(hashMap);
         }
-        Page<HashMap> resPage = new PageImpl<>(res, pageable, positionEntityPage.getTotalElements());
+        Page<HashMap> resPage = new PageImpl<>(res, pageable, publicPositions.size());
         return resPage;
     }
 
@@ -172,7 +188,7 @@ public class PositionService {
 
 
     /**
-     * 根据类型查询不同的校招岗位 1.校招 2.社招 3.实习
+     * 根据类型查询不同的校招岗位 1.校招 2.社招 3.实习,用户访问
      *
      * @param recruitmentType
      * @return
@@ -183,7 +199,7 @@ public class PositionService {
         List<HashMap> res = new ArrayList<>();
         for (PositionEntity position : positions) {
             //简历已经发布
-            if (position.getPublishType() == 1) {
+            if (isUnderwayPosition(position)) {
                 //判断简历类型
                 if (position.getRecruitmentType() == recruitmentType) {
                     HashMap<String, String> hashMap = new LinkedHashMap<>();
@@ -212,7 +228,7 @@ public class PositionService {
     public HashMap<String, String> getPosition(Long positionId) {
         PositionEntity position = positionRepository.findOne(positionId);
         if (position == null) return null;
-        if (position.getPublishType() == 1) {
+        if (isUnderwayPosition(position)) {
             //简历已经处于被发布状态
             HashMap<String, String> hashMap = new LinkedHashMap<>();
             hashMap.put("id", new Long(position.getId()).toString());
@@ -228,6 +244,49 @@ public class PositionService {
             return hashMap;
         }
         return null;
+    }
+
+    /**
+     * 用户对岗位进行模糊查询
+     *
+     * @param partOfName
+     * @return
+     */
+    public List<PositionEntity> getLikePositions(String workPlace, String partOfName, String positionType) {
+        List<PositionEntity> positions = positionRepository.
+                findAllByWorkPlaceContainingAndPositionNameContainingAndPositionTypeContaining(workPlace, partOfName, positionType);
+        List<PositionEntity> publicPositions = new ArrayList<>();
+        for (PositionEntity position : positions) {
+            if (isUnderwayPosition(position)) {
+                publicPositions.add(position);
+            }
+        }
+        return publicPositions;
+    }
+
+    /**
+     * 判断一个岗位是否在发布中
+     * 首先判断发布状态是否为 1
+     * 若为 1 ，进一步比较deadline与当前时间，若已经过期，修改数据库
+     *
+     * @param position
+     * @return
+     */
+    private Boolean isUnderwayPosition(PositionEntity position) {
+        if (position.getPublishType() == 1) {
+            Date deadLine = position.getDeadline();
+            Date nowDate = new java.sql.Date(System.currentTimeMillis());
+            if (nowDate.before(deadLine)) {
+                return true;
+            } else {
+                PositionEntity newPosition = positionRepository.findOne(position.getId());
+                newPosition.setPublishType(2);
+                positionRepository.save(newPosition);
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
 
