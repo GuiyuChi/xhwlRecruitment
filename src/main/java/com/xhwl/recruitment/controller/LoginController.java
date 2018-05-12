@@ -4,6 +4,7 @@ import com.xhwl.recruitment.bean.ResponseBean;
 import com.xhwl.recruitment.dao.AdminAuthRepository;
 import com.xhwl.recruitment.domain.AdminAuthEntity;
 import com.xhwl.recruitment.domain.UserEntity;
+import com.xhwl.recruitment.exception.CaptchaException;
 import com.xhwl.recruitment.exception.MException;
 import com.xhwl.recruitment.service.FileService;
 import com.xhwl.recruitment.service.UserService;
@@ -16,6 +17,8 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -40,7 +43,6 @@ import java.util.LinkedHashMap;
 @RestController
 @Slf4j
 public class LoginController {
-    private String Captcha = null;//图片验证码的字符串
     @Autowired
     UserService userService;
 
@@ -50,37 +52,77 @@ public class LoginController {
     @Autowired
     AdminAuthRepository adminAuthRepository;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
+
     /**
-     * 获取验证码
+     * 用户登录，带验证码版
      *
+     * @param username
+     * @param password
+     * @param check
      * @return
      */
-    @GetMapping("/loginCaptcha")
-    public ResponseEntity<byte[]> getCaptchaImage() //生成验证码
-    {
-        Object[] objs = VerifyUtil.createImage();
-
-        Captcha = (String) objs[0];
-
-        try {
-            BufferedImage image = (BufferedImage) objs[1];
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write(image, "jpg", baos);//写入流中
-            byte[] bytes = baos.toByteArray();
-
-            //设置下载头
-            HttpHeaders header = new HttpHeaders();
-            header.setContentType(MediaType.IMAGE_PNG);
-            return new ResponseEntity<>(bytes, header, HttpStatus.OK);
-        } catch (IOException e) {
-            e.printStackTrace();
+    @PostMapping("/loginWithCaptcha")
+    public ResponseBean login(@RequestParam("username") String username,
+                              @RequestParam("password") String password,
+                              @RequestParam("captcha") String check,
+                              @RequestParam("uuid") String uuid) {
+        ValueOperations<String, String> operations = redisTemplate.opsForValue();
+        String savedCaptcha = operations.get(uuid);
+        if (!check.equalsIgnoreCase(savedCaptcha)) throw new CaptchaException("图形验证码输入错误");
+        UserEntity userEntity = userService.getUser(username);
+        if (userEntity.getPassword().equals(password)) {
+            return new ResponseBean(200, "Login success", JWTUtil.sign(username, password));
+        } else {
+            throw new UnauthorizedException();
         }
-        return null;
     }
-    //objs[1]为验证码字符串，objs[2]为验证码图片
+
 
     /**
-     * 用户登录的接口
+     * 管理员登录的接口，带验证码版
+     * 所有管理员都通过此处登录
+     *
+     * @param username
+     * @param password
+     * @return
+     */
+    @PostMapping("/adminLoginWithCaptcha")
+    public ResponseBean adminLogin(@RequestParam("username") String username,
+                                   @RequestParam("password") String password,
+                                   @RequestParam("captcha") String check,
+                                   @RequestParam("uuid") String uuid) {
+        ValueOperations<String, String> operations = redisTemplate.opsForValue();
+        String savedCaptcha = operations.get(uuid);
+        if (!check.equalsIgnoreCase(savedCaptcha)) throw new CaptchaException("图形验证码输入错误");
+
+        UserEntity userEntity = userService.getUser(username);
+        if (userEntity.getPassword().equals(password)) {
+            if (userEntity.getRole().equals("admin")) {
+                Long userId = userEntity.getId();
+                AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
+                return new ResponseBean(200, adminAuthEntity.getRole(), JWTUtil.sign(username, password));
+            } else {
+                throw new UnauthorizedException();
+            }
+        } else {
+            throw new UnauthorizedException();
+        }
+    }
+
+    /**
+     * 登录是否过期的检验,只需要shiro验证即可，所有为空函数
+     */
+    @GetMapping("/tokenCheck")
+    @RequiresAuthentication
+    public void tokenCheck() {
+        //nothing
+    }
+
+    /**
+     * 用户登录的接口,即将废弃
      *
      * @param username
      * @param password
@@ -98,29 +140,7 @@ public class LoginController {
     }
 
     /**
-     * 用户登录，带验证码版
-     *
-     * @param username
-     * @param password
-     * @param check
-     * @return
-     */
-    @PostMapping("/loginWithCaptcha")
-    public ResponseBean login(@RequestParam("username") String username,
-                              @RequestParam("password") String password,
-                              @RequestParam("captcha") String check) {
-        if (!check.equalsIgnoreCase(Captcha)) throw new MException("验证码认证失败");
-        UserEntity userEntity = userService.getUser(username);
-        if (userEntity.getPassword().equals(password)) {
-            return new ResponseBean(200, "Login success", JWTUtil.sign(username, password));
-        } else {
-            throw new UnauthorizedException();
-        }
-    }
-
-
-    /**
-     * 管理员登录的接口
+     * 管理员登录的接口，即将废弃
      * 所有管理员都通过此处登录
      *
      * @param username
@@ -144,14 +164,9 @@ public class LoginController {
         }
     }
 
-    /**
-     * 登录是否过期的检验,只需要shiro验证即可，所有为空函数
-     */
-    @GetMapping("/tokenCheck")
-    @RequiresAuthentication
-    public void tokenCheck() {
-        //nothing
-    }
+
+
+
 
     /**
      * 管理员登录后，获取管理员类型
