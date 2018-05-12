@@ -1,8 +1,11 @@
 package com.xhwl.recruitment.service;
 
+import com.xhwl.recruitment.dao.DwResumeRepository;
+import com.xhwl.recruitment.dao.ResumeDeliverRepository;
 import com.xhwl.recruitment.dao.ResumeRepository;
 import com.xhwl.recruitment.domain.ResumeEntity;
 import com.xhwl.recruitment.util.FileUtil;
+import com.xhwl.recruitment.util.UUIDUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +14,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * @Author: guiyu
@@ -25,11 +30,17 @@ public class FileService {
     @Autowired
     ResumeRepository resumeRepository;
 
+    @Autowired
+    DwResumeRepository dwResumeRepository;
+
+    @Autowired
+    ResumeDeliverRepository resumeDeliverRepository;
+
     /**
      * 服务器存放文件的位置
      */
-//    private final String ROOT = "/Users/chikatsurasakai/";
-    private final String ROOT = "/home/ubuntu/";
+    private final String ROOT = "/Users/chikatsurasakai/";
+//    private final String ROOT = "/home/ubuntu/";
 
 
     /**
@@ -141,6 +152,62 @@ public class FileService {
         //读取文件
         return FileUtils.readFileToByteArray(new File(path));
 
+    }
+
+    /**
+     * 管理员下载用户上传的简历，传入投递编号
+     *
+     * @param deliverId
+     * @return
+     */
+    public List<Object> getResumeByDeliver(Long deliverId) throws IOException {
+        Long dwResumeId = resumeDeliverRepository.findOne(deliverId).getDwResumeId();
+        String lp = dwResumeRepository.findOne(dwResumeId).getUploadResumePath();
+        if (lp == null) return null;
+        String path = DwResumeAccessoryFileFolderPath + lp;
+
+        List<Object> res = new ArrayList<>();
+
+        //获取文件后缀
+        String type = lp.substring(lp.lastIndexOf('.') + 1);
+
+        //下载文件名
+        String downName = UUIDUtil.getUUID() + "." + type;
+
+        //读取文件
+        byte[] file = FileUtils.readFileToByteArray(new File(path));
+
+        res.add(downName);
+        res.add(file);
+        return res;
+    }
+
+    /**
+     * 管理员下载用户上传的附件，传入投递编号
+     *
+     * @param deliverId
+     * @return
+     */
+    public List<Object> getSupportDetailByDeliver(Long deliverId) throws IOException {
+        Long dwResumeId = resumeDeliverRepository.findOne(deliverId).getDwResumeId();
+        String lp = dwResumeRepository.findOne(dwResumeId).getSupportDetailPath();
+        if (lp == null) return null;
+        String path = DwSupportDetailFileFolderPath + lp;
+
+        List<Object> res = new ArrayList<>();
+
+        //获取文件后缀
+        String type = lp.substring(lp.lastIndexOf('.') + 1);
+
+        //下载文件名
+        String downName = UUIDUtil.getUUID() + "." + type;
+
+        //读取文件
+        byte[] file = FileUtils.readFileToByteArray(new File(path));
+
+        res.add(downName);
+        res.add(file);
+        return res;
     }
 
     /**

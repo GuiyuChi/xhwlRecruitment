@@ -4,6 +4,7 @@ import com.xhwl.recruitment.service.FileService;
 import com.xhwl.recruitment.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -97,12 +99,12 @@ public class FileController {
     }
 
     /**
-     * 下载某用户的简历附件,测试接口
+     * 下载某用户的简历附件，传入 简历投递表的 id
      *
      * @param headers
      * @return
      */
-    @GetMapping("download-resume/{userId}")
+    @GetMapping("/download-resume/{userId}")
     public ResponseEntity<byte[]> downloadResume(@RequestHeader HttpHeaders headers, @PathVariable("userId") Long userId) {
 //        Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         try {
@@ -120,6 +122,62 @@ public class FileController {
         }
         return null;
     }
+
+    /**
+     * 管理员下载用户投递的简历附件，根据投递记录的编号
+     *
+     * @param deliverId
+     * @return
+     */
+    @GetMapping("admin/downloadResume/{deliverId}")
+    @RequiresRoles("admin")
+    public ResponseEntity<byte[]> downloadResumeByDeliver(@PathVariable("deliverId") Long deliverId) {
+        try {
+            List<Object> findList = fileService.getResumeByDeliver(deliverId);
+            //文件不存在，传出空值
+            if (findList == null) return null;
+
+            byte[] resumeByteArray = (byte[]) findList.get(1);
+
+            // 设置下载响应头
+            HttpHeaders header = new HttpHeaders();
+            header.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            header.setContentDispositionFormData("attachment", String.valueOf(findList.get(0)), Charset.forName("utf-8"));
+
+            return new ResponseEntity<>(resumeByteArray, header, HttpStatus.OK);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 管理员下载用户投递的附件，根据投递记录的编号
+     * @param deliverId
+     * @return
+     */
+    @GetMapping("/admin/downloadSupportDetail/{deliverId}")
+    @RequiresRoles("admin")
+    public ResponseEntity<byte[]> downloadSupportDetailByDeliver(@PathVariable("deliverId") Long deliverId) {
+        try {
+            List<Object> findList = fileService.getSupportDetailByDeliver(deliverId);
+            //文件不存在，传出空值
+            if (findList == null) return null;
+
+            byte[] resumeByteArray = (byte[]) findList.get(1);
+
+            // 设置下载响应头
+            HttpHeaders header = new HttpHeaders();
+            header.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            header.setContentDispositionFormData("attachment", String.valueOf(findList.get(0)), Charset.forName("utf-8"));
+
+            return new ResponseEntity<>(resumeByteArray, header, HttpStatus.OK);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
     /**
      * 上传其他辅助材料
