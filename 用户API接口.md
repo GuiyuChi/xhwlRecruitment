@@ -86,6 +86,45 @@ uuid用与验证码建立唯一关系
 }
 ```
 
+## 用户登录，带验证码版
+```
+验证码的获取同注册
+表单提交
+【username】手机号
+【password】密码
+【captcha】图片验证码结果，忽略大小写
+【uuid】获取图片验证码时获得的uuid
+
+正确返回 200状态码
+{
+    "code": 200,
+    "msg": "Login success",
+    "data": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1MjYwOTA1NjAsInVzZXJuYW1lIjoiMTU5ODAyNDUzNzIifQ.bUuUgl388vPZ5nFS320mkSeXyKzJJgI1LkIlACmIE2k"
+}
+
+验证码错误 400状态码
+{
+    "code": 423,
+    "msg": "图形验证码输入错误",
+    "data": null
+}
+
+用户名不存在 500状态码
+{
+    "code": 500,
+    "msg": null,
+    "data": null
+}
+
+密码错误 401状态码
+{
+    "code": 401,
+    "msg": "Unauthorized",
+    "data": null
+}
+
+```
+
 ## 用户按招聘类型获取岗位 get {{8080}}/positions/1?positionType=销售&workPlace=深&positionName=测试
 ```
 添加了模糊搜索的功能，？后面的内容在搜索时输入
