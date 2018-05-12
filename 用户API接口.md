@@ -86,9 +86,9 @@ uuid用与验证码建立唯一关系
 }
 ```
 
-## 用户登录，带验证码版
+## 用户登录，带验证码版 post {{8080}}/loginWithCaptcha
 ```
-验证码的获取同注册
+验证码的获取同注册 {{8080}}/createPictureCaptcha
 表单提交
 【username】手机号
 【password】密码
