@@ -178,3 +178,50 @@ eg：{{8080}}/positions/1?workPlace=深圳
 ]
 ```
 
+## 用户投递简历 put {{8080}}/deliver/1 （id 为岗位 id）
+```
+成功返回 200状态码
+投递表的编码
+
+错误返回 400状态码
+{
+    "code": 440,
+    "msg": "重复投递",
+    "data": null
+}
+{
+    "code": 442,
+    "msg": "未创建简历",
+    "data": null
+}
+{
+    "code": 443,
+    "msg": "未填写个人信息",
+    "data": null
+}
+{
+    "code": 444,
+    "msg": "未填写教育经历",
+    "data": null
+}
+{
+    "code": 445,
+    "msg": "未填写就业意向",
+    "data": null
+}
+{
+    "code": 446,
+    "msg": "未上传简历附件",
+    "data": null
+}
+{
+    "code": 447,
+    "msg": "岗位不存在",
+    "data": null
+}
+{
+    "code": 448,
+    "msg": "未上传照片",
+    "data": null
+}
+```
