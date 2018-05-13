@@ -2,6 +2,8 @@ package com.xhwl.recruitment.controller.user;
 
 import com.xhwl.recruitment.domain.EducationExperienceEntity;
 import com.xhwl.recruitment.exception.MException;
+import com.xhwl.recruitment.exception.MyNoPermissionException;
+import com.xhwl.recruitment.exception.ResumeNoExistException;
 import com.xhwl.recruitment.service.PermissionService;
 import com.xhwl.recruitment.service.ResumeService;
 import com.xhwl.recruitment.service.UserService;
@@ -80,12 +82,12 @@ public class EducationExperienceController {
             if (permissionService.EducationExperiencePermission(userId, educationExperenceVo.getId())) {
                 return resumeService.modifyEducationExperience(educationExperenceVo);
             } else {
-                throw new MException("无修改权限");
+                throw new MyNoPermissionException("无修改权限");
             }
         } else {
             //没有输入id，为新建
             if (resumeService.getResume(userId) == null) {
-                throw new MException("需要先创建用户的简历表再创建教育信息表");
+                throw new ResumeNoExistException("需要先创建用户的简历表再创建教育信息表");
             }
             return resumeService.addEducationExperence(userId, educationExperenceVo);
         }
@@ -104,7 +106,7 @@ public class EducationExperienceController {
         if (permissionService.EducationExperiencePermission(userId, educationExperienceId)) {
             resumeService.deleteEducationExperience(educationExperienceId);
         } else {
-            throw new MException("无修改权限");
+            throw new MyNoPermissionException("无修改权限");
         }
     }
 }

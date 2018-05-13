@@ -2,6 +2,7 @@ package com.xhwl.recruitment.controller.user;
 
 import com.xhwl.recruitment.domain.WorkExperienceEntity;
 import com.xhwl.recruitment.exception.MException;
+import com.xhwl.recruitment.exception.MyNoPermissionException;
 import com.xhwl.recruitment.service.PermissionService;
 import com.xhwl.recruitment.service.ResumeService;
 import com.xhwl.recruitment.service.UserService;
@@ -58,7 +59,7 @@ public class WorkExperienceController {
             if(permissionService.workExperiencePermission(userId,workExperienceVo.getId())){
                 return resumeService.modifyWorkExperience(workExperienceVo);
             }else{
-                throw new MException("无修改权限");
+                throw new MyNoPermissionException("无修改权限");
             }
         }
     }
@@ -75,7 +76,7 @@ public class WorkExperienceController {
         if(permissionService.workExperiencePermission(userId,workExperienceId)){
             resumeService.deleteWorkExperience(workExperienceId);
         }else{
-            throw new MException("无修改权限");
+            throw new MyNoPermissionException("无修改权限");
         }
     }
 }

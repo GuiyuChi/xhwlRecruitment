@@ -2,6 +2,7 @@ package com.xhwl.recruitment.controller.user;
 
 import com.xhwl.recruitment.domain.AwardEntity;
 import com.xhwl.recruitment.exception.MException;
+import com.xhwl.recruitment.exception.MyNoPermissionException;
 import com.xhwl.recruitment.service.PermissionService;
 import com.xhwl.recruitment.service.ResumeService;
 import com.xhwl.recruitment.service.UserService;
@@ -46,7 +47,7 @@ public class AwardController {
             if(permissionService.awardPermission(userId,awardVo.getId())){
                 return resumeService.modifyAward(awardVo);
             }else{
-                throw new MException("无修改权限");
+                throw new MyNoPermissionException("无修改权限");
             }
         }
     }
@@ -58,7 +59,7 @@ public class AwardController {
         if(permissionService.awardPermission(userId,awardId)){
             resumeService.deleteAward(awardId);
         }else{
-            throw new MException("无修改权限");
+            throw new MyNoPermissionException("无修改权限");
         }
     }
 }

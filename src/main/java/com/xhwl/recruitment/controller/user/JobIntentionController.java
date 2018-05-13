@@ -2,6 +2,7 @@ package com.xhwl.recruitment.controller.user;
 
 import com.xhwl.recruitment.domain.JobIntentionEntity;
 import com.xhwl.recruitment.exception.MException;
+import com.xhwl.recruitment.exception.ResumeNoExistException;
 import com.xhwl.recruitment.service.ResumeService;
 import com.xhwl.recruitment.service.UserService;
 import com.xhwl.recruitment.util.JWTUtil;
@@ -46,7 +47,7 @@ public class JobIntentionController {
         Long userId = userService.getUserId(username);
 
         if (resumeService.getResume(userId) == null) {
-            throw new MException("需要先创建用户的简历表再创建个人信息表");
+            throw new ResumeNoExistException("需要先创建用户的简历表再创建工作意向表");
         }
 
         if(resumeService.getJobIntension(userId)==null){

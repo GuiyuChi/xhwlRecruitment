@@ -2,6 +2,7 @@ package com.xhwl.recruitment.controller.user;
 
 import com.xhwl.recruitment.domain.InternshipExperienceEntity;
 import com.xhwl.recruitment.exception.MException;
+import com.xhwl.recruitment.exception.MyNoPermissionException;
 import com.xhwl.recruitment.service.PermissionService;
 import com.xhwl.recruitment.service.ResumeService;
 import com.xhwl.recruitment.service.UserService;
@@ -60,7 +61,7 @@ public class InternshipExperienceController {
             if (permissionService.internshipExperiencePermission(userId, internshipExperienceVo.getId())) {
                 return resumeService.modifyInternshipExperience(internshipExperienceVo);
             } else {
-                throw new MException("无修改权限");
+                throw new MyNoPermissionException("无修改权限");
             }
         }
     }
@@ -77,7 +78,7 @@ public class InternshipExperienceController {
         if(permissionService.internshipExperiencePermission(userId,internshipId)){
             resumeService.deleteInternshipExperience(internshipId);
         }else{
-            throw new MException("无修改权限");
+            throw new MyNoPermissionException("无修改权限");
         }
     }
 }
