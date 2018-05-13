@@ -1,14 +1,12 @@
 package com.xhwl.recruitment.controller.user;
 
-import com.xhwl.recruitment.dao.EducationRepository;
-import com.xhwl.recruitment.dao.JobIntentionRepository;
-import com.xhwl.recruitment.dao.PersonalInformationRepository;
-import com.xhwl.recruitment.dao.ResumeRepository;
+import com.xhwl.recruitment.dao.*;
 import com.xhwl.recruitment.domain.ResumeEntity;
 import com.xhwl.recruitment.exception.*;
 import com.xhwl.recruitment.service.DeliverService;
 import com.xhwl.recruitment.service.PositionService;
 import com.xhwl.recruitment.service.UserService;
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
@@ -44,6 +42,9 @@ public class DeliverController {
     @Autowired
     JobIntentionRepository jobIntentionRepository;
 
+    @Autowired
+    PositionRepository positionRepository;
+
     /**
      * 用户投递岗位
      *
@@ -52,10 +53,10 @@ public class DeliverController {
      * @return
      */
     @PutMapping("/deliver/{positionId}")
+    @RequiresAuthentication
     public Long deliver(@RequestHeader HttpHeaders headers, @PathVariable("positionId") Long positionId) {
 
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
-        if (!deliverService.checkResumeType(userId, positionId)) throw new MException("简历类型不符");
 
         ResumeEntity resumeEntity = resumeRepository.findByUserId(userId);
 
@@ -63,11 +64,18 @@ public class DeliverController {
             //未创建简历
             throw new ResumeNoExistException("未创建简历");
         } else {
+            if (positionRepository.findOne(positionId)==null){
+                //岗位不存在
+                throw new PositionNoExistException("岗位不存在");
+            }
+            if (!deliverService.checkResumeType(userId, positionId)) {
+                throw new ResumeTypeException("简历类型不符");
+            }
             if (personalInformationRepository.findByResumeId(resumeEntity.getId()) == null) {
                 //未填写个人信息表
                 throw new PersonalInformationNoExistException("未填写个人信息");
             }
-            if (educationRepository.findAllByResumeId(resumeEntity.getId()) == null) {
+            if (educationRepository.findAllByResumeId(resumeEntity.getId()).size()==0) {
                 //未填写个人教育经历
                 throw new EducationNoExistException("未填写教育经历");
             }
@@ -79,12 +87,16 @@ public class DeliverController {
                 //未上传简历附件
                 throw new UploadResumeNoExistException("未上传简历附件");
             }
+            if(resumeEntity.getPhotoPath()==null){
+                //未上传照片
+                throw new PhotoNoExistException("未上传照片");
+            }
             //判断重复投递
             if (deliverService.isFirst(userId, positionId)) {
                 Long id = deliverService.deliver(positionId, userId);
                 return id;
             } else {
-                throw new MException("重复投递");
+                throw new DeliverRepeatException("重复投递");
             }
         }
 
@@ -97,6 +109,7 @@ public class DeliverController {
      * @return
      */
     @GetMapping("/deliver")
+    @RequiresAuthentication
     public List<HashMap> findResumeDelivers(@RequestHeader HttpHeaders headers) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
 
