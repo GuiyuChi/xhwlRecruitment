@@ -7,6 +7,7 @@ import com.xhwl.recruitment.dao.ResumeDeliverRepository;
 import com.xhwl.recruitment.domain.AdminAuthEntity;
 import com.xhwl.recruitment.dto.DeliverDto;
 import com.xhwl.recruitment.exception.MyNoPermissionException;
+import com.xhwl.recruitment.exception.PositionNoExistException;
 import com.xhwl.recruitment.service.AuditDeliverService;
 import com.xhwl.recruitment.service.DeliverService;
 import com.xhwl.recruitment.service.PositionService;
@@ -251,5 +252,21 @@ public class AdminDeliverController {
             throw new MyNoPermissionException("没有权限");
         }
         auditDeliverService.cancelRefuse(deliverId);
+    }
+
+    /**
+     * 管理员获取某岗位的投递条数
+     *
+     * @param positionId
+     * @return
+     */
+    @GetMapping("/admin/getDeliverNum/{positionId}")
+    @RequiresRoles("admin")
+    public HashMap getDeliverNum(@PathVariable("positionId") Long positionId) {
+        if (positionRepository.findOne(positionId) == null) {
+            throw new PositionNoExistException("岗位不存在");
+        }
+
+        return deliverService.getNumOfDeliver(positionId);
     }
 }

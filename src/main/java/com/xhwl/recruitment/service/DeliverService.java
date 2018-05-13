@@ -87,7 +87,6 @@ public class DeliverService {
     private FileService fileService;
 
 
-
     /**
      * 查找用户原先的resumeId
      *
@@ -115,7 +114,7 @@ public class DeliverService {
         copyTrainingExperience(oldResumeId, newResumeId);
         copyProjectExperience(oldResumeId, newResumeId);
         copyWorkExperience(oldResumeId, newResumeId);
-        copyInternshipExperience(oldResumeId,newResumeId);
+        copyInternshipExperience(oldResumeId, newResumeId);
         copyAward(oldResumeId, newResumeId);
         copyJobIntention(oldResumeId, newResumeId);
         return newResumeId;
@@ -393,4 +392,16 @@ public class DeliverService {
         return res;
     }
 
+    /**
+     * 获取某岗位有多少条投递
+     *
+     * @param positionId
+     * @return
+     */
+    public HashMap<String, Integer> getNumOfDeliver(Long positionId) {
+        List<ResumeDeliverEntity> resumeDeliverEntities = resumeDeliverRepository.findAllByPositionId(positionId);
+        HashMap<String, Integer> hashMap = new LinkedHashMap<>();
+        hashMap.put("number", resumeDeliverEntities.size());
+        return hashMap;
+    }
 }
