@@ -114,32 +114,126 @@ public class PositionService {
      *
      * @return
      */
-    public Page<HashMap> adminGetDepartmentPositions(Pageable pageable, Long department, Integer publicType) {
-        Page<PositionEntity> positionEntityPage = positionRepository.findAllByDepartmentAndPublishType(pageable, department, publicType);
-        List<PositionEntity> positions = positionEntityPage.getContent();
+    public Page<HashMap> adminGetDepartmentPositions(Pageable pageable, Long department, Integer publicType,
+                                                     String positionName, String early_date, String last_date) {
+        if (early_date.equals("") && last_date.equals("")) {
+            //日期未传入
+            Page<PositionEntity> positionEntityPage = positionRepository.findAllByPositionNameContainingAndDepartmentAndPublishType(pageable, positionName, department, publicType);
+            List<PositionEntity> positions = positionEntityPage.getContent();
 
-        //排除可能出现的过期但是type没有更改的情况
-        List<PositionEntity> publicPositions = new ArrayList<>();
-        for (PositionEntity position : positions) {
-            if (isUnderwayPosition(position)) {
-                publicPositions.add(position);
+            //排除可能出现的过期但是type没有更改的情况
+            List<PositionEntity> publicPositions = new ArrayList<>();
+            for (PositionEntity position : positions) {
+                if (isUnderwayPosition(position)) {
+                    publicPositions.add(position);
+                }
             }
+
+            List<HashMap> res = new ArrayList<>();
+            for (PositionEntity position : publicPositions) {
+                HashMap<String, String> hashMap = new LinkedHashMap<>();
+                hashMap.put("id", new Long(position.getId()).toString());
+                hashMap.put("positionName", position.getPositionName());
+                hashMap.put("department", String.valueOf(position.getDepartment()));
+                hashMap.put("recruitmentType", String.valueOf(position.getRecruitmentType()));
+                hashMap.put("workPlace", position.getWorkPlace());
+                hashMap.put("publishDate", String.valueOf(position.getPublishDate()));
+                hashMap.put("deadline", String.valueOf(position.getDeadline()));
+                res.add(hashMap);
+            }
+            Page<HashMap> resPage = new PageImpl<>(res, pageable, publicPositions.size());
+            return resPage;
+        } else {
+            //日期已经传入
+
+            Page<PositionEntity> positionEntityPage = positionRepository.findAllByPositionNameContainingAndDepartmentAndPublishType(pageable, positionName, department, publicType);
+            List<PositionEntity> positions = positionEntityPage.getContent();
+
+            //排除可能出现的过期但是type没有更改的情况
+            List<PositionEntity> publicPositions = new ArrayList<>();
+            for (PositionEntity position : positions) {
+                if (isUnderwayPosition(position)) {
+                    publicPositions.add(position);
+                }
+            }
+            List<HashMap> res = new ArrayList<>();
+
+            //时间处理
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date early = null;
+            Date last = null;
+            if (!early_date.equals("") && last_date.equals("")) {
+                //只传入最早时间
+                try {
+                    early = new Date(dateFormat.parse(early_date).getTime());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                for (PositionEntity position : publicPositions) {
+                    if (position.getPublishDate().after(early)) {
+                        HashMap<String, String> hashMap = new LinkedHashMap<>();
+                        hashMap.put("id", new Long(position.getId()).toString());
+                        hashMap.put("positionName", position.getPositionName());
+                        hashMap.put("department", String.valueOf(position.getDepartment()));
+                        hashMap.put("recruitmentType", String.valueOf(position.getRecruitmentType()));
+                        hashMap.put("workPlace", position.getWorkPlace());
+                        hashMap.put("publishDate", String.valueOf(position.getPublishDate()));
+                        hashMap.put("deadline", String.valueOf(position.getDeadline()));
+                        res.add(hashMap);
+                    }
+                }
+
+            } else if (early_date.equals("") && !last_date.equals("")) {
+                //只传入最晚时间
+                try {
+                    last = new Date(dateFormat.parse(last_date).getTime());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                for (PositionEntity position : publicPositions) {
+                    if (position.getPublishDate().before(last)) {
+                        HashMap<String, String> hashMap = new LinkedHashMap<>();
+                        hashMap.put("id", new Long(position.getId()).toString());
+                        hashMap.put("positionName", position.getPositionName());
+                        hashMap.put("department", String.valueOf(position.getDepartment()));
+                        hashMap.put("recruitmentType", String.valueOf(position.getRecruitmentType()));
+                        hashMap.put("workPlace", position.getWorkPlace());
+                        hashMap.put("publishDate", String.valueOf(position.getPublishDate()));
+                        hashMap.put("deadline", String.valueOf(position.getDeadline()));
+                        res.add(hashMap);
+                    }
+                }
+
+            } else {
+
+                try {
+                    early = new Date(dateFormat.parse(early_date).getTime());
+                    last = new Date(dateFormat.parse(last_date).getTime());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                for (PositionEntity position : publicPositions) {
+                    if (position.getPublishDate().after(early) && position.getPublishDate().before(last)) {
+                        HashMap<String, String> hashMap = new LinkedHashMap<>();
+                        hashMap.put("id", new Long(position.getId()).toString());
+                        hashMap.put("positionName", position.getPositionName());
+                        hashMap.put("department", String.valueOf(position.getDepartment()));
+                        hashMap.put("recruitmentType", String.valueOf(position.getRecruitmentType()));
+                        hashMap.put("workPlace", position.getWorkPlace());
+                        hashMap.put("publishDate", String.valueOf(position.getPublishDate()));
+                        hashMap.put("deadline", String.valueOf(position.getDeadline()));
+                        res.add(hashMap);
+                    }
+                }
+            }
+
+            Page<HashMap> resPage = new PageImpl<>(res, pageable, res.size());
+            return resPage;
         }
 
-        List<HashMap> res = new ArrayList<>();
-        for (PositionEntity position : publicPositions) {
-            HashMap<String, String> hashMap = new LinkedHashMap<>();
-            hashMap.put("id", new Long(position.getId()).toString());
-            hashMap.put("positionName", position.getPositionName());
-            hashMap.put("department", String.valueOf(position.getDepartment()));
-            hashMap.put("recruitmentType", String.valueOf(position.getRecruitmentType()));
-            hashMap.put("workPlace", position.getWorkPlace());
-            hashMap.put("publishDate", String.valueOf(position.getPublishDate()));
-            hashMap.put("deadline", String.valueOf(position.getDeadline()));
-            res.add(hashMap);
-        }
-        Page<HashMap> resPage = new PageImpl<>(res, pageable, publicPositions.size());
-        return resPage;
     }
 
     /**
@@ -149,32 +243,141 @@ public class PositionService {
      * @param publicType
      * @return
      */
-    public Page<HashMap> adminGetAllPublishPositions(Pageable pageable, Integer publicType) {
-        Page<PositionEntity> positionEntityPage = positionRepository.findAllByPublishType(pageable, publicType);
-        List<PositionEntity> positions = positionEntityPage.getContent();
+    public Page<HashMap> adminGetAllPublishPositions(Pageable pageable, Integer publicType, Long deaprtment,
+                                                     String positionName, String early_date, String last_date) {
+        if (early_date.equals("") && last_date.equals("")) {
 
-        //排除可能出现的过期但是type没有更改的情况
-        List<PositionEntity> publicPositions = new ArrayList<>();
-        for (PositionEntity position : positions) {
-            if (isUnderwayPosition(position)) {
-                publicPositions.add(position);
+            Page<PositionEntity> positionEntityPage = null;
+            if (deaprtment == 0) {
+                //岗位未传入
+                positionEntityPage = positionRepository.findAllByPositionNameContainingAndPublishType(pageable, positionName, publicType);
+            }else{
+                positionEntityPage = positionRepository.findAllByPositionNameContainingAndDepartmentAndPublishType(pageable, positionName,deaprtment, publicType);
             }
+
+            List<PositionEntity> positions = positionEntityPage.getContent();
+
+            //排除可能出现的过期但是type没有更改的情况
+            List<PositionEntity> publicPositions = new ArrayList<>();
+            for (PositionEntity position : positions) {
+                if (isUnderwayPosition(position)) {
+                    publicPositions.add(position);
+                }
+            }
+
+            List<HashMap> res = new ArrayList<>();
+            for (PositionEntity position : publicPositions) {
+                HashMap<String, String> hashMap = new LinkedHashMap<>();
+                hashMap.put("id", new Long(position.getId()).toString());
+                hashMap.put("positionName", position.getPositionName());
+                hashMap.put("department", String.valueOf(position.getDepartment()));
+                hashMap.put("recruitmentType", String.valueOf(position.getRecruitmentType()));
+                hashMap.put("workPlace", position.getWorkPlace());
+                hashMap.put("publishDate", String.valueOf(position.getPublishDate()));
+                hashMap.put("deadline", String.valueOf(position.getDeadline()));
+                res.add(hashMap);
+            }
+
+            Page<HashMap> resPage = new PageImpl<>(res, pageable, res.size());
+            return resPage;
+
+        } else {
+
+            Page<PositionEntity> positionEntityPage = null;
+            if (deaprtment == 0) {
+                //岗位未传入
+                positionEntityPage = positionRepository.findAllByPositionNameContainingAndPublishType(pageable, positionName, publicType);
+            }else{
+                positionEntityPage = positionRepository.findAllByPositionNameContainingAndDepartmentAndPublishType(pageable, positionName,deaprtment, publicType);
+            }
+
+            List<PositionEntity> positions = positionEntityPage.getContent();
+
+            //排除可能出现的过期但是type没有更改的情况
+            List<PositionEntity> publicPositions = new ArrayList<>();
+            for (PositionEntity position : positions) {
+                if (isUnderwayPosition(position)) {
+                    publicPositions.add(position);
+                }
+            }
+            List<HashMap> res = new ArrayList<>();
+
+            //时间处理
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date early = null;
+            Date last = null;
+            if (!early_date.equals("") && last_date.equals("")) {
+                //只传入最早时间
+                try {
+                    early = new Date(dateFormat.parse(early_date).getTime());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                for (PositionEntity position : publicPositions) {
+                    if (position.getPublishDate().after(early)) {
+                        HashMap<String, String> hashMap = new LinkedHashMap<>();
+                        hashMap.put("id", new Long(position.getId()).toString());
+                        hashMap.put("positionName", position.getPositionName());
+                        hashMap.put("department", String.valueOf(position.getDepartment()));
+                        hashMap.put("recruitmentType", String.valueOf(position.getRecruitmentType()));
+                        hashMap.put("workPlace", position.getWorkPlace());
+                        hashMap.put("publishDate", String.valueOf(position.getPublishDate()));
+                        hashMap.put("deadline", String.valueOf(position.getDeadline()));
+                        res.add(hashMap);
+                    }
+                }
+
+            } else if (early_date.equals("") && !last_date.equals("")) {
+                //只传入最晚时间
+                try {
+                    last = new Date(dateFormat.parse(last_date).getTime());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                for (PositionEntity position : publicPositions) {
+                    if (position.getPublishDate().before(last)) {
+                        HashMap<String, String> hashMap = new LinkedHashMap<>();
+                        hashMap.put("id", new Long(position.getId()).toString());
+                        hashMap.put("positionName", position.getPositionName());
+                        hashMap.put("department", String.valueOf(position.getDepartment()));
+                        hashMap.put("recruitmentType", String.valueOf(position.getRecruitmentType()));
+                        hashMap.put("workPlace", position.getWorkPlace());
+                        hashMap.put("publishDate", String.valueOf(position.getPublishDate()));
+                        hashMap.put("deadline", String.valueOf(position.getDeadline()));
+                        res.add(hashMap);
+                    }
+                }
+
+            } else {
+
+                try {
+                    early = new Date(dateFormat.parse(early_date).getTime());
+                    last = new Date(dateFormat.parse(last_date).getTime());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                for (PositionEntity position : publicPositions) {
+                    if (position.getPublishDate().after(early) && position.getPublishDate().before(last)) {
+                        HashMap<String, String> hashMap = new LinkedHashMap<>();
+                        hashMap.put("id", new Long(position.getId()).toString());
+                        hashMap.put("positionName", position.getPositionName());
+                        hashMap.put("department", String.valueOf(position.getDepartment()));
+                        hashMap.put("recruitmentType", String.valueOf(position.getRecruitmentType()));
+                        hashMap.put("workPlace", position.getWorkPlace());
+                        hashMap.put("publishDate", String.valueOf(position.getPublishDate()));
+                        hashMap.put("deadline", String.valueOf(position.getDeadline()));
+                        res.add(hashMap);
+                    }
+                }
+            }
+
+            Page<HashMap> resPage = new PageImpl<>(res, pageable, res.size());
+            return resPage;
         }
 
-        List<HashMap> res = new ArrayList<>();
-        for (PositionEntity position : publicPositions) {
-            HashMap<String, String> hashMap = new LinkedHashMap<>();
-            hashMap.put("id", new Long(position.getId()).toString());
-            hashMap.put("positionName", position.getPositionName());
-            hashMap.put("department", String.valueOf(position.getDepartment()));
-            hashMap.put("recruitmentType", String.valueOf(position.getRecruitmentType()));
-            hashMap.put("workPlace", position.getWorkPlace());
-            hashMap.put("publishDate", String.valueOf(position.getPublishDate()));
-            hashMap.put("deadline", String.valueOf(position.getDeadline()));
-            res.add(hashMap);
-        }
-        Page<HashMap> resPage = new PageImpl<>(res, pageable, publicPositions.size());
-        return resPage;
     }
 
     /**

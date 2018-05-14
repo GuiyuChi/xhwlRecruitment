@@ -110,15 +110,19 @@ public class AdminPositionController {
     @RequiresRoles("admin")
     public Page<HashMap> adminGetPositions(@RequestHeader HttpHeaders headers,
                                            @RequestParam(value = "page", defaultValue = "1") Integer page,
-                                           @RequestParam(value = "size", defaultValue = "20") Integer size) {
+                                           @RequestParam(value = "size", defaultValue = "20") Integer size,
+                                           @RequestParam(value = "department", defaultValue = "0") Long department,
+                                           @RequestParam(value = "positionName", defaultValue = "") String positionName,
+                                           @RequestParam(value = "earlyDate", defaultValue = "") String early_date,
+                                           @RequestParam(value = "lastDate", defaultValue = "") String last_date) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
 
         PageRequest request = new PageRequest(page - 1, size);
         if (adminAuthEntity.getDepartmentId() == PersonnelDepartmentId) {
-            return positionService.adminGetAllPublishPositions(request, 1);
+            return positionService.adminGetAllPublishPositions(request, 1, department, positionName, early_date, last_date);
         } else {
-            return positionService.adminGetDepartmentPositions(request, adminAuthEntity.getDepartmentId(), PositionisPublish);
+            return positionService.adminGetDepartmentPositions(request, adminAuthEntity.getDepartmentId(), PositionisPublish, positionName, early_date, last_date);
         }
     }
 
@@ -134,7 +138,7 @@ public class AdminPositionController {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
 
-        if(positionRepository.findOne(positionId)==null){
+        if (positionRepository.findOne(positionId) == null) {
             throw new PositionNoExistException("岗位不存在");
         }
 

@@ -24,4 +24,10 @@ public interface PositionRepository extends JpaRepository<PositionEntity, Long> 
     //根据岗位进行模糊查询
     List<PositionEntity> findAllByWorkPlaceContainingAndPositionNameContainingAndPositionTypeContaining
     (String workPlace, String name,String positionType);
+
+    //模糊查询 名称模糊，部门精确 高级管理员以上调用
+    Page<PositionEntity> findAllByPositionNameContainingAndDepartmentAndPublishType(Pageable pageable,String name,Long departmentId,Integer publishType);
+
+    //模糊查询 名称模糊
+    Page<PositionEntity> findAllByPositionNameContainingAndPublishType(Pageable pageable,String name,Integer publishType);
 }
