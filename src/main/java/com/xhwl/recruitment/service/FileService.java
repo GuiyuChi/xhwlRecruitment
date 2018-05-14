@@ -39,8 +39,9 @@ public class FileService {
     /**
      * 服务器存放文件的位置
      */
-    private final String ROOT = "/Users/chikatsurasakai/";
+//    private final String ROOT = "/Users/chikatsurasakai/";
 //    private final String ROOT = "/home/ubuntu/";
+    private final String ROOT = "/root";
 
 
     /**

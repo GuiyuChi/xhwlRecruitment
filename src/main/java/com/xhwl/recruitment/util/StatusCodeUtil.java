@@ -87,21 +87,25 @@ public class StatusCodeUtil {
     /**
      * 投递状态编码转化为前端需要的样式
      *
+     * 返回一个整数 1~4表示审核中、部门笔试中、部门面试中、HR面试中
+     * -1~-4表示审核被拒、部门面试被拒、部门面试被拒、HR面试被拒
+     * 5表示全部步骤通过
+     *
      * @param code
      * @return
      */
     public static String code2View(String code) {
         Integer status = codeAnalysis(code);
         if (status == ResumeReview || status == HRFristReview) {
-            return "1221";
+            return "1";
         } else if (status == DepartmentWrittenExamination) {
-            return "3221";
+            return "2";
         } else if (status == DepartmentInterview) {
-            return "3421";
+            return "3";
         } else if (status == HRInterview) {
-            return "3441";
+            return "4";
         } else if (status == Pass) {
-            return "3443";
+            return "5";
         } else {
             //拒绝的情况
             Integer refuseStep = 0;
@@ -112,16 +116,16 @@ public class StatusCodeUtil {
                 }
             }
             if (refuseStep == ResumeReview || refuseStep == HRFristReview) {
-                return "5221";
+                return "-1";
             } else if (refuseStep == DepartmentWrittenExamination) {
-                return "3621";
+                return "-2";
             } else if (refuseStep == DepartmentInterview) {
-                return "3461";
+                return "-3";
             } else if (refuseStep == HRInterview) {
-                return "3445";
+                return "-4";
             }
         }
-        return "1221";
+        return "1";
     }
 
     /**

@@ -2,9 +2,11 @@ package com.xhwl.recruitment.controller.admin;
 
 import com.xhwl.recruitment.dao.AdminAuthRepository;
 import com.xhwl.recruitment.dao.DepartmentRepository;
+import com.xhwl.recruitment.dao.PositionRepository;
 import com.xhwl.recruitment.domain.AdminAuthEntity;
 import com.xhwl.recruitment.exception.DepartmentException;
 import com.xhwl.recruitment.exception.MyNoPermissionException;
+import com.xhwl.recruitment.exception.PositionNoExistException;
 import com.xhwl.recruitment.service.DeliverService;
 import com.xhwl.recruitment.service.PositionService;
 import com.xhwl.recruitment.service.UserService;
@@ -58,6 +60,9 @@ public class AdminPositionController {
     @Autowired
     private DepartmentRepository departmentRepository;
 
+    @Autowired
+    private PositionRepository positionRepository;
+
     /**
      * 管理员（人事）添加和修改职位,前端判断全部非空
      *
@@ -92,7 +97,7 @@ public class AdminPositionController {
      */
     @GetMapping("/admin/position/{positionId}")
     @RequiresRoles("admin")
-    public HashMap adminGetPosition(@RequestHeader HttpHeaders headers,@PathVariable("positionId") Long positionId) {
+    public HashMap adminGetPosition(@RequestHeader HttpHeaders headers, @PathVariable("positionId") Long positionId) {
         return positionService.adminGetPosition(positionId);
     }
 
@@ -104,16 +109,16 @@ public class AdminPositionController {
     @PostMapping("/admin/positions")
     @RequiresRoles("admin")
     public Page<HashMap> adminGetPositions(@RequestHeader HttpHeaders headers,
-                                                  @RequestParam(value = "page", defaultValue = "1") Integer page,
-                                                  @RequestParam(value = "size", defaultValue = "20") Integer size) {
+                                           @RequestParam(value = "page", defaultValue = "1") Integer page,
+                                           @RequestParam(value = "size", defaultValue = "20") Integer size) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
 
         PageRequest request = new PageRequest(page - 1, size);
-        if(adminAuthEntity.getDepartmentId()==PersonnelDepartmentId){
-            return positionService.adminGetAllPublishPositions(request,1);
-        }else{
-            return positionService.adminGetDepartmentPositions(request,adminAuthEntity.getDepartmentId(),PositionisPublish);
+        if (adminAuthEntity.getDepartmentId() == PersonnelDepartmentId) {
+            return positionService.adminGetAllPublishPositions(request, 1);
+        } else {
+            return positionService.adminGetDepartmentPositions(request, adminAuthEntity.getDepartmentId(), PositionisPublish);
         }
     }
 
@@ -124,8 +129,19 @@ public class AdminPositionController {
      * @param positionId
      */
     @DeleteMapping("/admin/position/{positionId}")
-    @RequiresPermissions(logical = Logical.AND, value = {"position"})
-    public void deletePosition(@PathVariable("positionId") Long positionId) {
-        positionService.adminDeletePosition(positionId);
+    @RequiresRoles("admin")
+    public void deletePosition(@RequestHeader HttpHeaders headers, @PathVariable("positionId") Long positionId) {
+        Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
+        AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
+
+        if(positionRepository.findOne(positionId)==null){
+            throw new PositionNoExistException("岗位不存在");
+        }
+
+        if (adminAuthEntity.getDepartmentId() == PersonnelDepartmentId) {
+            positionService.adminDeletePosition(positionId);
+        } else {
+            throw new MyNoPermissionException("没有权限");
+        }
     }
 }

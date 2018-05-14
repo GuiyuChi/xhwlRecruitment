@@ -122,6 +122,18 @@ public class LoginController {
     }
 
     /**
+     * 验证管理员登录是否过期
+     */
+    @GetMapping("/adminTokenCheck")
+    @RequiresRoles("admin")
+    public ResponseBean adminTokenCheck(@RequestHeader HttpHeaders headers){
+        Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
+        AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
+
+        return new ResponseBean(200, adminAuthEntity.getRole(), headers.getFirst("authorization"));
+    }
+
+    /**
      * 用户登录的接口,即将废弃
      *
      * @param username
