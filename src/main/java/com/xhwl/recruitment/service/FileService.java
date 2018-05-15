@@ -212,6 +212,24 @@ public class FileService {
     }
 
     /**
+     * 管理员下载用户上传的照片
+     *
+     * @param deliverId
+     * @return
+     * @throws IOException
+     */
+    public byte[] getPhotoByDeliver(Long deliverId) throws IOException {
+        Long dwResumeId = resumeDeliverRepository.findOne(deliverId).getDwResumeId();
+        //从数据库找到文件路径
+        String lp = dwResumeRepository.findOne(dwResumeId).getPhotoPath();
+        if (lp == null) return null;
+        String path = DwPhotoFileFolderPath + lp;
+
+        //读取文件
+        return FileUtils.readFileToByteArray(new File(path));
+    }
+
+    /**
      * 辅助材料上传，并写入数据库
      *
      * @param file

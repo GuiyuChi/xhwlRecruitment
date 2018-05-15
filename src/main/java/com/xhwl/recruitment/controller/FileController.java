@@ -178,6 +178,27 @@ public class FileController {
         return null;
     }
 
+    /**
+     * 管理员下载照片,根据投递记录的编号
+     *
+     * @return
+     */
+    @GetMapping("/admin/downloadPhoto/{deliverId}")
+    @RequiresRoles("admin")
+    public ResponseEntity<byte[]> downloadPhotoByDeliver(@RequestHeader HttpHeaders headers,@PathVariable("deliverId") Long deliverId) {
+
+        try {
+            byte[] photoByteArray = fileService.getPhotoByDeliver(deliverId);
+            //设置下载头
+            HttpHeaders header = new HttpHeaders();
+            header.setContentType(MediaType.IMAGE_PNG);
+            return new ResponseEntity<>(photoByteArray, header, HttpStatus.OK);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
     /**
      * 上传其他辅助材料
