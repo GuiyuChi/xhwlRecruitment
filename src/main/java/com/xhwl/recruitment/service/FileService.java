@@ -41,7 +41,7 @@ public class FileService {
      */
 //    private final String ROOT = "/Users/chikatsurasakai/";
 //    private final String ROOT = "/home/ubuntu/";
-    private final String ROOT = "/root";
+    private final String ROOT = "/root/";
 
 
     /**
@@ -209,6 +209,24 @@ public class FileService {
         res.add(downName);
         res.add(file);
         return res;
+    }
+
+    /**
+     * 管理员下载用户上传的照片
+     *
+     * @param deliverId
+     * @return
+     * @throws IOException
+     */
+    public byte[] getPhotoByDeliver(Long deliverId) throws IOException {
+        Long dwResumeId = resumeDeliverRepository.findOne(deliverId).getDwResumeId();
+        //从数据库找到文件路径
+        String lp = dwResumeRepository.findOne(dwResumeId).getPhotoPath();
+        if (lp == null) return null;
+        String path = DwPhotoFileFolderPath + lp;
+
+        //读取文件
+        return FileUtils.readFileToByteArray(new File(path));
     }
 
     /**
