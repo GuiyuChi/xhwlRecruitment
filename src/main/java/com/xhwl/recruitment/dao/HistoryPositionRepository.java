@@ -17,9 +17,17 @@ import java.util.List;
 public interface HistoryPositionRepository extends JpaRepository<PositionEntity, Long> {
     //查询截止日期之前的发布项目
     @Query("select p from PositionEntity p where p.deadline>=?1 ")
-    List<PositionEntity> findBeforeDeadline(Date LocalTime);
+    List<PositionEntity> findAllBeforeDeadline(Date LocalTime);
+
+    //根据部门号显示截至日期之前的发布项目
+    @Query("select p from PositionEntity p where p.deadline>=?1 and p.department=?2 ")
+    List<PositionEntity> findBeforeDeadline(Date LocalTime,Long departmentId);
 
     //查询截至日期之后的发布项目
     @Query("select p from PositionEntity p where p.deadline<?1")
-    List<PositionEntity> findAfterDeadline(Date LocalTime);
+    List<PositionEntity> findAllAfterDeadline(Date LocalTime);
+
+    //根据部门号查询截至日期之后的发布项目
+    @Query("select p from PositionEntity p where p.deadline<?1 and p.department=?2")
+    List<PositionEntity> findAfterDeadline(Date LocalTime,Long departmentId);
 }
