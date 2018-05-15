@@ -41,7 +41,7 @@ public class FileService {
      */
 //    private final String ROOT = "/Users/chikatsurasakai/";
 //    private final String ROOT = "/home/ubuntu/";
-    private final String ROOT = "/root";
+    private final String ROOT = "/root/";
 
 
     /**
