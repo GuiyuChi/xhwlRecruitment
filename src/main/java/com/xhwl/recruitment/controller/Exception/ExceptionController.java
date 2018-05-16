@@ -155,6 +155,13 @@ public class ExceptionController {
         return new ResponseBean(448, ex.getMessage(), null);
     }
 
+    //捕获 DeliverNoExitExeption 投递记录不存在的异常
+    @ExceptionHandler(DeliverNoExitExeption.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseBean catchDeliverNoExitExeption(Throwable ex){
+        return new ResponseBean(449, ex.getMessage(), null);
+    }
+
 
 
     // 捕捉其他所有异常

@@ -225,3 +225,6 @@ eg：{{8080}}/positions/1?workPlace=深圳
     "data": null
 }
 ```
+
+## 用户删除投递 delete {{8080}}/deliver/45 数字为投递记录的id
+

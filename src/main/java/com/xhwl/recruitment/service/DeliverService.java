@@ -312,6 +312,7 @@ public class DeliverService {
 
         Date currentDate = new java.sql.Date(System.currentTimeMillis());
         resumeDeliverEntity.setDeliverDate(currentDate);
+        resumeDeliverEntity.setEmailState(0);
 
         ResumeDeliverEntity rde = resumeDeliverRepository.save(resumeDeliverEntity);
 //        log.info("the result of copy addResumeDeliver: {}", rde);
@@ -403,5 +404,14 @@ public class DeliverService {
         HashMap<String, Integer> hashMap = new LinkedHashMap<>();
         hashMap.put("number", resumeDeliverEntities.size());
         return hashMap;
+    }
+
+    /**
+     * 用户删除投递
+     *
+     * @param deliverId
+     */
+    public void deleteDeliver(Long deliverId) {
+        resumeDeliverRepository.delete(deliverId);
     }
 }
