@@ -7,7 +7,7 @@ import java.util.Objects;
 /**
  * @Author: guiyu
  * @Description:
- * @Date: Create in 下午9:56 2018/5/1
+ * @Date: Create in 下午3:58 2018/5/16
  **/
 @Entity
 @Table(name = "resume_deliver", schema = "xhwl", catalog = "")
@@ -16,7 +16,7 @@ public class ResumeDeliverEntity {
     private Long positionId;
     private Long userId;
     private Long dwResumeId;
-    private String authorityCode;
+    private Integer emailState;
     private String recruitmentState;
     private Date deliverDate;
 
@@ -62,13 +62,13 @@ public class ResumeDeliverEntity {
     }
 
     @Basic
-    @Column(name = "authority_code", nullable = true, length = 255)
-    public String getAuthorityCode() {
-        return authorityCode;
+    @Column(name = "email_state", nullable = true)
+    public Integer getEmailState() {
+        return emailState;
     }
 
-    public void setAuthorityCode(String authorityCode) {
-        this.authorityCode = authorityCode;
+    public void setEmailState(Integer emailState) {
+        this.emailState = emailState;
     }
 
     @Basic
@@ -100,7 +100,7 @@ public class ResumeDeliverEntity {
                 Objects.equals(positionId, that.positionId) &&
                 Objects.equals(userId, that.userId) &&
                 Objects.equals(dwResumeId, that.dwResumeId) &&
-                Objects.equals(authorityCode, that.authorityCode) &&
+                Objects.equals(emailState, that.emailState) &&
                 Objects.equals(recruitmentState, that.recruitmentState) &&
                 Objects.equals(deliverDate, that.deliverDate);
     }
@@ -108,6 +108,6 @@ public class ResumeDeliverEntity {
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, positionId, userId, dwResumeId, authorityCode, recruitmentState, deliverDate);
+        return Objects.hash(id, positionId, userId, dwResumeId, emailState, recruitmentState, deliverDate);
     }
 }

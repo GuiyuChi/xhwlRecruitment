@@ -312,6 +312,7 @@ public class DeliverService {
 
         Date currentDate = new java.sql.Date(System.currentTimeMillis());
         resumeDeliverEntity.setDeliverDate(currentDate);
+        resumeDeliverEntity.setEmailState(0);
 
         ResumeDeliverEntity rde = resumeDeliverRepository.save(resumeDeliverEntity);
 //        log.info("the result of copy addResumeDeliver: {}", rde);
