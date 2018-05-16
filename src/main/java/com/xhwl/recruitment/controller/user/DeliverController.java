@@ -1,6 +1,7 @@
 package com.xhwl.recruitment.controller.user;
 
 import com.xhwl.recruitment.dao.*;
+import com.xhwl.recruitment.domain.ResumeDeliverEntity;
 import com.xhwl.recruitment.domain.ResumeEntity;
 import com.xhwl.recruitment.exception.*;
 import com.xhwl.recruitment.service.DeliverService;
@@ -45,6 +46,9 @@ public class DeliverController {
     @Autowired
     PositionRepository positionRepository;
 
+    @Autowired
+    ResumeDeliverRepository resumeDeliverRepository;
+
     /**
      * 用户投递岗位
      *
@@ -64,7 +68,7 @@ public class DeliverController {
             //未创建简历
             throw new ResumeNoExistException("未创建简历");
         } else {
-            if (positionRepository.findOne(positionId)==null){
+            if (positionRepository.findOne(positionId) == null) {
                 //岗位不存在
                 throw new PositionNoExistException("岗位不存在");
             }
@@ -75,7 +79,7 @@ public class DeliverController {
                 //未填写个人信息表
                 throw new PersonalInformationNoExistException("未填写个人信息");
             }
-            if (educationRepository.findAllByResumeId(resumeEntity.getId()).size()==0) {
+            if (educationRepository.findAllByResumeId(resumeEntity.getId()).size() == 0) {
                 //未填写个人教育经历
                 throw new EducationNoExistException("未填写教育经历");
             }
@@ -87,7 +91,7 @@ public class DeliverController {
                 //未上传简历附件
                 throw new UploadResumeNoExistException("未上传简历附件");
             }
-            if(resumeEntity.getPhotoPath()==null){
+            if (resumeEntity.getPhotoPath() == null) {
                 //未上传照片
                 throw new PhotoNoExistException("未上传照片");
             }
@@ -117,5 +121,26 @@ public class DeliverController {
 
         return res;
 
+    }
+
+    /**
+     * 用户删除自己的投递记录
+     *
+     * @param headers
+     */
+    @DeleteMapping("/deliver/{deliverId}")
+    @RequiresAuthentication
+    public void deleteResumeDelivers(@RequestHeader HttpHeaders headers,@PathVariable("deliverId") Long deliverId){
+        Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
+
+        ResumeDeliverEntity resumeDeliverEntity = resumeDeliverRepository.findOne(deliverId);
+        if(resumeDeliverEntity==null){
+            throw new DeliverNoExitExeption("该投递记录不存在");
+        }
+        if(resumeDeliverEntity.getUserId()!=userId){
+            throw new MyNoPermissionException("无权限");
+        }
+
+        deliverService.deleteDeliver(deliverId);
     }
 }

@@ -405,4 +405,13 @@ public class DeliverService {
         hashMap.put("number", resumeDeliverEntities.size());
         return hashMap;
     }
+
+    /**
+     * 用户删除投递
+     *
+     * @param deliverId
+     */
+    public void deleteDeliver(Long deliverId) {
+        resumeDeliverRepository.delete(deliverId);
+    }
 }
