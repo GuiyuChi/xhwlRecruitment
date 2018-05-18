@@ -11,7 +11,7 @@ uuid用与验证码建立唯一关系
 }
 ```
 
-## 获取短信验证码 post {{8080}}/createPhoneCaptcha
+## 登录时 获取短信验证码 post {{8080}}/createPhoneCaptchaForLogin
 ```
 表单提交
 【username】手机号
@@ -29,6 +29,38 @@ uuid用与验证码建立唯一关系
 {
     "code": 423,
     "msg": "图形验证码输入错误",
+    "data": null
+}
+{
+    "code": 432,
+    "msg": "用户已存在",
+    "data": null
+}
+```
+
+## 重置密码时 获取短信验证码 post {{8080}}/createPhoneCaptchaResetPassword
+```
+表单提交
+【username】手机号
+【captcha】图片验证码结果，忽略大小写
+【uuid】获取图片验证码时获得的uuid
+
+正确返回 200状态码
+{
+    "result": "1",
+    "tips": "提交成功"
+}
+
+错误返回 500状态码
+图形验证码输入错误
+{
+    "code": 423,
+    "msg": "图形验证码输入错误",
+    "data": null
+}
+{
+    "code": 426,
+    "msg": "用户未注册",
     "data": null
 }
 ```
