@@ -1,7 +1,10 @@
 package com.xhwl.recruitment.controller;
 
 import com.xhwl.recruitment.bean.PhoneCaptchaResponseBean;
+import com.xhwl.recruitment.dao.UserRepository;
 import com.xhwl.recruitment.exception.CaptchaException;
+import com.xhwl.recruitment.exception.UserNoExistException;
+import com.xhwl.recruitment.exception.UserRepeatException;
 import com.xhwl.recruitment.util.UUIDUtil;
 import com.xhwl.recruitment.util.VerifyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,9 +45,11 @@ public class CaptchaController {
     @Autowired
     private RedisTemplate redisTemplate;
 
+    @Autowired
+    private UserRepository userRepository;
+
     /**
      * 获取图像验证码
-     *
      *
      * @return 验证码的图形
      */
@@ -73,7 +78,7 @@ public class CaptchaController {
     }
 
     /**
-     * 获取短信验证码
+     * 获取短信验证码，即将废弃
      *
      * @param username
      * @return
@@ -109,7 +114,119 @@ public class CaptchaController {
             requestParam.set("format", "1");
             requestParam.set("mobile", username);
             int phoneCaptcha = ran.nextInt(899999) + 100000;
-            requestParam.set("content", "欢迎使用兴海物联招聘网站，您的注册验证码为" + Integer.toString(phoneCaptcha)+",如果不是本人操作，请忽略这条信息");
+            requestParam.set("content", "欢迎使用兴海物联招聘网站，您的注册验证码为" + Integer.toString(phoneCaptcha) + ",如果不是本人操作，请忽略这条信息");
+            HttpHeaders requestHeaders = new HttpHeaders();
+
+            //存短信验证码到redis
+            String key = username + "_PhoneCaptcha";
+            operations.set(key, String.valueOf(phoneCaptcha));
+
+
+            requestHeaders.add(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded");
+            HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(requestParam, requestHeaders);
+            ResponseEntity<PhoneCaptchaResponseBean> responseEntity = restTemplate.postForEntity("http://client.sms10000.com/api/webservice", httpEntity, PhoneCaptchaResponseBean.class);
+            return responseEntity.getBody();
+        }
+    }
+
+    /**
+     * 注册时发送验证码短信
+     *
+     * @param username
+     * @param captcha
+     * @param uuid
+     * @return
+     * @throws URISyntaxException
+     */
+    @PostMapping("/createPhoneCaptchaForLogin")
+    public PhoneCaptchaResponseBean sendPhoneCaptchaForLogin(@RequestParam("username") String username, @RequestParam("captcha") String captcha, @RequestParam("uuid") String uuid) throws URISyntaxException {
+        ValueOperations<String, String> operations = redisTemplate.opsForValue();
+        String savedCaptcha = operations.get(uuid);
+        if (!captcha.equalsIgnoreCase(savedCaptcha)) {
+            throw new CaptchaException("图形验证码输入错误");
+        } else if (userRepository.findByUsername(username) != null) {
+            throw new UserRepeatException("用户已存在");
+        } else {
+            Random ran = new Random();
+            RestTemplate restTemplate = new RestTemplate();
+
+            List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>();
+            //Add the Jackson Message converter
+            MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+            // Note: here we are making this converter to process any kind of response,
+            // not only application/*json, which is the default behaviour
+            converter.setSupportedMediaTypes(Collections.singletonList(MediaType.TEXT_HTML));
+            FormHttpMessageConverter formHttpMessageConverter = new FormHttpMessageConverter();
+            messageConverters.add(converter);
+            messageConverters.add(formHttpMessageConverter);
+            restTemplate.setMessageConverters(messageConverters);
+            MultiValueMap<String, String> requestParam = new LinkedMultiValueMap<>();
+            requestParam.set("cmd", "send");
+            requestParam.set("eprId", "619");
+            requestParam.set("userId", "xhwlxyzp");
+            requestParam.set("timestamp", String.valueOf(System.currentTimeMillis()));
+            requestParam.set("key", encryption("619" + "xhwlxyzp" + "xyzp00" + requestParam.getFirst("timestamp")));
+            requestParam.set("msgId", String.valueOf(ran.nextInt()));
+            requestParam.set("format", "1");
+            requestParam.set("mobile", username);
+            int phoneCaptcha = ran.nextInt(899999) + 100000;
+            requestParam.set("content", "欢迎使用兴海物联招聘网站，您的注册验证码为" + Integer.toString(phoneCaptcha) + ",如果不是本人操作，请忽略这条信息");
+            HttpHeaders requestHeaders = new HttpHeaders();
+
+            //存短信验证码到redis
+            String key = username + "_PhoneCaptcha";
+            operations.set(key, String.valueOf(phoneCaptcha));
+
+
+            requestHeaders.add(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded");
+            HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(requestParam, requestHeaders);
+            ResponseEntity<PhoneCaptchaResponseBean> responseEntity = restTemplate.postForEntity("http://client.sms10000.com/api/webservice", httpEntity, PhoneCaptchaResponseBean.class);
+            return responseEntity.getBody();
+        }
+    }
+
+    /**
+     * 重置密码时发送验证码短信
+     *
+     * @param username
+     * @param captcha
+     * @param uuid
+     * @return
+     * @throws URISyntaxException
+     */
+    @PostMapping("/createPhoneCaptchaResetPassword")
+    public PhoneCaptchaResponseBean sendPhoneCaptchaForResetPassword(@RequestParam("username") String username, @RequestParam("captcha") String captcha, @RequestParam("uuid") String uuid) throws URISyntaxException {
+        ValueOperations<String, String> operations = redisTemplate.opsForValue();
+        String savedCaptcha = operations.get(uuid);
+        if (!captcha.equalsIgnoreCase(savedCaptcha)) {
+            throw new CaptchaException("图形验证码输入错误");
+        } else if (userRepository.findByUsername(username) == null) {
+            throw new UserNoExistException("用户未注册");
+        } else {
+            Random ran = new Random();
+            RestTemplate restTemplate = new RestTemplate();
+
+            List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>();
+            //Add the Jackson Message converter
+            MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+            // Note: here we are making this converter to process any kind of response,
+            // not only application/*json, which is the default behaviour
+            converter.setSupportedMediaTypes(Collections.singletonList(MediaType.TEXT_HTML));
+            FormHttpMessageConverter formHttpMessageConverter = new FormHttpMessageConverter();
+            messageConverters.add(converter);
+            messageConverters.add(formHttpMessageConverter);
+            restTemplate.setMessageConverters(messageConverters);
+            MultiValueMap<String, String> requestParam = new LinkedMultiValueMap<>();
+            requestParam.set("cmd", "send");
+            requestParam.set("eprId", "619");
+            requestParam.set("userId", "xhwlxyzp");
+            requestParam.set("timestamp", String.valueOf(System.currentTimeMillis()));
+            requestParam.set("key", encryption("619" + "xhwlxyzp" + "xyzp00" + requestParam.getFirst("timestamp")));
+            requestParam.set("msgId", String.valueOf(ran.nextInt()));
+            requestParam.set("format", "1");
+            requestParam.set("mobile", username);
+            int phoneCaptcha = ran.nextInt(899999) + 100000;
+            requestParam.set("content", "欢迎使用兴海物联招聘网站，您的注册验证码为" + Integer.toString(phoneCaptcha) + ",如果不是本人操作，请忽略这条信息");
             HttpHeaders requestHeaders = new HttpHeaders();
 
             //存短信验证码到redis
