@@ -11,7 +11,7 @@ uuid用与验证码建立唯一关系
 }
 ```
 
-## 登录时 获取短信验证码 post {{8080}}/createPhoneCaptchaForLogin
+## 注册时 获取短信验证码 post {{8080}}/createPhoneCaptchaForLogin
 ```
 表单提交
 【username】手机号
