@@ -2,8 +2,11 @@ package com.xhwl.recruitment.controller.admin;
 
 
 import com.xhwl.recruitment.bean.PhoneCaptchaResponseBean;
+import com.xhwl.recruitment.dao.DwPersonalInformationRepository;
 import com.xhwl.recruitment.dao.PersonalInformationRepository;
-import com.xhwl.recruitment.domain.PersonalInformationEntity;
+import com.xhwl.recruitment.dao.ResumeDeliverRepository;
+import com.xhwl.recruitment.dao.UserRepository;
+import com.xhwl.recruitment.domain.*;
 import com.xhwl.recruitment.service.ResumeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -33,13 +36,18 @@ import java.util.Random;
 @RestController
 public class AdminNoteController {
     @Autowired
-    PersonalInformationRepository personalInformationRepository;
+    DwPersonalInformationRepository dwPersonalInformationRepository;
+    @Autowired
+    ResumeDeliverRepository resumeDeliverRepository;
+
     @PostMapping("/admin/onNote/{resumeId}")//发送通过短信
     public PhoneCaptchaResponseBean sendOnNoteByResumeId(@PathVariable("resumeId") Long resumeId, @RequestParam("month") String month,
                                                          @RequestParam("day")String day,@RequestParam("hour")String hour,@RequestParam("minute")String minute){
-        PersonalInformationEntity personalInformationEntity=personalInformationRepository.findByResumeId(resumeId);
-        String name=personalInformationEntity.getName();
-        String phone=personalInformationEntity.getTelephone();
+        ResumeDeliverEntity resumeDelieverEntity=resumeDeliverRepository.findById(resumeId);
+        Long dw_resume_id=resumeDelieverEntity.getDwResumeId();
+        DwPersonalInformationEntity dwPersonalInformationEntity=dwPersonalInformationRepository.findByResumeId(dw_resume_id);
+        String name=dwPersonalInformationEntity.getName();
+        String phone=dwPersonalInformationEntity.getTelephone();
         Random ran = new Random();
         RestTemplate restTemplate = new RestTemplate();
 
@@ -77,11 +85,14 @@ public class AdminNoteController {
         return responseEntity.getBody();
     }
 
+
     @PostMapping("/admin/onNoteWithoutDate/{resumeId}")//发送不带参数的通过短信
     public PhoneCaptchaResponseBean sendOnNoteWithoutDateByResumeId(@PathVariable("resumeId") Long resumeId){
-        PersonalInformationEntity personalInformationEntity=personalInformationRepository.findByResumeId(resumeId);
-        String name=personalInformationEntity.getName();
-        String phone=personalInformationEntity.getTelephone();
+        ResumeDeliverEntity resumeDelieverEntity=resumeDeliverRepository.findById(resumeId);
+        Long dw_resume_id=resumeDelieverEntity.getDwResumeId();
+        DwPersonalInformationEntity dwPersonalInformationEntity=dwPersonalInformationRepository.findByResumeId(dw_resume_id);
+        String name=dwPersonalInformationEntity.getName();
+        String phone=dwPersonalInformationEntity.getTelephone();
         Random ran = new Random();
         RestTemplate restTemplate = new RestTemplate();
 
@@ -120,9 +131,11 @@ public class AdminNoteController {
     }
     @GetMapping("/admin/offNote/{resumeId}")//发送拒绝短信
     public PhoneCaptchaResponseBean sendOffNoteByResumeId(@PathVariable("resumeId") Long resumeId){
-        PersonalInformationEntity personalInformationEntity=personalInformationRepository.findByResumeId(resumeId);
-        String name=personalInformationEntity.getName();
-        String phone=personalInformationEntity.getTelephone();
+        ResumeDeliverEntity resumeDelieverEntity=resumeDeliverRepository.findById(resumeId);
+        Long dw_resume_id=resumeDelieverEntity.getDwResumeId();
+        DwPersonalInformationEntity dwPersonalInformationEntity=dwPersonalInformationRepository.findByResumeId(dw_resume_id);
+        String name=dwPersonalInformationEntity.getName();
+        String phone=dwPersonalInformationEntity.getTelephone();
         Random ran = new Random();
         RestTemplate restTemplate = new RestTemplate();
 

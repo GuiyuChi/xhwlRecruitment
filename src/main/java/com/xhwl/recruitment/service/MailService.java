@@ -1,7 +1,11 @@
 package com.xhwl.recruitment.service;
 
+import com.xhwl.recruitment.dao.DwPersonalInformationRepository;
 import com.xhwl.recruitment.dao.PersonalInformationRepository;
+import com.xhwl.recruitment.dao.ResumeDeliverRepository;
+import com.xhwl.recruitment.domain.DwPersonalInformationEntity;
 import com.xhwl.recruitment.domain.PersonalInformationEntity;
+import com.xhwl.recruitment.domain.ResumeDeliverEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -21,11 +25,17 @@ public class MailService {
     PersonalInformationRepository personalInformationRepository;
     @Autowired
     JavaMailSender mailSender;
+    @Autowired
+    ResumeDeliverRepository resumeDeliverRepository;
+    @Autowired
+    DwPersonalInformationRepository dwPersonalInformationRepository;
     public void sendOnMailByResumeId(Long ResumeId ,String month,String day,String hour,String minute )//发送通过邮件
     {
-        PersonalInformationEntity personalInformationEntity=personalInformationRepository.findByResumeId(ResumeId);
-        String mail=personalInformationEntity.getEmail();
-        String name=personalInformationEntity.getName();
+        ResumeDeliverEntity resumeDelieverEntity=resumeDeliverRepository.findById(ResumeId);
+        Long dw_resume_id=resumeDelieverEntity.getDwResumeId();
+        DwPersonalInformationEntity dwPersonalInformationEntity=dwPersonalInformationRepository.findByResumeId(dw_resume_id);
+        String mail=dwPersonalInformationEntity.getEmail();
+        String name=dwPersonalInformationEntity.getName();
         try
         {
             final MimeMessage mimeMessage = this.mailSender.createMimeMessage();
@@ -43,9 +53,11 @@ public class MailService {
     }
     public void sendOffMailByResumeId(Long ResumeId)//发送回绝邮件
     {
-        PersonalInformationEntity personalInformationEntity=personalInformationRepository.findByResumeId(ResumeId);
-        String mail=personalInformationEntity.getEmail();
-        String name=personalInformationEntity.getName();
+        ResumeDeliverEntity resumeDelieverEntity=resumeDeliverRepository.findById(ResumeId);
+        Long dw_resume_id=resumeDelieverEntity.getDwResumeId();
+        DwPersonalInformationEntity dwPersonalInformationEntity=dwPersonalInformationRepository.findByResumeId(dw_resume_id);
+        String mail=dwPersonalInformationEntity.getEmail();
+        String name=dwPersonalInformationEntity.getName();
         try
         {
             final MimeMessage mimeMessage = this.mailSender.createMimeMessage();
