@@ -77,6 +77,47 @@ public class AdminNoteController {
         return responseEntity.getBody();
     }
 
+    @PostMapping("/admin/onNoteWithoutDate/{resumeId}")//发送不带参数的通过短信
+    public PhoneCaptchaResponseBean sendOnNoteWithoutDateByResumeId(@PathVariable("resumeId") Long resumeId){
+        PersonalInformationEntity personalInformationEntity=personalInformationRepository.findByResumeId(resumeId);
+        String name=personalInformationEntity.getName();
+        String phone=personalInformationEntity.getTelephone();
+        Random ran = new Random();
+        RestTemplate restTemplate = new RestTemplate();
+
+        List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>();
+        //Add the Jackson Message converter
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        // Note: here we are making this converter to process any kind of response,
+        // not only application/*json, which is the default behaviour
+        converter.setSupportedMediaTypes(Collections.singletonList(MediaType.TEXT_HTML));
+        FormHttpMessageConverter formHttpMessageConverter = new FormHttpMessageConverter();
+        messageConverters.add(converter);
+        messageConverters.add(formHttpMessageConverter);
+        restTemplate.setMessageConverters(messageConverters);
+        MultiValueMap<String, String> requestParam = new LinkedMultiValueMap<>();
+        requestParam.set("cmd", "send");
+        requestParam.set("eprId", "619");
+        requestParam.set("userId", "xhwlxyzp");
+        requestParam.set("timestamp", String.valueOf(System.currentTimeMillis()));
+        requestParam.set("key", encryption("619" + "xhwlxyzp" + "xyzp00" + requestParam.getFirst("timestamp")));
+        requestParam.set("msgId", String.valueOf(ran.nextInt()));
+        requestParam.set("format", "1");
+        requestParam.set("mobile", phone);
+
+        requestParam.set("content", name+"您好，恭喜您成功通过本公司的笔试及面试环节！期待您的加入" );
+        HttpHeaders requestHeaders = new HttpHeaders();
+
+        /**存短信验证码到redis
+         String key = username + "_PhoneCaptcha";
+         operations.set(key, String.valueOf(phoneCaptcha));
+         **/
+
+        requestHeaders.add(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded");
+        HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(requestParam, requestHeaders);
+        ResponseEntity<PhoneCaptchaResponseBean> responseEntity = restTemplate.postForEntity("http://client.sms10000.com/api/webservice", httpEntity, PhoneCaptchaResponseBean.class);
+        return responseEntity.getBody();
+    }
     @GetMapping("/admin/offNote/{resumeId}")//发送拒绝短信
     public PhoneCaptchaResponseBean sendOffNoteByResumeId(@PathVariable("resumeId") Long resumeId){
         PersonalInformationEntity personalInformationEntity=personalInformationRepository.findByResumeId(resumeId);
