@@ -18,11 +18,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -41,7 +45,8 @@ public class AdminNoteController {
     DwPersonalInformationRepository dwPersonalInformationRepository;
     @Autowired
     ResumeDeliverRepository resumeDeliverRepository;
-
+    @Autowired
+    JavaMailSender mailSender;
     @RequiresAuthentication
     @RequiresRoles("admin")
     @PostMapping("/admin/onNote/{resumeId}")//发送通过短信
@@ -90,8 +95,8 @@ public class AdminNoteController {
     }
 
 
-    @RequiresAuthentication
-    @RequiresRoles("admin")
+    //@RequiresAuthentication
+    //@RequiresRoles("admin")
     @PostMapping("/admin/onNoteWithoutDate/{resumeId}")//发送不带参数的通过短信
     public PhoneCaptchaResponseBean sendOnNoteWithoutDateByResumeId(@PathVariable("resumeId") Long resumeId){
         ResumeDeliverEntity resumeDelieverEntity=resumeDeliverRepository.findById(resumeId);
@@ -99,6 +104,20 @@ public class AdminNoteController {
         DwPersonalInformationEntity dwPersonalInformationEntity=dwPersonalInformationRepository.findByResumeId(dw_resume_id);
         String name=dwPersonalInformationEntity.getName();
         String phone=dwPersonalInformationEntity.getTelephone();
+        String mail=dwPersonalInformationEntity.getEmail();
+        try
+        {
+            final MimeMessage mimeMessage = this.mailSender.createMimeMessage();
+            final MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
+            message.setFrom("714479658@qq.com");
+            message.setTo(mail);
+            message.setSubject("兴海物联");
+            message.setText(name+":\n"+"  您好！\n"+"  恭喜您成功通过本公司的笔试面试环节！期待您的加入！\n"+"  进一步了解公司请点击下方链接：");
+            this.mailSender.send(mimeMessage);
+
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
         Random ran = new Random();
         RestTemplate restTemplate = new RestTemplate();
 
@@ -120,7 +139,7 @@ public class AdminNoteController {
         requestParam.set("key", encryption("619" + "xhwlxyzp" + "xyzp00" + requestParam.getFirst("timestamp")));
         requestParam.set("msgId", String.valueOf(ran.nextInt()));
         requestParam.set("format", "1");
-        requestParam.set("mobile", "18859279003");
+        requestParam.set("mobile", phone);
 
         requestParam.set("content", name+"恭喜您已通过所有招聘流程" );
         HttpHeaders requestHeaders = new HttpHeaders();
