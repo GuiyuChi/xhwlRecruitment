@@ -8,6 +8,8 @@ import com.xhwl.recruitment.dao.ResumeDeliverRepository;
 import com.xhwl.recruitment.dao.UserRepository;
 import com.xhwl.recruitment.domain.*;
 import com.xhwl.recruitment.service.ResumeService;
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -40,6 +42,8 @@ public class AdminNoteController {
     @Autowired
     ResumeDeliverRepository resumeDeliverRepository;
 
+    @RequiresAuthentication
+    @RequiresRoles("admin")
     @PostMapping("/admin/onNote/{resumeId}")//发送通过短信
     public PhoneCaptchaResponseBean sendOnNoteByResumeId(@PathVariable("resumeId") Long resumeId, @RequestParam("month") String month,
                                                          @RequestParam("day")String day,@RequestParam("hour")String hour,@RequestParam("minute")String minute){
@@ -86,6 +90,8 @@ public class AdminNoteController {
     }
 
 
+    @RequiresAuthentication
+    @RequiresRoles("admin")
     @PostMapping("/admin/onNoteWithoutDate/{resumeId}")//发送不带参数的通过短信
     public PhoneCaptchaResponseBean sendOnNoteWithoutDateByResumeId(@PathVariable("resumeId") Long resumeId){
         ResumeDeliverEntity resumeDelieverEntity=resumeDeliverRepository.findById(resumeId);
@@ -114,9 +120,9 @@ public class AdminNoteController {
         requestParam.set("key", encryption("619" + "xhwlxyzp" + "xyzp00" + requestParam.getFirst("timestamp")));
         requestParam.set("msgId", String.valueOf(ran.nextInt()));
         requestParam.set("format", "1");
-        requestParam.set("mobile", phone);
+        requestParam.set("mobile", "18859279003");
 
-        requestParam.set("content", name+"您好，恭喜您成功通过本公司的笔试及面试环节！期待您的加入" );
+        requestParam.set("content", name+"恭喜您已通过所有招聘流程" );
         HttpHeaders requestHeaders = new HttpHeaders();
 
         /**存短信验证码到redis
@@ -129,6 +135,9 @@ public class AdminNoteController {
         ResponseEntity<PhoneCaptchaResponseBean> responseEntity = restTemplate.postForEntity("http://client.sms10000.com/api/webservice", httpEntity, PhoneCaptchaResponseBean.class);
         return responseEntity.getBody();
     }
+
+    @RequiresAuthentication
+    @RequiresRoles("admin")
     @GetMapping("/admin/offNote/{resumeId}")//发送拒绝短信
     public PhoneCaptchaResponseBean sendOffNoteByResumeId(@PathVariable("resumeId") Long resumeId){
         ResumeDeliverEntity resumeDelieverEntity=resumeDeliverRepository.findById(resumeId);

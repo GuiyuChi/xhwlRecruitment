@@ -14,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +24,7 @@ import java.util.List;
  * @Description: 管理员根据简历id发送邮件的API
  * @Date: Create in 上午11:33 2018/5/7
  **/
+@RestController
 public class AdminHistoryPositionController {
     @Autowired
     HistoryPositionService historyPositionService;
