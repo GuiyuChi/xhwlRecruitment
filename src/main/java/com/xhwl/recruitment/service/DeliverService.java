@@ -385,10 +385,13 @@ public class DeliverService {
             hashMap.put("id", String.valueOf(resumeDeliver.getId()));
             Long positionId = resumeDeliver.getPositionId();
             PositionEntity positionEntity = positionRepository.findOne(positionId);
-            hashMap.put("positionName", positionEntity.getPositionName());
-            hashMap.put("recruitmentType", String.valueOf(positionEntity.getRecruitmentType()));
-            hashMap.put("recruitmentState", StatusCodeUtil.code2View(resumeDeliver.getRecruitmentState()));
-            res.add(hashMap);
+            // 确保岗位存在
+            if (positionEntity != null) {
+                hashMap.put("positionName", positionEntity.getPositionName());
+                hashMap.put("recruitmentType", String.valueOf(positionEntity.getRecruitmentType()));
+                hashMap.put("recruitmentState", StatusCodeUtil.code2View(resumeDeliver.getRecruitmentState()));
+                res.add(hashMap);
+            }
         }
         return res;
     }
