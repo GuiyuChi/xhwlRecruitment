@@ -84,16 +84,20 @@ public class AdminAuthService {
         for (int i = 0; i < adminAuthEntityList.size(); i++) {
             AdminAuthDto adminAuthDto = new AdminAuthDto();
 
-            String department = String.valueOf(departmentRepository.findOne(adminAuthEntityList.get(i).getDepartmentId()).getId());
-            String password = userRepository.findOne(adminAuthEntityList.get(i).getUserId()).getPassword();
-            String username = adminAuthEntityList.get(i).getUserName();
+            if (userRepository.findOne(adminAuthEntityList.get(i).getUserId()) != null) {
+                String department = String.valueOf(departmentRepository.findOne(adminAuthEntityList.get(i).getDepartmentId()).getId());
+                String password = userRepository.findOne(adminAuthEntityList.get(i).getUserId()).getPassword();
+                String username = adminAuthEntityList.get(i).getUserName();
 
-            adminAuthDto.setId(adminAuthEntityList.get(i).getId());
-            adminAuthDto.setUsername(username);
-            adminAuthDto.setDepartment(department);
-            adminAuthDto.setPassword(password);
+                adminAuthDto.setId(adminAuthEntityList.get(i).getId());
+                adminAuthDto.setUsername(username);
+                adminAuthDto.setDepartment(department);
+                adminAuthDto.setPassword(password);
 
-            adminAuthDtoList.add(adminAuthDto);
+                adminAuthDtoList.add(adminAuthDto);
+            }else{
+                System.out.println(i);
+            }
         }
 
         Page<AdminAuthDto> adminAuthDtoPage = new PageImpl<AdminAuthDto>(adminAuthDtoList, pageable, adminAuthEntityPage.getTotalElements());
@@ -162,7 +166,7 @@ public class AdminAuthService {
      */
     public AdminAuthDto searchAdmin(String adminName) {
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserName(adminName);
-        if(adminAuthEntity == null) return null;
+        if (adminAuthEntity == null) return null;
 
         AdminAuthDto adminAuthDto = new AdminAuthDto();
         adminAuthDto.setId(adminAuthEntity.getId());
