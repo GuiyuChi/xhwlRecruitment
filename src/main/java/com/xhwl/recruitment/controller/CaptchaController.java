@@ -3,6 +3,7 @@ package com.xhwl.recruitment.controller;
 import com.xhwl.recruitment.bean.PhoneCaptchaResponseBean;
 import com.xhwl.recruitment.dao.UserRepository;
 import com.xhwl.recruitment.exception.CaptchaException;
+import com.xhwl.recruitment.exception.PhoneCaptchaException;
 import com.xhwl.recruitment.exception.UserNoExistException;
 import com.xhwl.recruitment.exception.UserRepeatException;
 import com.xhwl.recruitment.util.UUIDUtil;
@@ -33,6 +34,7 @@ import java.net.URISyntaxException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Author: guiyu
@@ -90,6 +92,8 @@ public class CaptchaController {
         String savedCaptcha = operations.get(uuid);
         if (!captcha.equalsIgnoreCase(savedCaptcha)) {
             throw new CaptchaException("图形验证码输入错误");
+        } else if (isSendedInOneMinute(username)) {
+            throw new PhoneCaptchaException("验证码已发送，一分钟后重试");
         } else {
             Random ran = new Random();
             RestTemplate restTemplate = new RestTemplate();
@@ -120,6 +124,10 @@ public class CaptchaController {
             //存短信验证码到redis
             String key = username + "_PhoneCaptcha";
             operations.set(key, String.valueOf(phoneCaptcha));
+
+            //验证码的短期连续提交的排除,60秒后过期
+            String sendStatus = username + "_sended";
+            operations.set(sendStatus, "1", 60, TimeUnit.SECONDS);
 
 
             requestHeaders.add(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded");
@@ -146,6 +154,8 @@ public class CaptchaController {
             throw new CaptchaException("图形验证码输入错误");
         } else if (userRepository.findByUsername(username) != null) {
             throw new UserRepeatException("用户已存在");
+        } else if (isSendedInOneMinute(username)) {
+            throw new PhoneCaptchaException("验证码已发送，一分钟后重试");
         } else {
             Random ran = new Random();
             RestTemplate restTemplate = new RestTemplate();
@@ -176,6 +186,10 @@ public class CaptchaController {
             //存短信验证码到redis
             String key = username + "_PhoneCaptcha";
             operations.set(key, String.valueOf(phoneCaptcha));
+
+            //验证码的短期连续提交的排除,60秒后过期
+            String sendStatus = username + "_sended";
+            operations.set(sendStatus, "1", 60, TimeUnit.SECONDS);
 
 
             requestHeaders.add(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded");
@@ -202,6 +216,8 @@ public class CaptchaController {
             throw new CaptchaException("图形验证码输入错误");
         } else if (userRepository.findByUsername(username) == null) {
             throw new UserNoExistException("用户未注册");
+        } else if (isSendedInOneMinute(username)) {
+            throw new PhoneCaptchaException("验证码已发送，一分钟后重试");
         } else {
             Random ran = new Random();
             RestTemplate restTemplate = new RestTemplate();
@@ -226,12 +242,16 @@ public class CaptchaController {
             requestParam.set("format", "1");
             requestParam.set("mobile", username);
             int phoneCaptcha = ran.nextInt(899999) + 100000;
-            requestParam.set("content", "欢迎使用兴海物联招聘网站，您的注册验证码为" + Integer.toString(phoneCaptcha) + ",如果不是本人操作，请忽略这条信息");
+            requestParam.set("content", "欢迎使用兴海物联招聘网站，您的验证码为" + Integer.toString(phoneCaptcha) + ",如果不是本人操作，请忽略这条信息");
             HttpHeaders requestHeaders = new HttpHeaders();
 
             //存短信验证码到redis
             String key = username + "_PhoneCaptcha";
             operations.set(key, String.valueOf(phoneCaptcha));
+
+            //验证码的短期连续提交的排除,60秒后过期
+            String sendStatus = username + "_sended";
+            operations.set(sendStatus, "1", 60, TimeUnit.SECONDS);
 
 
             requestHeaders.add(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded");
@@ -241,6 +261,21 @@ public class CaptchaController {
         }
     }
 
+    /**
+     * 判断一分钟内是否已经发送过
+     *
+     * @param username
+     * @return
+     */
+    private boolean isSendedInOneMinute(String username) {
+        ValueOperations<String, String> operations = redisTemplate.opsForValue();
+        String sendStatus = username + "_sended";
+        if (operations.get(sendStatus) == null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
     /**
      * 获取图像验证码内容的测试接口
