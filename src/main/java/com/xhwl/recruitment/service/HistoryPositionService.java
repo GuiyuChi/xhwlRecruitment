@@ -7,6 +7,7 @@ import groovy.util.logging.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -107,5 +108,52 @@ public class HistoryPositionService {
             Page<HashMap> resPage = new PageImpl<>(res, pageable, positions.size());
             return resPage;
         }
+    }
+    //过期后的发布项目模糊查询
+    public Page<HashMap> searchPositionAfterDeadline(Pageable pageable, Long departmentId, java.util.Date publish_date,java.util.Date end_date, String departmentName, String positionName) {
+        java.util.Date date1=new java.util.Date();
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+        String str=sdf.format(date1);
+        Date date2 =Date.valueOf(str);
+        str=sdf.format(publish_date);
+        Date publishDate=Date.valueOf(str);
+        str=sdf.format(end_date);
+        Date endDate=Date.valueOf(str);
+        if(departmentId==1L)//人事查询
+        {
+            List<PositionEntity>positions=historyPositionRepository.superSearchAfterDeadline(date2,departmentName,positionName,publishDate,endDate);
+            List<HashMap> res = new ArrayList<>();
+            for (PositionEntity position : positions) {
+                HashMap<String, String> hashMap = new LinkedHashMap<>();
+                hashMap.put("id", new Long(position.getId()).toString());
+                hashMap.put("positionName", position.getPositionName());
+                hashMap.put("department", String.valueOf(position.getDepartment()));
+                hashMap.put("recruitmentType", String.valueOf(position.getRecruitmentType()));
+                hashMap.put("workPlace", position.getWorkPlace());
+                hashMap.put("publishDate", String.valueOf(position.getPublishDate()));
+                hashMap.put("deadline", String.valueOf(position.getDeadline()));
+                res.add(hashMap);
+            }
+            Page<HashMap> resPage = new PageImpl<>(res, pageable, positions.size());
+            return resPage;
+        }
+        else//非人事查询
+            {
+                List<PositionEntity>positions=historyPositionRepository.searchAfterDeadline(date2,departmentId,positionName,publishDate,endDate);
+                List<HashMap> res = new ArrayList<>();
+                for (PositionEntity position : positions) {
+                    HashMap<String, String> hashMap = new LinkedHashMap<>();
+                    hashMap.put("id", new Long(position.getId()).toString());
+                    hashMap.put("positionName", position.getPositionName());
+                    hashMap.put("department", String.valueOf(position.getDepartment()));
+                    hashMap.put("recruitmentType", String.valueOf(position.getRecruitmentType()));
+                    hashMap.put("workPlace", position.getWorkPlace());
+                    hashMap.put("publishDate", String.valueOf(position.getPublishDate()));
+                    hashMap.put("deadline", String.valueOf(position.getDeadline()));
+                    res.add(hashMap);
+                }
+                Page<HashMap> resPage = new PageImpl<>(res, pageable, positions.size());
+                return resPage;
+            }
     }
 }

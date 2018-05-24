@@ -11,11 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -34,7 +32,6 @@ public class AdminHistoryPositionController {
     AdminAuthRepository adminAuthRepository;
     //显示过期前项目
     @GetMapping("/admin/PositionsBeforeDeadline")
-    @RequiresAuthentication
     @RequiresRoles("admin")
     public Page<HashMap> getPositionBeforeDeadline(@RequestHeader HttpHeaders headers,
                                                    @RequestParam(value = "page", defaultValue = "1") Integer page,
@@ -47,7 +44,6 @@ public class AdminHistoryPositionController {
     }
 //显示过期后项目
     @GetMapping("/admin/PositionAfterDeadline")
-    @RequiresAuthentication
     @RequiresRoles("admin")
     public Page<HashMap>getPositionAfterDeadline(@RequestHeader HttpHeaders headers,
                                                         @RequestParam(value = "page", defaultValue = "1") Integer page,
@@ -57,5 +53,22 @@ public class AdminHistoryPositionController {
         Long departmentId=adminAuthEntity.getDepartmentId();
         PageRequest request = new PageRequest(page - 1, size);
         return historyPositionService.getPositionAfterDeadline(request,departmentId);
+    }
+
+    @PostMapping("/admin/searchPositionAfterDeadline")//查询历史记录
+    @RequiresRoles("admin")
+    public Page<HashMap>searchPositionAfterDeadline(@RequestHeader HttpHeaders headers,
+                                                    @RequestParam(value = "page", defaultValue = "1") Integer page,
+                                                    @RequestParam(value = "size", defaultValue = "20") Integer size,
+                                                    @RequestParam(value="publish_date") Date publish_date,
+                                                    @RequestParam(value="end_date") Date end_date,
+                                                    @RequestParam(value="departmentName")String departmentName,
+                                                    @RequestParam(value="positionName") String positionName)
+    {
+        Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
+        AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
+        Long departmentId=adminAuthEntity.getDepartmentId();
+        PageRequest request = new PageRequest(page - 1, size);
+        return historyPositionService.searchPositionAfterDeadline(request,departmentId,publish_date,end_date,departmentName,positionName);
     }
 }
