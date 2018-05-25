@@ -17,6 +17,7 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 
@@ -118,7 +119,10 @@ public class AdminPositionController {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
 
-        PageRequest request = new PageRequest(page - 1, size);
+        // 管理员实现岗位查看时按 发布时间 逆序，即后添加的显示在前面
+        Sort sort = new Sort(Sort.Direction.DESC, "publishDate");
+
+        PageRequest request = new PageRequest(page - 1, size,sort);
         if (adminAuthEntity.getDepartmentId() == PersonnelDepartmentId) {
             return positionService.adminGetAllPublishPositions(request, 1, department, positionName, early_date, last_date);
         } else {
