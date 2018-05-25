@@ -381,12 +381,15 @@ public class PositionService {
     }
 
     /**
-     * 管理员删除岗位
+     * 管理员关闭岗位，岗位的 publicType 被设置为2
      *
      * @param positionId
      */
-    public void adminDeletePosition(Long positionId) {
-        positionRepository.delete(positionId);
+    public void adminClosePosition(Long positionId) {
+        PositionEntity positionEntity = positionRepository.findOne(positionId);
+
+        //将岗位设置成关闭状态
+        positionEntity.setPublishType(2);
     }
 
 

@@ -59,6 +59,13 @@ public class ExceptionController {
         return new ResponseBean(433, ex.getMessage(), null);
     }
 
+    // 捕获 DeliverException 投递相关的通用异常
+    @ExceptionHandler(DeliverException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseBean catchDeliverException(Throwable ex) {
+        return new ResponseBean(434, ex.getMessage(), null);
+    }
+
 
 
     //捕获 CaptchaException 图像验证码异常
@@ -161,6 +168,8 @@ public class ExceptionController {
     public ResponseBean catchDeliverNoExitExeption(Throwable ex){
         return new ResponseBean(449, ex.getMessage(), null);
     }
+
+
 
 
 

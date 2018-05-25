@@ -7,6 +7,7 @@ import com.xhwl.recruitment.exception.*;
 import com.xhwl.recruitment.service.DeliverService;
 import com.xhwl.recruitment.service.PositionService;
 import com.xhwl.recruitment.service.UserService;
+import com.xhwl.recruitment.util.StatusCodeUtil;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -139,6 +140,11 @@ public class DeliverController {
         }
         if(resumeDeliverEntity.getUserId()!=userId){
             throw new MyNoPermissionException("无权限");
+        }
+
+        // 删除投递时管理员已经进行了简历流转的操作
+        if(StatusCodeUtil.codeAnalysis(resumeDeliverEntity.getRecruitmentState())!=0){
+            throw new DeliverException("管理员已经对简历进行过操作");
         }
 
         deliverService.deleteDeliver(deliverId);

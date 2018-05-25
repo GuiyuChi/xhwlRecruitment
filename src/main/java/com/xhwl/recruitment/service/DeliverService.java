@@ -417,4 +417,6 @@ public class DeliverService {
     public void deleteDeliver(Long deliverId) {
         resumeDeliverRepository.delete(deliverId);
     }
+
+
 }

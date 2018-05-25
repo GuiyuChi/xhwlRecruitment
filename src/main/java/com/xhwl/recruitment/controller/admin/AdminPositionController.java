@@ -128,13 +128,13 @@ public class AdminPositionController {
 
 
     /**
-     * 管理员（人事）按ID删除岗位
+     * 管理员（人事）按ID关闭岗位
      *
      * @param positionId
      */
     @DeleteMapping("/admin/position/{positionId}")
     @RequiresRoles("admin")
-    public void deletePosition(@RequestHeader HttpHeaders headers, @PathVariable("positionId") Long positionId) {
+    public void closePosition(@RequestHeader HttpHeaders headers, @PathVariable("positionId") Long positionId) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
 
@@ -143,7 +143,7 @@ public class AdminPositionController {
         }
 
         if (adminAuthEntity.getDepartmentId() == PersonnelDepartmentId) {
-            positionService.adminDeletePosition(positionId);
+            positionService.adminClosePosition(positionId);
         } else {
             throw new MyNoPermissionException("没有权限");
         }
