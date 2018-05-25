@@ -390,6 +390,9 @@ public class PositionService {
 
         //将岗位设置成关闭状态
         positionEntity.setPublishType(2);
+
+        //将截止日期设置为当前日期
+        positionEntity.setDeadline(new Date(System.currentTimeMillis()));
     }
 
 
