@@ -5,6 +5,7 @@ import com.xhwl.recruitment.domain.DwEducationExperienceEntity;
 import com.xhwl.recruitment.domain.DwPersonalInformationEntity;
 import com.xhwl.recruitment.domain.ResumeDeliverEntity;
 import com.xhwl.recruitment.dto.DeliverDto;
+import com.xhwl.recruitment.redis.DeliverRedis;
 import com.xhwl.recruitment.util.StatusCodeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,6 +56,9 @@ public class AuditDeliverService {
 
     @Autowired
     PositionRepository positionRepository;
+
+    @Autowired
+    DeliverRedis deliverRedis;
 
     //获取用户名
     private String getUsernameByDeliver(ResumeDeliverEntity resumeDeliverEntity) {
@@ -115,6 +119,9 @@ public class AuditDeliverService {
         String oldCode = deliver.getRecruitmentState();
         deliver.setRecruitmentState(StatusCodeUtil.codeChange(oldCode, 1));
         resumeDeliverRepository.save(deliver);
+
+        // 重新设置阅读状态为未读
+        deliverRedis.setDeliverUnread(deliverId);
     }
 
     /**
@@ -127,6 +134,9 @@ public class AuditDeliverService {
         String oldCode = deliver.getRecruitmentState();
         deliver.setRecruitmentState(StatusCodeUtil.codeChange(oldCode, 2));
         resumeDeliverRepository.save(deliver);
+
+        // 重新设置阅读状态为未读
+        deliverRedis.setDeliverUnread(deliverId);
     }
 
     /**
@@ -139,6 +149,9 @@ public class AuditDeliverService {
         String oldCode = deliver.getRecruitmentState();
         deliver.setRecruitmentState(StatusCodeUtil.cancelRefuse(oldCode));
         resumeDeliverRepository.save(deliver);
+
+        // 重新设置阅读状态为未读
+        deliverRedis.setDeliverUnread(deliverId);
     }
 
     /**

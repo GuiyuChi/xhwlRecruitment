@@ -49,25 +49,6 @@ public class AdminResumeController {
     public List<Object> adminGetResumeBydeliver(@PathVariable("deliverId") Long deliverId) {
         return dwResumeService.adminGetResume(deliverId);
     }
-//
-//    @GetMapping("/admin/download-resume/{userId}")
-//    public ResponseEntity<byte[]> downloadResume(@RequestHeader HttpHeaders headers, @PathVariable("userId") Long userId) {
-////        Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
-//        try {
-//            byte[] resumeByteArray = fileService.getResume(userId);
-//
-//            // 设置下载响应头
-//            HttpHeaders header = new HttpHeaders();
-//            header.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-//            header.setContentDispositionFormData("attachment", getUUID() + ".doc", Charset.forName("utf-8"));
-//
-//            return new ResponseEntity<>(resumeByteArray, header, HttpStatus.OK);
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
 
 
 }

@@ -2,11 +2,14 @@ package com.xhwl.recruitment.service;
 
 import com.xhwl.recruitment.dao.*;
 import com.xhwl.recruitment.domain.*;
+import com.xhwl.recruitment.redis.DeliverRedis;
 import com.xhwl.recruitment.util.StatusCodeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -85,6 +88,9 @@ public class DeliverService {
 
     @Autowired
     private FileService fileService;
+
+    @Autowired
+    private DeliverRedis deliverRedis;
 
 
     /**
@@ -330,6 +336,10 @@ public class DeliverService {
         HashMap<String, String> filespath = fileService.copyDocument(userId);
         Long newResumeId = copyDatabase(userId, filespath);
         Long resumeDeliverId = addResumeDeliver(positionId, userId, newResumeId);
+
+        // 设置简历的阅读状态为未读
+        deliverRedis.setDeliverUnread(resumeDeliverId);
+
         return resumeDeliverId;
     }
 

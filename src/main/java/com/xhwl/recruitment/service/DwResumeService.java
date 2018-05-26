@@ -2,6 +2,7 @@ package com.xhwl.recruitment.service;
 
 import com.xhwl.recruitment.dao.*;
 import com.xhwl.recruitment.domain.DwResumeEntity;
+import com.xhwl.recruitment.redis.DeliverRedis;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +49,9 @@ public class DwResumeService {
     @Autowired
     private PositionRepository positionRepository;
 
+    @Autowired
+    private DeliverRedis deliverRedis;
+
     private Long getDwResumeId(Long deliverId){
         return resumeDeliverRepository.findOne(deliverId).getDwResumeId();
     }
@@ -74,6 +78,10 @@ public class DwResumeService {
      */
     public List<Object> adminGetResume(Long deliverId){
         Long resumeId = getDwResumeId(deliverId);
+
+        //设置投递记录对应的阅读状态为已读
+        deliverRedis.setDeliverRead(deliverId);
+
         return getDwResumeAllInfo(resumeId);
     }
 }
