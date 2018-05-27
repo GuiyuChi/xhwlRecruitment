@@ -40,7 +40,7 @@ public class MailService {
         {
             final MimeMessage mimeMessage = this.mailSender.createMimeMessage();
             final MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
-            message.setFrom("wudan1@copm.com.cn");
+            message.setFrom("714479658@qq.com");
             message.setTo(mail);
             message.setSubject("兴海物联");
             message.setText(name+":\n"+"  您好！\n"+"  恭喜您成功通过本公司的笔试面试环节！请您于"+month+"月"+day+"日"+hour+"时"+minute+"分准时到岗，期待您的加入！\n"+"  进一步了解公司请点击下方链接：");
@@ -62,7 +62,7 @@ public class MailService {
         {
             final MimeMessage mimeMessage = this.mailSender.createMimeMessage();
             final MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
-            message.setFrom("wudan1@copm.com.cn");
+            message.setFrom("714479658@qq.com");
             message.setTo(mail);
             message.setSubject("兴海物联");
             message.setText(name+":\n"+"  您好！\n"+"  很遗憾您没有通过该岗位的招聘！希望未来还有合作机会，祝您今后求职顺利\n"+"  进一步了解公司请点击下方链接：");
