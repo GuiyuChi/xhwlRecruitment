@@ -73,4 +73,25 @@ public class MailService {
         }
 
     }
+
+    public void sendCustomMail(Long resumeId, String title, String component) {
+        ResumeDeliverEntity resumeDelieverEntity=resumeDeliverRepository.findById(resumeId);
+        Long dw_resume_id=resumeDelieverEntity.getDwResumeId();
+        DwPersonalInformationEntity dwPersonalInformationEntity=dwPersonalInformationRepository.findByResumeId(dw_resume_id);
+        String mail=dwPersonalInformationEntity.getEmail();
+        try
+        {
+            final MimeMessage mimeMessage = this.mailSender.createMimeMessage();
+            final MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
+            message.setFrom("714479658@qq.com");
+            message.setTo(mail);
+            message.setSubject(title);
+            message.setText(component);
+            this.mailSender.send(mimeMessage);
+
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+
+    }
 }

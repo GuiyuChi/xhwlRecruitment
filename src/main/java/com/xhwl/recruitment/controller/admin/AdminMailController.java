@@ -30,6 +30,14 @@ public class AdminMailController {
 
     @RequiresAuthentication
     @RequiresRoles("admin")
+    @PostMapping("/admin/customMail/{resumeId}")//管理员自定义邮件
+    public void sendCustomMail(@PathVariable("resumeId")Long resumeId,@RequestParam("title") String title,@RequestParam("component") String component)
+    {
+        mailService.sendCustomMail(resumeId,title,component);
+    }
+
+    @RequiresAuthentication
+    @RequiresRoles("admin")
     @PostMapping("/admin/offMail/resumeId")//发送回绝邮件
     public void sendOffMail(@PathVariable("resumeId")Long resumeId)
     {
