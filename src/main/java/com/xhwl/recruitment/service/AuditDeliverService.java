@@ -3,6 +3,7 @@ package com.xhwl.recruitment.service;
 import com.xhwl.recruitment.dao.*;
 import com.xhwl.recruitment.domain.DwEducationExperienceEntity;
 import com.xhwl.recruitment.domain.DwPersonalInformationEntity;
+import com.xhwl.recruitment.domain.PositionEntity;
 import com.xhwl.recruitment.domain.ResumeDeliverEntity;
 import com.xhwl.recruitment.dto.DeliverDto;
 import com.xhwl.recruitment.redis.DeliverRedis;
@@ -163,8 +164,10 @@ public class AuditDeliverService {
      */
     public List<DeliverDto> findDeliverInResumeReview(Long positionId, Long department) {
         List<ResumeDeliverEntity> delivers = findAllResumeReview(positionId);
+        PositionEntity position = positionRepository.findOne(positionId);
         Integer auth = 0;
-        if (department == PersonnelDepartmentId) {
+        // 管理员的岗位与 简历审核岗位 相同
+        if (department == position.getResumeAuditDepartment()) {
             auth = 1;
         }
         if (delivers == null) return null;
