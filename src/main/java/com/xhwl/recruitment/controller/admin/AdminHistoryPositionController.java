@@ -13,6 +13,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -56,15 +58,14 @@ public class AdminHistoryPositionController {
     }
 
     @PostMapping("/admin/searchPositionAfterDeadline")//查询历史记录
-    @RequiresRoles("admin")
+   //@RequiresRoles("admin")
     public Page<HashMap>searchPositionAfterDeadline(@RequestHeader HttpHeaders headers,
                                                     @RequestParam(value = "page", defaultValue = "1") Integer page,
                                                     @RequestParam(value = "size", defaultValue = "20") Integer size,
                                                     @RequestParam(value="publish_date") Date publish_date,
                                                     @RequestParam(value="end_date") Date end_date,
                                                     @RequestParam(value="departmentName")String departmentName,
-                                                    @RequestParam(value="positionName") String positionName)
-    {
+                                                    @RequestParam(value="positionName") String positionName) throws ParseException {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
         Long departmentId=adminAuthEntity.getDepartmentId();

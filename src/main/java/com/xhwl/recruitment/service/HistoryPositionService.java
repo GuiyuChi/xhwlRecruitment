@@ -1,7 +1,9 @@
 package com.xhwl.recruitment.service;
 
+import com.xhwl.recruitment.dao.DepartmentRepository;
 import com.xhwl.recruitment.dao.HistoryPositionRepository;
 import com.xhwl.recruitment.dao.PositionRepository;
+import com.xhwl.recruitment.domain.DepartmentEntity;
 import com.xhwl.recruitment.domain.PositionEntity;
 import groovy.util.logging.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * @Author: kepiao
@@ -28,6 +27,8 @@ import java.util.List;
 public class HistoryPositionService {
     @Autowired
     HistoryPositionRepository historyPositionRepository;
+    @Autowired
+    DepartmentRepository departmentRepository;
     //获得过期前的发布项目
     public Page<HashMap> getPositionBeforeDeadline(Pageable pageable,long departmentId) {
         java.util.Date date1 = new java.util.Date();
@@ -119,9 +120,15 @@ public class HistoryPositionService {
         Date publishDate=Date.valueOf(str);
         str=sdf.format(end_date);
         Date endDate=Date.valueOf(str);
+        List<DepartmentEntity>departmentEntities=departmentRepository.findAllByNameContaining(departmentName);
+        List<Long>department = new ArrayList<Long>();
+        for (DepartmentEntity departmentEntity:departmentEntities
+             ) {
+            department.add(departmentEntity.getId());
+        }
         if(departmentId==1L)//人事查询
         {
-            List<PositionEntity>positions=historyPositionRepository.superSearchAfterDeadline(date2,departmentName,positionName,publishDate,endDate);
+            List<PositionEntity>positions=historyPositionRepository.findAllByDeadlineBeforeAndDepartmentInAndPositionNameContainingAndPublishDateAfterAndDeadlineBefore(date2,department,positionName,publishDate,endDate);
             List<HashMap> res = new ArrayList<>();
             for (PositionEntity position : positions) {
                 HashMap<String, String> hashMap = new LinkedHashMap<>();
@@ -139,7 +146,7 @@ public class HistoryPositionService {
         }
         else//非人事查询
             {
-                List<PositionEntity>positions=historyPositionRepository.searchAfterDeadline(date2,departmentId,positionName,publishDate,endDate);
+                List<PositionEntity>positions=historyPositionRepository.findAllByDeadlineBeforeAndDepartmentAndPositionNameContainingAndPublishDateAfterAndDeadlineBefore(date2,departmentId,positionName,publishDate,endDate);
                 List<HashMap> res = new ArrayList<>();
                 for (PositionEntity position : positions) {
                     HashMap<String, String> hashMap = new LinkedHashMap<>();
