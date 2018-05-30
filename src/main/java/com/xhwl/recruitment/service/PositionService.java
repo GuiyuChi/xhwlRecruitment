@@ -212,7 +212,7 @@ public class PositionService {
                     early = new Date(dateFormat.parse(early_date).getTime());
                     last = new Date(dateFormat.parse(last_date).getTime());
                 } catch (ParseException e) {
-                    e.printStackTrace();
+                        e.printStackTrace();
                 }
 
                 for (PositionEntity position : publicPositions) {
