@@ -264,3 +264,7 @@ eg：{{8080}}/positions/1?workPlace=深圳
 
 ## 用户下载自己上传的辅助材料 get {{8080}}/downloadSupportDetail
 
+## 用户删除自己上传的简历 delete {{8080}}/deleteResume
+
+## 用户删除自己上传的支持材料 delete {{8080}}/deleteSupportDetail
+
