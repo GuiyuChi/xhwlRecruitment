@@ -172,6 +172,16 @@ public class FileService {
     }
 
     /**
+     * 删除某用户的简历投递，目前只是删除数据库中的文件地址信息，没有删掉用户投递的文件
+     * @param userId
+     */
+    public void deleteResume(Long userId) {
+        ResumeEntity resume = resumeRepository.findByUserId(userId);
+        resume.setUploadResumePath(null);
+        resumeRepository.save(resume);
+    }
+
+    /**
      * 管理员下载用户上传的简历，传入投递编号
      *
      * @param deliverId
@@ -225,6 +235,16 @@ public class FileService {
         res.add(downName);
         res.add(file);
         return res;
+    }
+
+    /**
+     * 删除某用户的简历投递，目前只是删除数据库中的文件地址信息，没有删掉用户投递的文件
+     * @param userId
+     */
+    public void deleteSupportDetail(Long userId) {
+        ResumeEntity resume = resumeRepository.findByUserId(userId);
+        resume.setSupportDetailPath(null);
+        resumeRepository.save(resume);
     }
 
     /**

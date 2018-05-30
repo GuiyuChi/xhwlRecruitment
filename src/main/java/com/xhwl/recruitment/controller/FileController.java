@@ -130,6 +130,18 @@ public class FileController {
     }
 
     /**
+     * 用户删除自己简历的接口
+     *
+     * @param headers
+     */
+    @DeleteMapping("/deleteResume")
+    @RequiresAuthentication
+    public void deleteResume(@RequestHeader HttpHeaders headers) {
+        Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
+        fileService.deleteResume(userId);
+    }
+
+    /**
      * 管理员下载用户投递的简历附件，根据投递记录的编号
      *
      * @param deliverId
@@ -159,6 +171,7 @@ public class FileController {
 
     /**
      * 管理员下载用户投递的附件，根据投递记录的编号
+     *
      * @param deliverId
      * @return
      */
@@ -186,6 +199,7 @@ public class FileController {
 
     /**
      * 用户下载自己的上传的辅助材料
+     *
      * @return
      */
     @GetMapping("/downloadSupportDetail")
@@ -211,6 +225,18 @@ public class FileController {
         return null;
     }
 
+    /**
+     * 用户删除自己支持材料的接口
+     *
+     * @param headers
+     */
+    @DeleteMapping("/deleteSupportDetail")
+    @RequiresAuthentication
+    public void deleteSupportDetail(@RequestHeader HttpHeaders headers) {
+        Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
+        fileService.deleteSupportDetail(userId);
+    }
+
 
     /**
      * 管理员下载照片,根据投递记录的编号
@@ -219,7 +245,7 @@ public class FileController {
      */
     @GetMapping("/admin/downloadPhoto/{deliverId}")
     @RequiresRoles("admin")
-    public ResponseEntity<byte[]> downloadPhotoByDeliver(@RequestHeader HttpHeaders headers,@PathVariable("deliverId") Long deliverId) {
+    public ResponseEntity<byte[]> downloadPhotoByDeliver(@RequestHeader HttpHeaders headers, @PathVariable("deliverId") Long deliverId) {
 
         try {
             byte[] photoByteArray = fileService.getPhotoByDeliver(deliverId);
