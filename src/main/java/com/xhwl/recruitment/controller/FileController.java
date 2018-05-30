@@ -99,21 +99,27 @@ public class FileController {
     }
 
     /**
-     * 下载某用户的简历附件，传入 简历投递表的 id
+     * 下载某用户的简历附件
      *
      * @param headers
      * @return
      */
-    @GetMapping("/download-resume/{userId}")
-    public ResponseEntity<byte[]> downloadResume(@RequestHeader HttpHeaders headers, @PathVariable("userId") Long userId) {
-//        Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
+    @GetMapping("/downloadResume")
+    @RequiresAuthentication
+    public ResponseEntity<byte[]> downloadResume(@RequestHeader HttpHeaders headers) {
+        Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         try {
-            byte[] resumeByteArray = fileService.getResume(userId);
+            List<Object> findList = fileService.getResume(userId);
+
+            //文件不存在，传出空值
+            if (findList == null) return null;
+
+            byte[] resumeByteArray = (byte[]) findList.get(1);
 
             // 设置下载响应头
             HttpHeaders header = new HttpHeaders();
             header.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-            header.setContentDispositionFormData("attachment", getUUID() + ".doc", Charset.forName("utf-8"));
+            header.setContentDispositionFormData("attachment", String.valueOf(findList.get(0)), Charset.forName("utf-8"));
 
             return new ResponseEntity<>(resumeByteArray, header, HttpStatus.OK);
 
@@ -177,6 +183,34 @@ public class FileController {
         }
         return null;
     }
+
+    /**
+     * 用户下载自己的上传的辅助材料
+     * @return
+     */
+    @GetMapping("/downloadSupportDetail")
+    @RequiresAuthentication
+    public ResponseEntity<byte[]> downloadSupportDetail(@RequestHeader HttpHeaders headers) {
+        Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
+        try {
+            List<Object> findList = fileService.getSupportDetail(userId);
+            //文件不存在，传出空值
+            if (findList == null) return null;
+
+            byte[] resumeByteArray = (byte[]) findList.get(1);
+
+            // 设置下载响应头
+            HttpHeaders header = new HttpHeaders();
+            header.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            header.setContentDispositionFormData("attachment", String.valueOf(findList.get(0)), Charset.forName("utf-8"));
+
+            return new ResponseEntity<>(resumeByteArray, header, HttpStatus.OK);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
     /**
      * 管理员下载照片,根据投递记录的编号
