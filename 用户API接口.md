@@ -260,3 +260,7 @@ eg：{{8080}}/positions/1?workPlace=深圳
 
 ## 用户删除投递 delete {{8080}}/deliver/45 数字为投递记录的id
 
+## 用户下载自己上传的简历附件 get {{8080}}/downloadResume
+
+## 用户下载自己上传的辅助材料 get {{8080}}/downloadSupportDetail
+
