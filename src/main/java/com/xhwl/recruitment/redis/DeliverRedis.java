@@ -1,5 +1,8 @@
 package com.xhwl.recruitment.redis;
 
+import com.xhwl.recruitment.dao.AdminAuthRepository;
+import com.xhwl.recruitment.dao.DepartmentRepository;
+import com.xhwl.recruitment.dao.PositionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -14,6 +17,15 @@ import org.springframework.stereotype.Service;
 public class DeliverRedis {
     @Autowired
     RedisTemplate redisTemplate;
+
+    @Autowired
+    PositionRepository positionRepository;
+
+    @Autowired
+    AdminAuthRepository adminAuthRepository;
+
+    @Autowired
+    DepartmentRepository departmentRepository;
 
     /**
      * 设置某投递记录的阅读状态为 未读
@@ -38,7 +50,7 @@ public class DeliverRedis {
     }
 
     /**
-     * 获取某投递记录的阅读状态
+     * 获取某投递记录的阅读状态 0未读 1已读
      *
      * @param deliverId
      * @return
@@ -48,4 +60,12 @@ public class DeliverRedis {
         String key = "Deliver_" + deliverId.toString() + "_ReadFlag";
         return operations.get(key);
     }
+
+    /**
+     * 根据部门设置某投递的阅读状态为未读，对某部门的所有员工设为未读
+     * 投递成功时调用
+     */
+    public void setDeliverUnreadByDepartment(Long deliverId,Long departmentId){}
+
+
 }

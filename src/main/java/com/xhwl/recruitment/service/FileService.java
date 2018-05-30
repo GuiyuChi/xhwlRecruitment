@@ -43,6 +43,11 @@ public class FileService {
 //    private final String ROOT = "/home/ubuntu/";
     private final String ROOT = "/root/";
 
+    /**
+     * 最终部署服务器文件存放位置
+     */
+//    private final String ROOT = "/home/XMuniv-sp/chigy/";
+
 
     /**
      * 用户上传简历附件保存的位置
@@ -144,15 +149,26 @@ public class FileService {
      * @return
      * @throws IOException
      */
-    public byte[] getResume(Long userId) throws IOException {
+    public List<Object> getResume(Long userId) throws IOException {
         //从数据库找到文件路径
         String lp = resumeRepository.findByUserId(userId).getUploadResumePath();
         if (lp == null) return null;
         String path = ResumeAccessoryFileFolderPath + lp;
 
-        //读取文件
-        return FileUtils.readFileToByteArray(new File(path));
+        List<Object> res = new ArrayList<>();
 
+        //获取文件后缀
+        String type = lp.substring(lp.lastIndexOf('.') + 1);
+
+        //下载文件名
+        String downName = UUIDUtil.getUUID() + "." + type;
+
+        //读取文件
+        byte[] file = FileUtils.readFileToByteArray(new File(path));
+
+        res.add(downName);
+        res.add(file);
+        return res;
     }
 
     /**
@@ -166,6 +182,34 @@ public class FileService {
         String lp = dwResumeRepository.findOne(dwResumeId).getUploadResumePath();
         if (lp == null) return null;
         String path = DwResumeAccessoryFileFolderPath + lp;
+
+        List<Object> res = new ArrayList<>();
+
+        //获取文件后缀
+        String type = lp.substring(lp.lastIndexOf('.') + 1);
+
+        //下载文件名
+        String downName = UUIDUtil.getUUID() + "." + type;
+
+        //读取文件
+        byte[] file = FileUtils.readFileToByteArray(new File(path));
+
+        res.add(downName);
+        res.add(file);
+        return res;
+    }
+
+    /**
+     * 用户获取自己上传的简历附件
+     *
+     * @param userId
+     * @return
+     * @throws IOException
+     */
+    public List<Object> getSupportDetail(Long userId) throws IOException {
+        String lp = resumeRepository.findByUserId(userId).getUploadResumePath();
+        if (lp == null) return null;
+        String path = DwSupportDetailFileFolderPath + lp;
 
         List<Object> res = new ArrayList<>();
 

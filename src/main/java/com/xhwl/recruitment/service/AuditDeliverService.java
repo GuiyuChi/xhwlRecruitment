@@ -185,6 +185,38 @@ public class AuditDeliverService {
         return deliverDtos;
     }
 
+    /**
+     * 管理员获取 简历审核 中的投递数量 和 自己需要查看的简历
+     *
+     * @param positionId
+     * @param department
+     * @return
+     */
+    public HashMap findDeliverNumInResumeReview(Long positionId, Long department) {
+        List<ResumeDeliverEntity> resumeDeliverEntities = findAllResumeReview(positionId);
+        PositionEntity position = positionRepository.findOne(positionId);
+
+        // 项目下的简历总数
+        int deliverNum = resumeDeliverEntities.size();
+
+        // 需要处理的简历数
+        int needSolveNum = 0;
+        for (ResumeDeliverEntity deliver : resumeDeliverEntities) {
+            Long deliverId = deliver.getId();
+            needSolveNum = needSolveNum + deliverRedis.getDeliverReadFlag(deliverId);
+        }
+
+        HashMap<String, Integer> hashMap = new LinkedHashMap();
+        hashMap.put("deliverNum", deliverNum);
+        if (department == position.getResumeAuditDepartment()) {
+            hashMap.put("needSolveNum", needSolveNum);
+        }else {
+            hashMap.put("needSolveNum", 0);
+        }
+
+        return hashMap;
+    }
+
     private List<ResumeDeliverEntity> findAllResumeReview(Long positionId) {
         List<ResumeDeliverEntity> resumeDeliverEntities = resumeDeliverRepository.findAllByPositionId(positionId);
         List<ResumeDeliverEntity> resumeReviewList = new ArrayList<>();
@@ -197,6 +229,7 @@ public class AuditDeliverService {
         }
         return resumeReviewList;
     }
+
 
     /**
      * 管理员获取正在 HR初审 中的简历
@@ -224,6 +257,40 @@ public class AuditDeliverService {
             deliverDtos.add(deliverDto);
         }
         return deliverDtos;
+    }
+
+    /**
+     * 管理员获取 HR初审 中的投递数量 和 自己需要查看的简历
+     *
+     * @param positionId
+     * @param department
+     * @return
+     */
+    public HashMap findDeliverNumInHRFristReview(Long positionId, Long department) {
+        List<ResumeDeliverEntity> delivers = findAllHRFristReview(positionId);
+        PositionEntity position = positionRepository.findOne(positionId);
+
+        // 项目下的简历总数
+        int deliverNum = delivers.size();
+
+        // 需要处理的简历数
+        int needSolveNum = 0;
+        for (ResumeDeliverEntity deliver : delivers) {
+            Long deliverId = deliver.getId();
+            needSolveNum = needSolveNum + deliverRedis.getDeliverReadFlag(deliverId);
+        }
+
+        HashMap<String, Integer> hashMap = new LinkedHashMap();
+        hashMap.put("deliverNum", deliverNum);
+
+        // 根据管理员的权限，判断是否给出需要处理的投递数
+        if (department == PersonnelDepartmentId) {
+            hashMap.put("needSolveNum", needSolveNum);
+        }else {
+            hashMap.put("needSolveNum", 0);
+        }
+
+        return hashMap;
     }
 
     private List<ResumeDeliverEntity> findAllHRFristReview(Long positionId) {
@@ -267,6 +334,40 @@ public class AuditDeliverService {
         return deliverDtos;
     }
 
+    /**
+     * 管理员获取 部门笔试 中的投递数量 和 自己需要查看的简历
+     *
+     * @param positionId
+     * @param department
+     * @return
+     */
+    public HashMap findDeliverNumInDepartmentWrittenExamination(Long positionId, Long department) {
+        List<ResumeDeliverEntity> delivers = findAllDepartmentWrittenExamination(positionId);
+        PositionEntity position = positionRepository.findOne(positionId);
+
+        // 项目下的简历总数
+        int deliverNum = delivers.size();
+
+        // 需要处理的简历数
+        int needSolveNum = 0;
+        for (ResumeDeliverEntity deliver : delivers) {
+            Long deliverId = deliver.getId();
+            needSolveNum = needSolveNum + deliverRedis.getDeliverReadFlag(deliverId);
+        }
+
+        HashMap<String, Integer> hashMap = new LinkedHashMap();
+        hashMap.put("deliverNum", deliverNum);
+
+        // 根据管理员的权限，判断是否给出需要处理的投递数
+        if (department == position.getDepartment()) {
+            hashMap.put("needSolveNum", needSolveNum);
+        }else {
+            hashMap.put("needSolveNum", 0);
+        }
+
+        return hashMap;
+    }
+
     private List<ResumeDeliverEntity> findAllDepartmentWrittenExamination(Long positionId) {
         List<ResumeDeliverEntity> resumeDeliverEntities = resumeDeliverRepository.findAllByPositionId(positionId);
         List<ResumeDeliverEntity> resumeReviewList = new ArrayList<>();
@@ -308,6 +409,40 @@ public class AuditDeliverService {
         return deliverDtos;
     }
 
+    /**
+     * 管理员获取 部门面试 中的投递数量 和 自己需要查看的简历
+     *
+     * @param positionId
+     * @param department
+     * @return
+     */
+    public HashMap findDeliverNumInDepartmentInterview(Long positionId, Long department) {
+        List<ResumeDeliverEntity> delivers = findAllDepartmentInterview(positionId);
+        PositionEntity position = positionRepository.findOne(positionId);
+
+        // 项目下的简历总数
+        int deliverNum = delivers.size();
+
+        // 需要处理的简历数
+        int needSolveNum = 0;
+        for (ResumeDeliverEntity deliver : delivers) {
+            Long deliverId = deliver.getId();
+            needSolveNum = needSolveNum + deliverRedis.getDeliverReadFlag(deliverId);
+        }
+
+        HashMap<String, Integer> hashMap = new LinkedHashMap();
+        hashMap.put("deliverNum", deliverNum);
+
+        // 根据管理员的权限，判断是否给出需要处理的投递数
+        if (department == position.getDepartment()) {
+            hashMap.put("needSolveNum", needSolveNum);
+        }else {
+            hashMap.put("needSolveNum", 0);
+        }
+
+        return hashMap;
+    }
+
     private List<ResumeDeliverEntity> findAllDepartmentInterview(Long positionId) {
         List<ResumeDeliverEntity> resumeDeliverEntities = resumeDeliverRepository.findAllByPositionId(positionId);
         List<ResumeDeliverEntity> resumeReviewList = new ArrayList<>();
@@ -347,6 +482,40 @@ public class AuditDeliverService {
             deliverDtos.add(deliverDto);
         }
         return deliverDtos;
+    }
+
+    /**
+     * 管理员获取 HR面试 中的投递数量 和 自己需要查看的简历
+     *
+     * @param positionId
+     * @param department
+     * @return
+     */
+    public HashMap findDeliverNumInHRInterview(Long positionId, Long department) {
+        List<ResumeDeliverEntity> delivers = findAllHRInterview(positionId);
+        PositionEntity position = positionRepository.findOne(positionId);
+
+        // 项目下的简历总数
+        int deliverNum = delivers.size();
+
+        // 需要处理的简历数
+        int needSolveNum = 0;
+        for (ResumeDeliverEntity deliver : delivers) {
+            Long deliverId = deliver.getId();
+            needSolveNum = needSolveNum + deliverRedis.getDeliverReadFlag(deliverId);
+        }
+
+        HashMap<String, Integer> hashMap = new LinkedHashMap();
+        hashMap.put("deliverNum", deliverNum);
+
+        // 根据管理员的权限，判断是否给出需要处理的投递数
+        if (department == PersonnelDepartmentId) {
+            hashMap.put("needSolveNum", needSolveNum);
+        }else {
+            hashMap.put("needSolveNum", 0);
+        }
+
+        return hashMap;
     }
 
     private List<ResumeDeliverEntity> findAllHRInterview(Long positionId) {
