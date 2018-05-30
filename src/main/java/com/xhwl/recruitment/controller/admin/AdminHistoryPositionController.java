@@ -58,7 +58,7 @@ public class AdminHistoryPositionController {
     }
 
     @PostMapping("/admin/searchPositionAfterDeadline")//查询历史记录
-   //@RequiresRoles("admin")
+   @RequiresRoles("admin")
     public Page<HashMap>searchPositionAfterDeadline(@RequestHeader HttpHeaders headers,
                                                     @RequestParam(value = "page", defaultValue = "1") Integer page,
                                                     @RequestParam(value = "size", defaultValue = "20") Integer size,

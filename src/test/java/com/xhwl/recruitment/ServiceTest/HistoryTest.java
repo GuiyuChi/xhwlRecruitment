@@ -39,7 +39,7 @@ public class HistoryTest {
       java.sql.Date date4 = java.sql.Date.valueOf(str);
       PageRequest request = new PageRequest(0, 20);
       Page<HashMap>m= historyPositionService.searchPositionAfterDeadline(request,departmentId,date2,date3,departmentName,positionName);
-      System.out.println();
+      System.out.println(m);
 
    }
 }
