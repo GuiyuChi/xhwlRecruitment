@@ -1,8 +1,10 @@
 package com.xhwl.recruitment.controller.admin;
 
 import com.xhwl.recruitment.dao.AdminAuthRepository;
+import com.xhwl.recruitment.dao.ResumeDeliverRepository;
 import com.xhwl.recruitment.domain.AdminAuthEntity;
 import com.xhwl.recruitment.domain.PositionEntity;
+import com.xhwl.recruitment.domain.ResumeDeliverEntity;
 import com.xhwl.recruitment.service.HistoryPositionService;
 import com.xhwl.recruitment.service.UserService;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -33,6 +35,8 @@ public class AdminHistoryPositionController {
     UserService userService;
     @Autowired
     AdminAuthRepository adminAuthRepository;
+    @Autowired
+    ResumeDeliverRepository resumeDeliverRepository;
     //显示过期前项目
     @GetMapping("/admin/PositionsBeforeDeadline")
     @RequiresRoles("admin")
@@ -75,5 +79,11 @@ public class AdminHistoryPositionController {
         Long departmentId=adminAuthEntity.getDepartmentId();
         PageRequest request = new PageRequest(page - 1, size);
         return historyPositionService.searchPositionAfterDeadline(request,departmentId,publishDate,endDate,departmentName,positionName);
+    }
+    @GetMapping("admin/getMailState/{resumeId}")//管理员拿到email_state字段，判断是否发送邮件
+    @RequiresRoles("admin")
+    public int getMailState(@PathVariable("resumeId") Long resumeId){
+        ResumeDeliverEntity resumeDelieverEntity=resumeDeliverRepository.findById(resumeId);
+        return resumeDelieverEntity.getEmailState();
     }
 }

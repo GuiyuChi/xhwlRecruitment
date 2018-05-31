@@ -36,6 +36,8 @@ public class MailService {
         DwPersonalInformationEntity dwPersonalInformationEntity=dwPersonalInformationRepository.findByResumeId(dw_resume_id);
         String mail=dwPersonalInformationEntity.getEmail();
         String name=dwPersonalInformationEntity.getName();
+        resumeDelieverEntity.setEmailState(1);
+        resumeDeliverRepository.saveAndFlush(resumeDelieverEntity);
         try
         {
             final MimeMessage mimeMessage = this.mailSender.createMimeMessage();
@@ -58,6 +60,8 @@ public class MailService {
         DwPersonalInformationEntity dwPersonalInformationEntity=dwPersonalInformationRepository.findByResumeId(dw_resume_id);
         String mail=dwPersonalInformationEntity.getEmail();
         String name=dwPersonalInformationEntity.getName();
+        resumeDelieverEntity.setEmailState(1);
+        resumeDeliverRepository.saveAndFlush(resumeDelieverEntity);
         try
         {
             final MimeMessage mimeMessage = this.mailSender.createMimeMessage();

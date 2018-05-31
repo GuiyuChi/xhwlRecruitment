@@ -18,5 +18,6 @@ public interface ResumeDeliverRepository extends JpaRepository<ResumeDeliverEnti
     List<ResumeDeliverEntity> findAllByPositionId(Long positionId);
 
     ResumeDeliverEntity findById(Long resumeId);
+    ResumeDeliverEntity saveAndFlush(ResumeDeliverEntity resumeDeliverEntity);
 
 }
