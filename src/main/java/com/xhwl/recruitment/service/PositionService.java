@@ -1,8 +1,11 @@
 package com.xhwl.recruitment.service;
 
 import com.xhwl.recruitment.dao.PositionRepository;
+import com.xhwl.recruitment.dao.ResumeDeliverRepository;
 import com.xhwl.recruitment.domain.AdminAuthEntity;
 import com.xhwl.recruitment.domain.PositionEntity;
+import com.xhwl.recruitment.domain.ResumeDeliverEntity;
+import com.xhwl.recruitment.util.StatusCodeUtil;
 import com.xhwl.recruitment.vo.PositionVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -32,6 +35,8 @@ import java.util.List;
 public class PositionService {
     @Autowired
     PositionRepository positionRepository;
+    @Autowired
+    ResumeDeliverRepository resumeDeliverRepository;
 
     /**
      * 管理员添加或修改职位，添加时传入id为null
@@ -212,7 +217,7 @@ public class PositionService {
                     early = new Date(dateFormat.parse(early_date).getTime());
                     last = new Date(dateFormat.parse(last_date).getTime());
                 } catch (ParseException e) {
-                        e.printStackTrace();
+                    e.printStackTrace();
                 }
 
                 for (PositionEntity position : publicPositions) {
@@ -251,8 +256,8 @@ public class PositionService {
             if (deaprtment == 0) {
                 //岗位未传入
                 positionEntityPage = positionRepository.findAllByPositionNameContainingAndPublishType(pageable, positionName, publicType);
-            }else{
-                positionEntityPage = positionRepository.findAllByPositionNameContainingAndDepartmentAndPublishType(pageable, positionName,deaprtment, publicType);
+            } else {
+                positionEntityPage = positionRepository.findAllByPositionNameContainingAndDepartmentAndPublishType(pageable, positionName, deaprtment, publicType);
             }
 
             List<PositionEntity> positions = positionEntityPage.getContent();
@@ -287,8 +292,8 @@ public class PositionService {
             if (deaprtment == 0) {
                 //岗位未传入
                 positionEntityPage = positionRepository.findAllByPositionNameContainingAndPublishType(pageable, positionName, publicType);
-            }else{
-                positionEntityPage = positionRepository.findAllByPositionNameContainingAndDepartmentAndPublishType(pageable, positionName,deaprtment, publicType);
+            } else {
+                positionEntityPage = positionRepository.findAllByPositionNameContainingAndDepartmentAndPublishType(pageable, positionName, deaprtment, publicType);
             }
 
             List<PositionEntity> positions = positionEntityPage.getContent();
@@ -393,6 +398,10 @@ public class PositionService {
 
         //将截止日期设置为当前日期
         positionEntity.setDeadline(new Date(System.currentTimeMillis()));
+
+        //拒绝岗位下的所有简历
+        refuseAllDeliverByPositionId(positionId);
+
     }
 
 
@@ -507,10 +516,28 @@ public class PositionService {
                 PositionEntity newPosition = positionRepository.findOne(position.getId());
                 newPosition.setPublishType(2);
                 positionRepository.save(newPosition);
+
+                // 判断其过期时，拒绝改岗位下的所有投递
+                refuseAllDeliverByPositionId(position.getId());
                 return false;
             }
         } else {
             return false;
+        }
+    }
+
+    /**
+     * 将某一岗位下的所有投递都设置为拒绝
+     * 在管理员关闭岗位和岗位过期的判断是触发
+     *
+     * @param positionId
+     */
+    private void refuseAllDeliverByPositionId(Long positionId) {
+        List<ResumeDeliverEntity> delivers = resumeDeliverRepository.findAllByPositionId(positionId);
+        for (ResumeDeliverEntity deliver : delivers) {
+            String newState = StatusCodeUtil.codeChange(deliver.getRecruitmentState(), 2);
+            deliver.setRecruitmentState(newState);
+            resumeDeliverRepository.save(deliver);
         }
     }
 
