@@ -65,7 +65,7 @@ public class AdminHistoryPositionController {
                                                     @RequestParam(value="publish_date") Date publish_date,
                                                     @RequestParam(value="end_date") Date end_date,
                                                     @RequestParam(value="departmentName")String departmentName,
-                                                    @RequestParam(value="positionName") String positionName) throws ParseException {
+                                                    @RequestParam(value="positionName") String positionName) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
         Long departmentId=adminAuthEntity.getDepartmentId();
