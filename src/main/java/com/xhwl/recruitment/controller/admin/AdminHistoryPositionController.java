@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -62,14 +63,17 @@ public class AdminHistoryPositionController {
     public Page<HashMap>searchPositionAfterDeadline(@RequestHeader HttpHeaders headers,
                                                     @RequestParam(value = "page", defaultValue = "1") Integer page,
                                                     @RequestParam(value = "size", defaultValue = "20") Integer size,
-                                                    @RequestParam(value="publish_date") Date publish_date,
-                                                    @RequestParam(value="end_date") Date end_date,
+                                                    @RequestParam(value="publish_date") String publish_date,
+                                                    @RequestParam(value="end_date") String end_date,
                                                     @RequestParam(value="departmentName")String departmentName,
-                                                    @RequestParam(value="positionName") String positionName) {
+                                                    @RequestParam(value="positionName") String positionName) throws ParseException {
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Date endDate=format.parse(end_date);
+        Date publishDate=format.parse(publish_date);
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
         Long departmentId=adminAuthEntity.getDepartmentId();
         PageRequest request = new PageRequest(page - 1, size);
-        return historyPositionService.searchPositionAfterDeadline(request,departmentId,publish_date,end_date,departmentName,positionName);
+        return historyPositionService.searchPositionAfterDeadline(request,departmentId,publishDate,endDate,departmentName,positionName);
     }
 }
