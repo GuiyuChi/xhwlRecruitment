@@ -8,7 +8,7 @@ import java.util.Objects;
 /**
  * @Author: guiyu
  * @Description:
- * @Date: Create in 上午11:19 2018/5/1
+ * @Date: Create in 下午3:35 2018/6/1
  **/
 @Entity
 @Table(name = "position", schema = "xhwl", catalog = "")
@@ -20,6 +20,7 @@ public class PositionEntity {
     private Long assessmentDepartment;
     private String positionType;
     private Integer recruitmentType;
+    private String workSeniority;
     private String workPlace;
     private String education;
     private Integer recruitingNumbers;
@@ -33,7 +34,6 @@ public class PositionEntity {
 
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
     public long getId() {
         return id;
     }
@@ -100,6 +100,16 @@ public class PositionEntity {
 
     public void setRecruitmentType(Integer recruitmentType) {
         this.recruitmentType = recruitmentType;
+    }
+
+    @Basic
+    @Column(name = "work_seniority", nullable = true, length = 255)
+    public String getWorkSeniority() {
+        return workSeniority;
+    }
+
+    public void setWorkSeniority(String workSeniority) {
+        this.workSeniority = workSeniority;
     }
 
     @Basic
@@ -214,6 +224,7 @@ public class PositionEntity {
                 Objects.equals(assessmentDepartment, that.assessmentDepartment) &&
                 Objects.equals(positionType, that.positionType) &&
                 Objects.equals(recruitmentType, that.recruitmentType) &&
+                Objects.equals(workSeniority, that.workSeniority) &&
                 Objects.equals(workPlace, that.workPlace) &&
                 Objects.equals(education, that.education) &&
                 Objects.equals(recruitingNumbers, that.recruitingNumbers) &&
@@ -229,29 +240,6 @@ public class PositionEntity {
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, positionName, department, resumeAuditDepartment, assessmentDepartment, positionType, recruitmentType, workPlace, education, recruitingNumbers, deadline, jobResponsibilities, jobRequirements, publishType, publishDate, gmtCreate, gmtModified);
-    }
-
-    @Override
-    public String toString() {
-        return "PositionEntity{" +
-                "id=" + id +
-                ", positionName='" + positionName + '\'' +
-                ", department=" + department +
-                ", resumeAuditDepartment=" + resumeAuditDepartment +
-                ", assessmentDepartment=" + assessmentDepartment +
-                ", positionType='" + positionType + '\'' +
-                ", recruitmentType=" + recruitmentType +
-                ", workPlace='" + workPlace + '\'' +
-                ", education='" + education + '\'' +
-                ", recruitingNumbers=" + recruitingNumbers +
-                ", deadline=" + deadline +
-                ", jobResponsibilities='" + jobResponsibilities + '\'' +
-                ", jobRequirements='" + jobRequirements + '\'' +
-                ", publishType=" + publishType +
-                ", publishDate=" + publishDate +
-                ", gmtCreate=" + gmtCreate +
-                ", gmtModified=" + gmtModified +
-                '}';
+        return Objects.hash(id, positionName, department, resumeAuditDepartment, assessmentDepartment, positionType, recruitmentType, workSeniority, workPlace, education, recruitingNumbers, deadline, jobResponsibilities, jobRequirements, publishType, publishDate, gmtCreate, gmtModified);
     }
 }
