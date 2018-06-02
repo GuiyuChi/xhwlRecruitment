@@ -13,6 +13,7 @@ public class PositionVo {
     private Long assessmentDepartment;//考核部门
     private String positionType;//职位类型
     private Integer recruitmentType;//招聘类型
+    private String workSeniority;//工作年限
     private String workPlace;//工作地点
     private String education;//学历要求
     private Integer recruitingNumbers;//招聘人数
@@ -76,6 +77,14 @@ public class PositionVo {
 
     public void setRecruitmentType(Integer recruitmentType) {
         this.recruitmentType = recruitmentType;
+    }
+
+    public String getWorkSeniority() {
+        return workSeniority;
+    }
+
+    public void setWorkSeniority(String workSeniority) {
+        this.workSeniority = workSeniority;
     }
 
     public String getWorkPlace() {
@@ -152,6 +161,7 @@ public class PositionVo {
                 ", assessmentDepartment=" + assessmentDepartment +
                 ", positionType='" + positionType + '\'' +
                 ", recruitmentType=" + recruitmentType +
+                ", workSeniority='" + workSeniority + '\'' +
                 ", workPlace='" + workPlace + '\'' +
                 ", education='" + education + '\'' +
                 ", recruitingNumbers=" + recruitingNumbers +
