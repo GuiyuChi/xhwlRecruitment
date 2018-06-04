@@ -1,6 +1,7 @@
 package com.xhwl.recruitment.controller.user;
 
 import com.xhwl.recruitment.domain.PersonalInformationEntity;
+import com.xhwl.recruitment.exception.FormSubmitFormatException;
 import com.xhwl.recruitment.exception.MException;
 import com.xhwl.recruitment.exception.ResumeNoExistException;
 import com.xhwl.recruitment.service.ResumeService;
@@ -69,6 +70,13 @@ public class PersonalInformationController {
         if (resumeService.getResume(userId) == null) {
             throw new ResumeNoExistException("需要先创建用户的简历表再创建个人信息表");
         }
+
+        // 表单验证
+        if (personalInformationVo.getName() == null || "".equals(personalInformationVo.getName())) {
+            throw new FormSubmitFormatException("表单格式错误");
+        }
+        
+
 
         if (resumeService.getPersonalInformation(userId) == null) {
             return resumeService.addPersonalInformation(userId, personalInformationVo);

@@ -38,6 +38,13 @@ public class ExceptionController {
 
 
 
+    // 捕获 FormSubmitFormatException 表单格式异常
+    @ExceptionHandler(FormSubmitFormatException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseBean catchFormSubmitFormatException(Throwable ex) {
+        return new ResponseBean(430, ex.getMessage(), null);
+    }
+
     //捕获 DepartmentException 部门相关错误
     @ExceptionHandler(DepartmentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
