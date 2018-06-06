@@ -75,7 +75,9 @@ public class PersonalInformationController {
         if (personalInformationVo.getName() == null || "".equals(personalInformationVo.getName())) {
             throw new FormSubmitFormatException("表单格式错误");
         }
-        
+        if (personalInformationVo.getSex() != 1 || personalInformationVo.getSex() != 2) {
+            throw new FormSubmitFormatException("性别格式错误");
+        }
 
 
         if (resumeService.getPersonalInformation(userId) == null) {
