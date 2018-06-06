@@ -86,7 +86,7 @@ public class StatusCodeUtil {
 
     /**
      * 投递状态编码转化为前端需要的样式
-     *
+     * <p>
      * 返回一个整数 1~4表示审核中、部门笔试中、部门面试中、HR面试中
      * -1~-4表示审核被拒、部门面试被拒、部门面试被拒、HR面试被拒
      * 5表示全部步骤通过
@@ -185,4 +185,27 @@ public class StatusCodeUtil {
         }
     }
 
+    /**
+     * 传入简历审核的步数，传出状态编码，其中拒绝的编码为 2 只能用于模糊查询
+     *
+     * @param step
+     * @return
+     */
+    public static String getCode(Integer step) {
+        if (step == ResumeReview) {
+            return "00000";
+        } else if (step == HRFristReview) {
+            return "10000";
+        } else if (step == DepartmentWrittenExamination) {
+            return "11000";
+        } else if (step == DepartmentInterview) {
+            return "11100";
+        } else if (step == HRInterview) {
+            return "11110";
+        } else if (step == Pass) {
+            return "11111";
+        } else {
+            return "2";
+        }
+    }
 }
