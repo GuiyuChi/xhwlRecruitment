@@ -165,11 +165,15 @@ public class AuditDeliverService {
      * @param department
      * @return
      */
-    public List<DeliverDto> findDeliverInResumeReview(Long positionId, Long department) {
-        List<ResumeDeliverEntity> delivers = findAllResumeReview(positionId);
+    public Page<DeliverDto> findDeliverInResumeReview(Pageable pageable,Long positionId, Long department) {
+        // 获取到对应的状态码
+        String queryCode = StatusCodeUtil.getCode(ResumeReview);
+        Page<ResumeDeliverEntity> deliverEntityPages = resumeDeliverRepository.findAllByPositionIdAndRecruitmentStateContaining(pageable, positionId, queryCode);
+        List<ResumeDeliverEntity> delivers = deliverEntityPages.getContent();
+
         PositionEntity position = positionRepository.findOne(positionId);
         Integer auth = 0;
-        // 管理员的岗位与 简历审核岗位 相同
+        // 管理员的岗位与 简历审核 岗位 相同
         if (department == position.getResumeAuditDepartment()) {
             auth = 1;
         }
@@ -185,53 +189,10 @@ public class AuditDeliverService {
             deliverDto.setAuth(auth);
             deliverDtos.add(deliverDto);
         }
-        return deliverDtos;
+        Page<DeliverDto> resPage = new PageImpl<DeliverDto>(deliverDtos, pageable, deliverEntityPages.getTotalElements());
+        return resPage;
     }
 
-    /**
-     * 管理员获取 简历审核 中的投递数量 和 自己需要查看的简历
-     *
-     * @param positionId
-     * @param department
-     * @return
-     */
-    public HashMap findDeliverNumInResumeReview(Long positionId, Long department) {
-        List<ResumeDeliverEntity> resumeDeliverEntities = findAllResumeReview(positionId);
-        PositionEntity position = positionRepository.findOne(positionId);
-
-        // 项目下的简历总数
-        int deliverNum = resumeDeliverEntities.size();
-
-        // 需要处理的简历数
-        int needSolveNum = 0;
-        for (ResumeDeliverEntity deliver : resumeDeliverEntities) {
-            Long deliverId = deliver.getId();
-            needSolveNum = needSolveNum + deliverRedis.getDeliverReadFlag(deliverId);
-        }
-
-        HashMap<String, Integer> hashMap = new LinkedHashMap();
-        hashMap.put("deliverNum", deliverNum);
-        if (department == position.getResumeAuditDepartment()) {
-            hashMap.put("needSolveNum", needSolveNum);
-        } else {
-            hashMap.put("needSolveNum", 0);
-        }
-
-        return hashMap;
-    }
-
-    private List<ResumeDeliverEntity> findAllResumeReview(Long positionId) {
-        List<ResumeDeliverEntity> resumeDeliverEntities = resumeDeliverRepository.findAllByPositionId(positionId);
-        List<ResumeDeliverEntity> resumeReviewList = new ArrayList<>();
-
-        if (resumeDeliverEntities == null) return null;
-        for (ResumeDeliverEntity resumeDeliverEntity : resumeDeliverEntities) {
-            if (StatusCodeUtil.codeAnalysis(resumeDeliverEntity.getRecruitmentState()) == ResumeReview) {
-                resumeReviewList.add(resumeDeliverEntity);
-            }
-        }
-        return resumeReviewList;
-    }
 
 
     /**
@@ -241,13 +202,17 @@ public class AuditDeliverService {
      * @param department
      * @return
      */
-    public List<DeliverDto> findDeliverInHRFristReview(Long positionId, Long department) {
-        List<ResumeDeliverEntity> delivers = findAllHRFristReview(positionId);
+    public Page<DeliverDto> findDeliverInHRFristReview(Pageable pageable, Long positionId, Long department) {
+        // 获取到对应的状态码
+        String queryCode = StatusCodeUtil.getCode(HRFristReview);
+        Page<ResumeDeliverEntity> deliverEntityPages = resumeDeliverRepository.findAllByPositionIdAndRecruitmentStateContaining(pageable, positionId, queryCode);
+        List<ResumeDeliverEntity> delivers = deliverEntityPages.getContent();
+
         Integer auth = 0;
         if (department == PersonnelDepartmentId) {
             auth = 1;
         }
-        if (delivers == null) return null;
+
         List<DeliverDto> deliverDtos = new ArrayList<>();
         for (ResumeDeliverEntity resumeDeliverEntity : delivers) {
             DeliverDto deliverDto = new DeliverDto();
@@ -259,55 +224,10 @@ public class AuditDeliverService {
             deliverDto.setAuth(auth);
             deliverDtos.add(deliverDto);
         }
-        return deliverDtos;
+        Page<DeliverDto> resPage = new PageImpl<DeliverDto>(deliverDtos, pageable, deliverEntityPages.getTotalElements());
+        return resPage;
     }
 
-    /**
-     * 管理员获取 HR初审 中的投递数量 和 自己需要查看的简历
-     *
-     * @param positionId
-     * @param department
-     * @return
-     */
-    public HashMap findDeliverNumInHRFristReview(Long positionId, Long department) {
-        List<ResumeDeliverEntity> delivers = findAllHRFristReview(positionId);
-        PositionEntity position = positionRepository.findOne(positionId);
-
-        // 项目下的简历总数
-        int deliverNum = delivers.size();
-
-        // 需要处理的简历数
-        int needSolveNum = 0;
-        for (ResumeDeliverEntity deliver : delivers) {
-            Long deliverId = deliver.getId();
-            needSolveNum = needSolveNum + deliverRedis.getDeliverReadFlag(deliverId);
-        }
-
-        HashMap<String, Integer> hashMap = new LinkedHashMap();
-        hashMap.put("deliverNum", deliverNum);
-
-        // 根据管理员的权限，判断是否给出需要处理的投递数
-        if (department == PersonnelDepartmentId) {
-            hashMap.put("needSolveNum", needSolveNum);
-        } else {
-            hashMap.put("needSolveNum", 0);
-        }
-
-        return hashMap;
-    }
-
-    private List<ResumeDeliverEntity> findAllHRFristReview(Long positionId) {
-        List<ResumeDeliverEntity> resumeDeliverEntities = resumeDeliverRepository.findAllByPositionId(positionId);
-        List<ResumeDeliverEntity> resumeReviewList = new ArrayList<>();
-
-        if (resumeDeliverEntities == null) return null;
-        for (ResumeDeliverEntity resumeDeliverEntity : resumeDeliverEntities) {
-            if (StatusCodeUtil.codeAnalysis(resumeDeliverEntity.getRecruitmentState()) == HRFristReview) {
-                resumeReviewList.add(resumeDeliverEntity);
-            }
-        }
-        return resumeReviewList;
-    }
 
     /**
      * 管理员获取正在 部门笔试 中的简历
@@ -343,61 +263,18 @@ public class AuditDeliverService {
     }
 
     /**
-     * 管理员获取 部门笔试 中的投递数量 和 自己需要查看的简历
-     *
-     * @param positionId
-     * @param department
-     * @return
-     */
-    public HashMap findDeliverNumInDepartmentWrittenExamination(Long positionId, Long department) {
-        List<ResumeDeliverEntity> delivers = findAllDepartmentWrittenExamination(positionId);
-        PositionEntity position = positionRepository.findOne(positionId);
-
-        // 项目下的简历总数
-        int deliverNum = delivers.size();
-
-        // 需要处理的简历数
-        int needSolveNum = 0;
-        for (ResumeDeliverEntity deliver : delivers) {
-            Long deliverId = deliver.getId();
-            needSolveNum = needSolveNum + deliverRedis.getDeliverReadFlag(deliverId);
-        }
-
-        HashMap<String, Integer> hashMap = new LinkedHashMap();
-        hashMap.put("deliverNum", deliverNum);
-
-        // 根据管理员的权限，判断是否给出需要处理的投递数
-        if (department == position.getDepartment()) {
-            hashMap.put("needSolveNum", needSolveNum);
-        } else {
-            hashMap.put("needSolveNum", 0);
-        }
-
-        return hashMap;
-    }
-
-    private List<ResumeDeliverEntity> findAllDepartmentWrittenExamination(Long positionId) {
-        List<ResumeDeliverEntity> resumeDeliverEntities = resumeDeliverRepository.findAllByPositionId(positionId);
-        List<ResumeDeliverEntity> resumeReviewList = new ArrayList<>();
-
-        if (resumeDeliverEntities == null) return null;
-        for (ResumeDeliverEntity resumeDeliverEntity : resumeDeliverEntities) {
-            if (StatusCodeUtil.codeAnalysis(resumeDeliverEntity.getRecruitmentState()) == DepartmentWrittenExamination) {
-                resumeReviewList.add(resumeDeliverEntity);
-            }
-        }
-        return resumeReviewList;
-    }
-
-    /**
      * 管理员获取正在 部门面试 中的简历
      *
      * @param positionId
      * @param department
      * @return
      */
-    public List<DeliverDto> findDeliverInDepartmentInterview(Long positionId, Long department) {
-        List<ResumeDeliverEntity> delivers = findAllDepartmentInterview(positionId);
+    public Page<DeliverDto> findDeliverInDepartmentInterview(Pageable pageable,Long positionId, Long department) {
+        // 获取到对应的状态码
+        String queryCode = StatusCodeUtil.getCode(DepartmentInterview);
+        Page<ResumeDeliverEntity> deliverEntityPages = resumeDeliverRepository.findAllByPositionIdAndRecruitmentStateContaining(pageable, positionId, queryCode);
+        List<ResumeDeliverEntity> delivers = deliverEntityPages.getContent();
+
         Integer auth = 0;
         if (department == positionRepository.findOne(positionId).getDepartment()) {
             auth = 1;
@@ -414,55 +291,10 @@ public class AuditDeliverService {
             deliverDto.setAuth(auth);
             deliverDtos.add(deliverDto);
         }
-        return deliverDtos;
+        Page<DeliverDto> resPage = new PageImpl<DeliverDto>(deliverDtos, pageable, deliverEntityPages.getTotalElements());
+        return resPage;
     }
 
-    /**
-     * 管理员获取 部门面试 中的投递数量 和 自己需要查看的简历
-     *
-     * @param positionId
-     * @param department
-     * @return
-     */
-    public HashMap findDeliverNumInDepartmentInterview(Long positionId, Long department) {
-        List<ResumeDeliverEntity> delivers = findAllDepartmentInterview(positionId);
-        PositionEntity position = positionRepository.findOne(positionId);
-
-        // 项目下的简历总数
-        int deliverNum = delivers.size();
-
-        // 需要处理的简历数
-        int needSolveNum = 0;
-        for (ResumeDeliverEntity deliver : delivers) {
-            Long deliverId = deliver.getId();
-            needSolveNum = needSolveNum + deliverRedis.getDeliverReadFlag(deliverId);
-        }
-
-        HashMap<String, Integer> hashMap = new LinkedHashMap();
-        hashMap.put("deliverNum", deliverNum);
-
-        // 根据管理员的权限，判断是否给出需要处理的投递数
-        if (department == position.getDepartment()) {
-            hashMap.put("needSolveNum", needSolveNum);
-        } else {
-            hashMap.put("needSolveNum", 0);
-        }
-
-        return hashMap;
-    }
-
-    private List<ResumeDeliverEntity> findAllDepartmentInterview(Long positionId) {
-        List<ResumeDeliverEntity> resumeDeliverEntities = resumeDeliverRepository.findAllByPositionId(positionId);
-        List<ResumeDeliverEntity> resumeReviewList = new ArrayList<>();
-
-        if (resumeDeliverEntities == null) return null;
-        for (ResumeDeliverEntity resumeDeliverEntity : resumeDeliverEntities) {
-            if (StatusCodeUtil.codeAnalysis(resumeDeliverEntity.getRecruitmentState()) == DepartmentInterview) {
-                resumeReviewList.add(resumeDeliverEntity);
-            }
-        }
-        return resumeReviewList;
-    }
 
     /**
      * 管理员获取正在 HR面试 中的简历
@@ -471,13 +303,16 @@ public class AuditDeliverService {
      * @param department
      * @return
      */
-    public List<DeliverDto> findDeliverInHRInterview(Long positionId, Long department) {
-        List<ResumeDeliverEntity> delivers = findAllHRInterview(positionId);
+    public Page<DeliverDto> findDeliverInHRInterview(Pageable pageable,Long positionId, Long department) {
+        // 获取到对应的状态码
+        String queryCode = StatusCodeUtil.getCode(HRInterview);
+        Page<ResumeDeliverEntity> deliverEntityPages = resumeDeliverRepository.findAllByPositionIdAndRecruitmentStateContaining(pageable, positionId, queryCode);
+        List<ResumeDeliverEntity> delivers = deliverEntityPages.getContent();
+
         Integer auth = 0;
         if (department == PersonnelDepartmentId) {
             auth = 1;
         }
-        if (delivers == null) return null;
         List<DeliverDto> deliverDtos = new ArrayList<>();
         for (ResumeDeliverEntity resumeDeliverEntity : delivers) {
             DeliverDto deliverDto = new DeliverDto();
@@ -489,54 +324,8 @@ public class AuditDeliverService {
             deliverDto.setAuth(auth);
             deliverDtos.add(deliverDto);
         }
-        return deliverDtos;
-    }
-
-    /**
-     * 管理员获取 HR面试 中的投递数量 和 自己需要查看的简历
-     *
-     * @param positionId
-     * @param department
-     * @return
-     */
-    public HashMap findDeliverNumInHRInterview(Long positionId, Long department) {
-        List<ResumeDeliverEntity> delivers = findAllHRInterview(positionId);
-        PositionEntity position = positionRepository.findOne(positionId);
-
-        // 项目下的简历总数
-        int deliverNum = delivers.size();
-
-        // 需要处理的简历数
-        int needSolveNum = 0;
-        for (ResumeDeliverEntity deliver : delivers) {
-            Long deliverId = deliver.getId();
-            needSolveNum = needSolveNum + deliverRedis.getDeliverReadFlag(deliverId);
-        }
-
-        HashMap<String, Integer> hashMap = new LinkedHashMap();
-        hashMap.put("deliverNum", deliverNum);
-
-        // 根据管理员的权限，判断是否给出需要处理的投递数
-        if (department == PersonnelDepartmentId) {
-            hashMap.put("needSolveNum", needSolveNum);
-        } else {
-            hashMap.put("needSolveNum", 0);
-        }
-
-        return hashMap;
-    }
-
-    private List<ResumeDeliverEntity> findAllHRInterview(Long positionId) {
-        List<ResumeDeliverEntity> resumeDeliverEntities = resumeDeliverRepository.findAllByPositionId(positionId);
-        List<ResumeDeliverEntity> resumeReviewList = new ArrayList<>();
-
-        if (resumeDeliverEntities == null) return null;
-        for (ResumeDeliverEntity resumeDeliverEntity : resumeDeliverEntities) {
-            if (StatusCodeUtil.codeAnalysis(resumeDeliverEntity.getRecruitmentState()) == HRInterview) {
-                resumeReviewList.add(resumeDeliverEntity);
-            }
-        }
-        return resumeReviewList;
+        Page<DeliverDto> resPage = new PageImpl<DeliverDto>(deliverDtos, pageable, deliverEntityPages.getTotalElements());
+        return resPage;
     }
 
 
@@ -547,13 +336,16 @@ public class AuditDeliverService {
      * @param department
      * @return
      */
-    public List<DeliverDto> findDeliverInPass(Long positionId, Long department) {
-        List<ResumeDeliverEntity> delivers = findAllPass(positionId);
+    public Page<DeliverDto> findDeliverInPass(Pageable pageable, Long positionId, Long department) {
+        // 获取到对应的状态码
+        String queryCode = StatusCodeUtil.getCode(Pass);
+        Page<ResumeDeliverEntity> deliverEntityPages = resumeDeliverRepository.findAllByPositionIdAndRecruitmentStateContaining(pageable, positionId, queryCode);
+        List<ResumeDeliverEntity> delivers = deliverEntityPages.getContent();
+
         Integer auth = 0;
-        if (department == positionRepository.findOne(positionId).getDepartment()) {
+        if (department == PersonnelDepartmentId) {
             auth = 1;
         }
-        if (delivers == null) return null;
         List<DeliverDto> deliverDtos = new ArrayList<>();
         for (ResumeDeliverEntity resumeDeliverEntity : delivers) {
             DeliverDto deliverDto = new DeliverDto();
@@ -565,20 +357,8 @@ public class AuditDeliverService {
             deliverDto.setAuth(auth);
             deliverDtos.add(deliverDto);
         }
-        return deliverDtos;
-    }
-
-    private List<ResumeDeliverEntity> findAllPass(Long positionId) {
-        List<ResumeDeliverEntity> resumeDeliverEntities = resumeDeliverRepository.findAllByPositionId(positionId);
-        List<ResumeDeliverEntity> resumeReviewList = new ArrayList<>();
-
-        if (resumeDeliverEntities == null) return null;
-        for (ResumeDeliverEntity resumeDeliverEntity : resumeDeliverEntities) {
-            if (StatusCodeUtil.codeAnalysis(resumeDeliverEntity.getRecruitmentState()) == Pass) {
-                resumeReviewList.add(resumeDeliverEntity);
-            }
-        }
-        return resumeReviewList;
+        Page<DeliverDto> resPage = new PageImpl<DeliverDto>(deliverDtos, pageable, deliverEntityPages.getTotalElements());
+        return resPage;
     }
 
     /**
@@ -588,8 +368,12 @@ public class AuditDeliverService {
      * @param department
      * @return
      */
-    public List<HashMap> findDeliverInRefuse(Long positionId, Long department) {
-        List<ResumeDeliverEntity> delivers = findAllRefuse(positionId);
+    public Page<HashMap> findDeliverInRefuse(Pageable pageable, Long positionId, Long department) {
+        // 获取到对应的状态码
+        String queryCode = StatusCodeUtil.getCode(Refuse);
+        Page<ResumeDeliverEntity> deliverEntityPages = resumeDeliverRepository.findAllByPositionIdAndRecruitmentStateContaining(pageable, positionId, queryCode);
+        List<ResumeDeliverEntity> delivers = deliverEntityPages.getContent();
+
         Integer auth = 0;
         if (department == PersonnelDepartmentId) {
             auth = 1;
@@ -610,20 +394,9 @@ public class AuditDeliverService {
 
             res.add(hashMap);
         }
-        return res;
-    }
+        Page<HashMap> resPage = new PageImpl<HashMap>(res, pageable, deliverEntityPages.getTotalElements());
+        return resPage;
 
-    private List<ResumeDeliverEntity> findAllRefuse(Long positionId) {
-        List<ResumeDeliverEntity> resumeDeliverEntities = resumeDeliverRepository.findAllByPositionId(positionId);
-        List<ResumeDeliverEntity> resumeReviewList = new ArrayList<>();
-
-        if (resumeDeliverEntities == null) return null;
-        for (ResumeDeliverEntity resumeDeliverEntity : resumeDeliverEntities) {
-            if (StatusCodeUtil.codeAnalysis(resumeDeliverEntity.getRecruitmentState()) == Refuse) {
-                resumeReviewList.add(resumeDeliverEntity);
-            }
-        }
-        return resumeReviewList;
     }
 
 

@@ -68,14 +68,17 @@ public class AdminDeliverController {
      */
     @GetMapping("/admin/ResumeReview/{positionId}")
     @RequiresRoles("admin")
-    public List<DeliverDto> findDeliverInResumeReview(@RequestHeader HttpHeaders headers, @PathVariable("positionId") Long positionId) {
+    public Page<DeliverDto> findDeliverInResumeReview(@RequestHeader HttpHeaders headers, @PathVariable("positionId") Long positionId,
+                                                      @RequestParam(value = "page", defaultValue = "1") Integer page,
+                                                      @RequestParam(value = "size", defaultValue = "10") Integer size) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
         Long departmentId = adminAuthEntity.getDepartmentId();
         if (departmentId != PersonnelDepartmentId && departmentId != positionRepository.findOne(positionId).getDepartment()) {
             throw new MyNoPermissionException("没有权限");
         }
-        return auditDeliverService.findDeliverInResumeReview(positionId, departmentId);
+        PageRequest request = new PageRequest(page - 1, size);
+        return auditDeliverService.findDeliverInResumeReview(request,positionId, departmentId);
     }
 
     /**
@@ -87,15 +90,17 @@ public class AdminDeliverController {
      */
     @GetMapping("/admin/HRFristReview/{positionId}")
     @RequiresRoles("admin")
-    public List<DeliverDto> findDeliverInHRFristReview(@RequestHeader HttpHeaders headers, @PathVariable("positionId") Long positionId) {
+    public Page<DeliverDto> findDeliverInHRFristReview(@RequestHeader HttpHeaders headers, @PathVariable("positionId") Long positionId,
+                                                       @RequestParam(value = "page", defaultValue = "1") Integer page,
+                                                       @RequestParam(value = "size", defaultValue = "10") Integer size) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
         Long departmentId = adminAuthEntity.getDepartmentId();
         if (departmentId != PersonnelDepartmentId && departmentId != positionRepository.findOne(positionId).getDepartment()) {
             throw new MyNoPermissionException("没有权限");
         }
-
-        return auditDeliverService.findDeliverInHRFristReview(positionId, departmentId);
+        PageRequest request = new PageRequest(page - 1, size);
+        return auditDeliverService.findDeliverInHRFristReview(request,positionId, departmentId);
     }
 
 
@@ -131,15 +136,17 @@ public class AdminDeliverController {
      */
     @GetMapping("/admin/DepartmentInterview/{positionId}")
     @RequiresRoles("admin")
-    public List<DeliverDto> findDeliverInDepartmentInterview(@RequestHeader HttpHeaders headers, @PathVariable("positionId") Long positionId) {
+    public Page<DeliverDto> findDeliverInDepartmentInterview(@RequestHeader HttpHeaders headers, @PathVariable("positionId") Long positionId,
+                                                             @RequestParam(value = "page", defaultValue = "1") Integer page,
+                                                             @RequestParam(value = "size", defaultValue = "10") Integer size) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
         Long departmentId = adminAuthEntity.getDepartmentId();
         if (departmentId != PersonnelDepartmentId && departmentId != positionRepository.findOne(positionId).getDepartment()) {
             throw new MyNoPermissionException("没有权限");
         }
-
-        return auditDeliverService.findDeliverInDepartmentInterview(positionId, departmentId);
+        PageRequest request = new PageRequest(page - 1, size);
+        return auditDeliverService.findDeliverInDepartmentInterview(request,positionId, departmentId);
     }
 
     /**
@@ -151,15 +158,17 @@ public class AdminDeliverController {
      */
     @GetMapping("/admin/HRInterview/{positionId}")
     @RequiresRoles("admin")
-    public List<DeliverDto> findDeliverInHRInterview(@RequestHeader HttpHeaders headers, @PathVariable("positionId") Long positionId) {
+    public Page<DeliverDto> findDeliverInHRInterview(@RequestHeader HttpHeaders headers, @PathVariable("positionId") Long positionId,
+                                                     @RequestParam(value = "page", defaultValue = "1") Integer page,
+                                                     @RequestParam(value = "size", defaultValue = "10") Integer size) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
         Long departmentId = adminAuthEntity.getDepartmentId();
         if (departmentId != PersonnelDepartmentId && departmentId != positionRepository.findOne(positionId).getDepartment()) {
             throw new MyNoPermissionException("没有权限");
         }
-
-        return auditDeliverService.findDeliverInHRInterview(positionId, departmentId);
+        PageRequest request = new PageRequest(page - 1, size);
+        return auditDeliverService.findDeliverInHRInterview(request,positionId, departmentId);
     }
 
     /**
@@ -171,7 +180,9 @@ public class AdminDeliverController {
      */
     @GetMapping("/admin/Pass/{positionId}")
     @RequiresRoles("admin")
-    public List<DeliverDto> findDeliverInPass(@RequestHeader HttpHeaders headers, @PathVariable("positionId") Long positionId) {
+    public Page<DeliverDto> findDeliverInPass(@RequestHeader HttpHeaders headers, @PathVariable("positionId") Long positionId,
+                                              @RequestParam(value = "page", defaultValue = "1") Integer page,
+                                              @RequestParam(value = "size", defaultValue = "10") Integer size) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
         Long departmentId = adminAuthEntity.getDepartmentId();
@@ -179,7 +190,8 @@ public class AdminDeliverController {
             throw new MyNoPermissionException("没有权限");
         }
 
-        return auditDeliverService.findDeliverInPass(positionId, departmentId);
+        PageRequest request = new PageRequest(page - 1, size);
+        return auditDeliverService.findDeliverInPass(request,positionId, departmentId);
     }
 
     /**
@@ -191,15 +203,17 @@ public class AdminDeliverController {
      */
     @GetMapping("/admin/Refuse/{positionId}")
     @RequiresRoles("admin")
-    public List<HashMap> findDeliverInRefuse(@RequestHeader HttpHeaders headers, @PathVariable("positionId") Long positionId) {
+    public Page<HashMap> findDeliverInRefuse(@RequestHeader HttpHeaders headers, @PathVariable("positionId") Long positionId,
+                                             @RequestParam(value = "page", defaultValue = "1") Integer page,
+                                             @RequestParam(value = "size", defaultValue = "10") Integer size) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
         Long departmentId = adminAuthEntity.getDepartmentId();
         if (departmentId != PersonnelDepartmentId && departmentId != positionRepository.findOne(positionId).getDepartment()) {
             throw new MyNoPermissionException("没有权限");
         }
-
-        return auditDeliverService.findDeliverInRefuse(positionId, departmentId);
+        PageRequest request = new PageRequest(page - 1, size);
+        return auditDeliverService.findDeliverInRefuse(request,positionId, departmentId);
     }
 
     /**
