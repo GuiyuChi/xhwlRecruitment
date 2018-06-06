@@ -9,6 +9,9 @@ import com.xhwl.recruitment.dto.DeliverDto;
 import com.xhwl.recruitment.redis.DeliverRedis;
 import com.xhwl.recruitment.util.StatusCodeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -210,7 +213,7 @@ public class AuditDeliverService {
         hashMap.put("deliverNum", deliverNum);
         if (department == position.getResumeAuditDepartment()) {
             hashMap.put("needSolveNum", needSolveNum);
-        }else {
+        } else {
             hashMap.put("needSolveNum", 0);
         }
 
@@ -286,7 +289,7 @@ public class AuditDeliverService {
         // 根据管理员的权限，判断是否给出需要处理的投递数
         if (department == PersonnelDepartmentId) {
             hashMap.put("needSolveNum", needSolveNum);
-        }else {
+        } else {
             hashMap.put("needSolveNum", 0);
         }
 
@@ -313,13 +316,17 @@ public class AuditDeliverService {
      * @param department
      * @return
      */
-    public List<DeliverDto> findDeliverInDepartmentWrittenExamination(Long positionId, Long department) {
-        List<ResumeDeliverEntity> delivers = findAllDepartmentWrittenExamination(positionId);
+    public Page<DeliverDto> findDeliverInDepartmentWrittenExamination(Pageable pageable, Long positionId, Long department) {
+        // 获取到对应的状态码
+        String queryCode = StatusCodeUtil.getCode(DepartmentWrittenExamination);
+
+        Page<ResumeDeliverEntity> deliverEntityPages = resumeDeliverRepository.findAllByPositionIdAndRecruitmentStateContaining(pageable, positionId, queryCode);
         Integer auth = 0;
         if (department == positionRepository.findOne(positionId).getDepartment()) {
             auth = 1;
         }
-        if (delivers == null) return null;
+        List<ResumeDeliverEntity> delivers = deliverEntityPages.getContent();
+
         List<DeliverDto> deliverDtos = new ArrayList<>();
         for (ResumeDeliverEntity resumeDeliverEntity : delivers) {
             DeliverDto deliverDto = new DeliverDto();
@@ -331,7 +338,8 @@ public class AuditDeliverService {
             deliverDto.setAuth(auth);
             deliverDtos.add(deliverDto);
         }
-        return deliverDtos;
+        Page<DeliverDto> resPage = new PageImpl<DeliverDto>(deliverDtos, pageable, deliverEntityPages.getTotalElements());
+        return resPage;
     }
 
     /**
@@ -361,7 +369,7 @@ public class AuditDeliverService {
         // 根据管理员的权限，判断是否给出需要处理的投递数
         if (department == position.getDepartment()) {
             hashMap.put("needSolveNum", needSolveNum);
-        }else {
+        } else {
             hashMap.put("needSolveNum", 0);
         }
 
@@ -436,7 +444,7 @@ public class AuditDeliverService {
         // 根据管理员的权限，判断是否给出需要处理的投递数
         if (department == position.getDepartment()) {
             hashMap.put("needSolveNum", needSolveNum);
-        }else {
+        } else {
             hashMap.put("needSolveNum", 0);
         }
 
@@ -511,7 +519,7 @@ public class AuditDeliverService {
         // 根据管理员的权限，判断是否给出需要处理的投递数
         if (department == PersonnelDepartmentId) {
             hashMap.put("needSolveNum", needSolveNum);
-        }else {
+        } else {
             hashMap.put("needSolveNum", 0);
         }
 

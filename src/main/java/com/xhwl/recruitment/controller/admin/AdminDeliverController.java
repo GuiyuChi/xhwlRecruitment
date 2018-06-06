@@ -14,6 +14,8 @@ import com.xhwl.recruitment.service.PositionService;
 import com.xhwl.recruitment.service.UserService;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 
@@ -106,7 +108,9 @@ public class AdminDeliverController {
      */
     @GetMapping("/admin/DepartmentWritten/{positionId}")
     @RequiresRoles("admin")
-    public List<DeliverDto> findDeliverInDepartmentWrittenExamination(@RequestHeader HttpHeaders headers, @PathVariable("positionId") Long positionId) {
+    public Page<DeliverDto> findDeliverInDepartmentWrittenExamination(@RequestHeader HttpHeaders headers, @PathVariable("positionId") Long positionId,
+                                                          @RequestParam(value = "page", defaultValue = "1") Integer page,
+                                                          @RequestParam(value = "size", defaultValue = "10") Integer size) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
         Long departmentId = adminAuthEntity.getDepartmentId();
@@ -114,7 +118,8 @@ public class AdminDeliverController {
             throw new MyNoPermissionException("没有权限");
         }
 
-        return auditDeliverService.findDeliverInDepartmentWrittenExamination(positionId, departmentId);
+        PageRequest request = new PageRequest(page - 1, size);
+        return auditDeliverService.findDeliverInDepartmentWrittenExamination(request,positionId, departmentId);
     }
 
     /**
