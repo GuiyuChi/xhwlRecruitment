@@ -35,4 +35,10 @@ public interface PositionRepository extends JpaRepository<PositionEntity, Long> 
     //岗位名称 发布状态 工作地点 岗位类型 模糊分页查询
     Page<PositionEntity> findAllByPositionNameContainingAndRecruitmentTypeAndPublishTypeAndWorkPlaceContainingAndPositionTypeContaining(String positionName, Integer recruitmentType, Integer publishType,
                                                                                                                                         String workPlace, String positionType, Pageable pageable);
+
+    //模糊查询 名称模糊，部门精确 发布时间
+    Page<PositionEntity> findAllByPositionNameContainingAndDepartmentAndPublishTypeAndPublishDateBetween(String positionName, Long department, Integer publishType, Date startTime, Date endTime, Pageable pageable);
+
+    //模糊查询 名称模糊 部门不限 发布时间
+    Page<PositionEntity> findAllByPositionNameContainingAndPublishTypeAndPublishDateBetween(String positionName, Integer publishType,  Date startTime, Date endTime, Pageable pageable);
 }
