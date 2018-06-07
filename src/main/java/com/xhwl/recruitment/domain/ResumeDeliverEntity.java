@@ -7,7 +7,7 @@ import java.util.Objects;
 /**
  * @Author: guiyu
  * @Description:
- * @Date: Create in 下午3:58 2018/5/16
+ * @Date: Create in 下午3:38 2018/6/7
  **/
 @Entity
 @Table(name = "resume_deliver", schema = "xhwl", catalog = "")
@@ -19,6 +19,7 @@ public class ResumeDeliverEntity {
     private Integer emailState;
     private String recruitmentState;
     private Date deliverDate;
+    private Integer readFlag;
 
     @Id
     @Column(name = "id", nullable = false)
@@ -91,6 +92,16 @@ public class ResumeDeliverEntity {
         this.deliverDate = deliverDate;
     }
 
+    @Basic
+    @Column(name = "read_flag", nullable = true)
+    public Integer getReadFlag() {
+        return readFlag;
+    }
+
+    public void setReadFlag(Integer readFlag) {
+        this.readFlag = readFlag;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -102,12 +113,13 @@ public class ResumeDeliverEntity {
                 Objects.equals(dwResumeId, that.dwResumeId) &&
                 Objects.equals(emailState, that.emailState) &&
                 Objects.equals(recruitmentState, that.recruitmentState) &&
-                Objects.equals(deliverDate, that.deliverDate);
+                Objects.equals(deliverDate, that.deliverDate) &&
+                Objects.equals(readFlag, that.readFlag);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, positionId, userId, dwResumeId, emailState, recruitmentState, deliverDate);
+        return Objects.hash(id, positionId, userId, dwResumeId, emailState, recruitmentState, deliverDate, readFlag);
     }
 }

@@ -8,7 +8,7 @@ import java.util.Objects;
 /**
  * @Author: guiyu
  * @Description:
- * @Date: Create in 下午3:35 2018/6/1
+ * @Date: Create in 下午3:38 2018/6/7
  **/
 @Entity
 @Table(name = "position", schema = "xhwl", catalog = "")
@@ -22,6 +22,7 @@ public class PositionEntity {
     private Integer recruitmentType;
     private String workSeniority;
     private String workPlace;
+    private String salary;
     private String education;
     private Integer recruitingNumbers;
     private Date deadline;
@@ -44,6 +45,7 @@ public class PositionEntity {
 
     @Basic
     @Column(name = "position_name", nullable = true, length = 255)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     public String getPositionName() {
         return positionName;
     }
@@ -120,6 +122,16 @@ public class PositionEntity {
 
     public void setWorkPlace(String workPlace) {
         this.workPlace = workPlace;
+    }
+
+    @Basic
+    @Column(name = "salary", nullable = true, length = 255)
+    public String getSalary() {
+        return salary;
+    }
+
+    public void setSalary(String salary) {
+        this.salary = salary;
     }
 
     @Basic
@@ -226,6 +238,7 @@ public class PositionEntity {
                 Objects.equals(recruitmentType, that.recruitmentType) &&
                 Objects.equals(workSeniority, that.workSeniority) &&
                 Objects.equals(workPlace, that.workPlace) &&
+                Objects.equals(salary, that.salary) &&
                 Objects.equals(education, that.education) &&
                 Objects.equals(recruitingNumbers, that.recruitingNumbers) &&
                 Objects.equals(deadline, that.deadline) &&
@@ -240,6 +253,6 @@ public class PositionEntity {
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, positionName, department, resumeAuditDepartment, assessmentDepartment, positionType, recruitmentType, workSeniority, workPlace, education, recruitingNumbers, deadline, jobResponsibilities, jobRequirements, publishType, publishDate, gmtCreate, gmtModified);
+        return Objects.hash(id, positionName, department, resumeAuditDepartment, assessmentDepartment, positionType, recruitmentType, workSeniority, workPlace, salary, education, recruitingNumbers, deadline, jobResponsibilities, jobRequirements, publishType, publishDate, gmtCreate, gmtModified);
     }
 }
