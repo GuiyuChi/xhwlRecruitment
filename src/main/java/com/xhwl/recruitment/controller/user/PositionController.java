@@ -15,6 +15,8 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 
@@ -61,11 +63,14 @@ public class PositionController {
      * @return
      */
     @GetMapping("/positions/{typeId}")
-    public List<HashMap> getUnderwayPositionsByType(@RequestHeader HttpHeaders headers, @PathVariable("typeId") Integer typeId,
+    public Page<HashMap> getUnderwayPositionsByType(@RequestHeader HttpHeaders headers, @PathVariable("typeId") Integer typeId,
+                                                    @RequestParam(value = "page", defaultValue = "1") Integer page,
+                                                    @RequestParam(value = "size", defaultValue = "10") Integer size,
                                                     @RequestParam(value="workPlace", required = false, defaultValue = "") String workPlace,
                                                     @RequestParam(value="positionType", required = false, defaultValue = "") String positionType,
                                                     @RequestParam(value="positionName", required = false, defaultValue = "") String positionName) {
-        List<HashMap> res = positionService.getLikePositions(workPlace,positionName,positionType,typeId);
+        PageRequest request = new PageRequest(page - 1, size);
+        Page<HashMap> res = positionService.getLikePositions(request,workPlace,positionName,positionType,typeId);
         return res;
     }
 
