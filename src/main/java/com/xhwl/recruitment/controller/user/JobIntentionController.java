@@ -1,11 +1,13 @@
 package com.xhwl.recruitment.controller.user;
 
 import com.xhwl.recruitment.domain.JobIntentionEntity;
+import com.xhwl.recruitment.exception.FormSubmitFormatException;
 import com.xhwl.recruitment.exception.MException;
 import com.xhwl.recruitment.exception.ResumeNoExistException;
 import com.xhwl.recruitment.service.ResumeService;
 import com.xhwl.recruitment.service.UserService;
 import com.xhwl.recruitment.util.JWTUtil;
+import com.xhwl.recruitment.util.ValidateUtils;
 import com.xhwl.recruitment.vo.JobIntentionVo;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +29,7 @@ public class JobIntentionController {
 
     @GetMapping("/intention")
     @RequiresAuthentication
-    public JobIntentionEntity getJobIntention(@RequestHeader HttpHeaders headers){
+    public JobIntentionEntity getJobIntention(@RequestHeader HttpHeaders headers) {
         String username = null;
         if (headers.getFirst("authorization") != null) {
             username = JWTUtil.getUsername(headers.getFirst("authorization"));
@@ -39,7 +41,7 @@ public class JobIntentionController {
 
     @PostMapping("/intention")
     @RequiresAuthentication
-    public JobIntentionEntity changeJobIntention(@RequestHeader HttpHeaders headers, @RequestBody JobIntentionVo jobIntentionVo){
+    public JobIntentionEntity changeJobIntention(@RequestHeader HttpHeaders headers, @RequestBody JobIntentionVo jobIntentionVo) {
         String username = null;
         if (headers.getFirst("authorization") != null) {
             username = JWTUtil.getUsername(headers.getFirst("authorization"));
@@ -50,12 +52,35 @@ public class JobIntentionController {
             throw new ResumeNoExistException("需要先创建用户的简历表再创建工作意向表");
         }
 
-        if(resumeService.getJobIntension(userId)==null){
-            return resumeService.addJobIntension(userId,jobIntentionVo);
-        }else{
+        //表单验证
+        if (!formValid(jobIntentionVo)) {
+            throw new FormSubmitFormatException("表单格式错误");
+        }
+        
+        if (resumeService.getJobIntension(userId) == null) {
+            return resumeService.addJobIntension(userId, jobIntentionVo);
+        } else {
             //从数据库中找到resume的id然后写入vo中
             jobIntentionVo.setId(resumeService.getJobIntension(userId).getId());
             return resumeService.modifyJobIntension(jobIntentionVo);
         }
+    }
+
+    /**
+     * 表单验证
+     *
+     * @param vo
+     * @return
+     */
+    private boolean formValid(JobIntentionVo vo) {
+        boolean validRes = true;
+
+        if (!ValidateUtils.isValidDate(vo.getExpectedTimeForDuty())) {
+            validRes = false;
+        }
+        if (!ValidateUtils.Notempty(vo.getWorkPlace())) {
+            validRes = false;
+        }
+        return validRes;
     }
 }

@@ -1,11 +1,13 @@
 package com.xhwl.recruitment.controller.user;
 
 import com.xhwl.recruitment.domain.InternshipExperienceEntity;
+import com.xhwl.recruitment.exception.FormSubmitFormatException;
 import com.xhwl.recruitment.exception.MException;
 import com.xhwl.recruitment.exception.MyNoPermissionException;
 import com.xhwl.recruitment.service.PermissionService;
 import com.xhwl.recruitment.service.ResumeService;
 import com.xhwl.recruitment.service.UserService;
+import com.xhwl.recruitment.util.ValidateUtils;
 import com.xhwl.recruitment.vo.InternshipExperienceVo;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +33,7 @@ public class InternshipExperienceController {
     PermissionService permissionService;
 
     /**
-     * 获取用户的工作经历
+     * 获取用户的实习经历
      *
      * @param headers
      * @return
@@ -45,6 +47,7 @@ public class InternshipExperienceController {
 
     /**
      * 新建或者修改一条实习经历
+     *
      * @param headers
      * @param internshipExperienceVo
      * @return
@@ -53,6 +56,10 @@ public class InternshipExperienceController {
     @RequiresAuthentication
     public InternshipExperienceEntity changeInternshipExperience(@RequestHeader HttpHeaders headers, @RequestBody InternshipExperienceVo internshipExperienceVo) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
+        //表单验证
+        if (!formValid(internshipExperienceVo)) {
+            throw new FormSubmitFormatException("表单格式错误");
+        }
         if (internshipExperienceVo.getId() == null) {
             //新建
             return resumeService.addInternshipExperience(userId, internshipExperienceVo);
@@ -68,17 +75,35 @@ public class InternshipExperienceController {
 
     /**
      * 删除
+     *
      * @param headers
      * @param internshipId
      */
     @DeleteMapping("/internship/{id}")
     @RequiresAuthentication
-    public void deleteInternshipExperience(@RequestHeader HttpHeaders headers,@PathVariable("id") Long internshipId){
+    public void deleteInternshipExperience(@RequestHeader HttpHeaders headers, @PathVariable("id") Long internshipId) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
-        if(permissionService.internshipExperiencePermission(userId,internshipId)){
+        if (permissionService.internshipExperiencePermission(userId, internshipId)) {
             resumeService.deleteInternshipExperience(internshipId);
-        }else{
+        } else {
             throw new MyNoPermissionException("无修改权限");
         }
+    }
+
+    /**
+     * 表单验证
+     *
+     * @param vo
+     * @return
+     */
+    private boolean formValid(InternshipExperienceVo vo) {
+        boolean validRes = true;
+        if (!ValidateUtils.Notempty(vo.getCompany())) {
+            validRes = false;
+        }
+        if (!ValidateUtils.Notempty(vo.getPosition())) {
+            validRes = false;
+        }
+        return validRes;
     }
 }

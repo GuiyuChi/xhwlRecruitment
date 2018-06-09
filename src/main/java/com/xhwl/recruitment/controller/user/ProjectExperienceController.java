@@ -1,11 +1,13 @@
 package com.xhwl.recruitment.controller.user;
 
 import com.xhwl.recruitment.domain.ProjectExperienceEntity;
+import com.xhwl.recruitment.exception.FormSubmitFormatException;
 import com.xhwl.recruitment.exception.MException;
 import com.xhwl.recruitment.exception.MyNoPermissionException;
 import com.xhwl.recruitment.service.PermissionService;
 import com.xhwl.recruitment.service.ResumeService;
 import com.xhwl.recruitment.service.UserService;
+import com.xhwl.recruitment.util.ValidateUtils;
 import com.xhwl.recruitment.vo.ProjectExperienceVo;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +56,11 @@ public class ProjectExperienceController {
     @RequiresAuthentication
     public ProjectExperienceEntity changeProjectExperience(@RequestHeader HttpHeaders headers, @RequestBody ProjectExperienceVo projectExperienceVo) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
+
+        //表单验证
+        if (!formValid(projectExperienceVo)) {
+            throw new FormSubmitFormatException("表单格式错误");
+        }
         if (projectExperienceVo.getId() == null) {
             //新建
             return resumeService.addProjectExperience(userId, projectExperienceVo);
@@ -82,5 +89,25 @@ public class ProjectExperienceController {
         } else {
             throw new MyNoPermissionException("无修改权限");
         }
+    }
+
+    /**
+     * 表单验证
+     *
+     * @param vo
+     * @return
+     */
+    private boolean formValid(ProjectExperienceVo vo) {
+        boolean validRes = true;
+        if (!ValidateUtils.Notempty(vo.getProjectName())) {
+            validRes = false;
+        }
+        if (!ValidateUtils.Notempty(vo.getProjectRole())) {
+            validRes = false;
+        }
+        if (!ValidateUtils.Notempty(vo.getProjectDescription())) {
+            validRes = false;
+        }
+        return validRes;
     }
 }

@@ -7,11 +7,16 @@ import com.xhwl.recruitment.exception.ResumeNoExistException;
 import com.xhwl.recruitment.service.ResumeService;
 import com.xhwl.recruitment.service.UserService;
 import com.xhwl.recruitment.util.JWTUtil;
+import com.xhwl.recruitment.util.ValidateUtils;
 import com.xhwl.recruitment.vo.PersonalInformationVo;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.regex.Pattern;
 
 /**
  * @Author: guiyu
@@ -72,11 +77,8 @@ public class PersonalInformationController {
         }
 
         // 表单验证
-        if (personalInformationVo.getName() == null || "".equals(personalInformationVo.getName())) {
+        if(!formValid(personalInformationVo)){
             throw new FormSubmitFormatException("表单格式错误");
-        }
-        if (personalInformationVo.getSex() != 1 || personalInformationVo.getSex() != 2) {
-            throw new FormSubmitFormatException("性别格式错误");
         }
 
 
@@ -87,5 +89,42 @@ public class PersonalInformationController {
             personalInformationVo.setId(resumeService.getPersonalInformation(userId).getId());
             return resumeService.modifyPersonalInformation(personalInformationVo);
         }
+    }
+
+    /**
+     * 表单验证
+     *
+     * @param vo
+     * @return
+     */
+    private boolean formValid(PersonalInformationVo vo) {
+        boolean validRes = true;
+
+        if (!ValidateUtils.Notempty(vo.getName())) {
+            validRes = false;
+        }
+        if (!ValidateUtils.Notempty(vo.getSex().toString())) {
+            validRes = false;
+        }
+        if (!ValidateUtils.Notempty(vo.getIdType().toString())) {
+            validRes = false;
+        }
+        if (vo.getIdType() == 1 && !ValidateUtils.IDcard(vo.getIdNumber())) {
+            validRes = false;
+        }
+        if (!ValidateUtils.isValidDate(vo.getBirthday())) {
+            validRes = false;
+        }
+        if (!ValidateUtils.Email(vo.getEmail())) {
+            validRes = false;
+        }
+        if(!ValidateUtils.Mobile(vo.getTelephone())){
+            validRes = false;
+        }
+        if (!ValidateUtils.Notempty(vo.getWorkSeniority())) {
+            validRes = false;
+        }
+
+        return validRes;
     }
 }
