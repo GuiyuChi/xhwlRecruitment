@@ -15,6 +15,7 @@ public class PositionVo {
     private Integer recruitmentType;//招聘类型
     private String workSeniority;//工作年限
     private String workPlace;//工作地点
+    private String salary;//预期薪水
     private String education;//学历要求
     private Integer recruitingNumbers;//招聘人数
     private String deadline;//截止日期
@@ -151,6 +152,14 @@ public class PositionVo {
         this.publishDate = publishDate;
     }
 
+    public String getSalary() {
+        return salary;
+    }
+
+    public void setSalary(String salary) {
+        this.salary = salary;
+    }
+
     @Override
     public String toString() {
         return "PositionVo{" +
@@ -163,6 +172,7 @@ public class PositionVo {
                 ", recruitmentType=" + recruitmentType +
                 ", workSeniority='" + workSeniority + '\'' +
                 ", workPlace='" + workPlace + '\'' +
+                ", salary='" + salary + '\'' +
                 ", education='" + education + '\'' +
                 ", recruitingNumbers=" + recruitingNumbers +
                 ", deadline='" + deadline + '\'' +

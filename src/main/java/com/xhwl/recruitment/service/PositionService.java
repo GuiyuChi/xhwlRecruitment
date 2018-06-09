@@ -107,6 +107,7 @@ public class PositionService {
         hashMap.put("recruitmentType", String.valueOf(position.getRecruitmentType()));
         hashMap.put("workSeniority", position.getWorkSeniority());
         hashMap.put("workPlace", position.getWorkPlace());
+        hashMap.put("salary",position.getSalary());
         hashMap.put("education", position.getEducation());
         hashMap.put("recruitingNumbers", position.getRecruitingNumbers().toString());
         hashMap.put("deadline", String.valueOf(position.getDeadline()));
@@ -163,6 +164,7 @@ public class PositionService {
             hashMap.put("recruitmentType", String.valueOf(position.getRecruitmentType()));
             hashMap.put("workSeniority", position.getWorkSeniority());
             hashMap.put("workPlace", position.getWorkPlace());
+            hashMap.put("salary",position.getSalary());
             hashMap.put("publishDate", String.valueOf(position.getPublishDate()));
             hashMap.put("deadline", String.valueOf(position.getDeadline()));
             res.add(hashMap);
@@ -226,6 +228,7 @@ public class PositionService {
             hashMap.put("recruitmentType", String.valueOf(position.getRecruitmentType()));
             hashMap.put("workSeniority", position.getWorkSeniority());
             hashMap.put("workPlace", position.getWorkPlace());
+            hashMap.put("salary",position.getSalary());
             hashMap.put("publishDate", String.valueOf(position.getPublishDate()));
             hashMap.put("deadline", String.valueOf(position.getDeadline()));
             res.add(hashMap);
@@ -276,6 +279,7 @@ public class PositionService {
                     hashMap.put("positionType", position.getPositionType());
                     hashMap.put("workSeniority", position.getWorkSeniority());
                     hashMap.put("workPlace", position.getWorkPlace());
+                    hashMap.put("salary",position.getSalary());
                     hashMap.put("recruitingNumbers", position.getRecruitingNumbers().toString());
                     hashMap.put("publishDate", position.getPublishDate().toString());
                     hashMap.put("department", String.valueOf(position.getDepartment()));
@@ -307,6 +311,7 @@ public class PositionService {
             hashMap.put("recruitingNumbers", position.getRecruitingNumbers().toString());
             hashMap.put("workSeniority", position.getWorkSeniority());
             hashMap.put("workPlace", position.getWorkPlace());
+            hashMap.put("salary",position.getSalary());
             hashMap.put("education", position.getEducation());
             hashMap.put("publishDate", position.getPublishDate().toString());
             hashMap.put("jobResponsibilities", position.getJobResponsibilities());
