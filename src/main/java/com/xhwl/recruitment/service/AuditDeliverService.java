@@ -113,6 +113,40 @@ public class AuditDeliverService {
         }
     }
 
+    //获得工作年限
+    private String getWorkSeniority(ResumeDeliverEntity resumeDeliverEntity){
+        Long resumeId = resumeDeliverEntity.getDwResumeId();
+        DwPersonalInformationEntity dwPersonalInformationEntity = dwPersonalInformationRepository.findByResumeId(resumeId);
+        if (dwPersonalInformationEntity == null) return "未填写";
+        return dwPersonalInformationEntity.getWorkSeniority();
+    }
+
+    private List<DeliverDto> entitys2DeliverDtos(List<ResumeDeliverEntity> delivers,Integer auth){
+        List<DeliverDto> deliverDtos = new ArrayList<>();
+
+        for (ResumeDeliverEntity resumeDeliverEntity : delivers) {
+            DeliverDto deliverDto = new DeliverDto();
+
+            // 判断岗位的类型
+            PositionEntity positionEntity = positionRepository.findOne(resumeDeliverEntity.getPositionId());
+            if(positionEntity!=null && 2==positionEntity.getRecruitmentType()){
+                //岗位为社招
+                deliverDto.setWorkSeniority(getWorkSeniority(resumeDeliverEntity));
+            } else{
+                deliverDto.setWorkSeniority(null);
+            }
+
+            deliverDto.setId(resumeDeliverEntity.getId());
+            deliverDto.setUsername(getUsernameByDeliver(resumeDeliverEntity));
+            deliverDto.setSex(getSexByDeliver(resumeDeliverEntity));
+            deliverDto.setHighestEducation(getMaxHighEducationByDeliver(resumeDeliverEntity));
+            deliverDto.setDeliverDate(resumeDeliverEntity.getDeliverDate());
+            deliverDto.setAuth(auth);
+            deliverDtos.add(deliverDto);
+        }
+        return deliverDtos;
+    }
+
     /**
      * 管理员让一条投递记录进入下一个流程,通过
      *
@@ -178,17 +212,7 @@ public class AuditDeliverService {
             auth = 1;
         }
         if (delivers == null) return null;
-        List<DeliverDto> deliverDtos = new ArrayList<>();
-        for (ResumeDeliverEntity resumeDeliverEntity : delivers) {
-            DeliverDto deliverDto = new DeliverDto();
-            deliverDto.setId(resumeDeliverEntity.getId());
-            deliverDto.setUsername(getUsernameByDeliver(resumeDeliverEntity));
-            deliverDto.setSex(getSexByDeliver(resumeDeliverEntity));
-            deliverDto.setHighestEducation(getMaxHighEducationByDeliver(resumeDeliverEntity));
-            deliverDto.setDeliverDate(resumeDeliverEntity.getDeliverDate());
-            deliverDto.setAuth(auth);
-            deliverDtos.add(deliverDto);
-        }
+        List<DeliverDto> deliverDtos = entitys2DeliverDtos(delivers,auth);
         Page<DeliverDto> resPage = new PageImpl<DeliverDto>(deliverDtos, pageable, deliverEntityPages.getTotalElements());
         return resPage;
     }
@@ -213,17 +237,7 @@ public class AuditDeliverService {
             auth = 1;
         }
 
-        List<DeliverDto> deliverDtos = new ArrayList<>();
-        for (ResumeDeliverEntity resumeDeliverEntity : delivers) {
-            DeliverDto deliverDto = new DeliverDto();
-            deliverDto.setId(resumeDeliverEntity.getId());
-            deliverDto.setUsername(getUsernameByDeliver(resumeDeliverEntity));
-            deliverDto.setSex(getSexByDeliver(resumeDeliverEntity));
-            deliverDto.setHighestEducation(getMaxHighEducationByDeliver(resumeDeliverEntity));
-            deliverDto.setDeliverDate(resumeDeliverEntity.getDeliverDate());
-            deliverDto.setAuth(auth);
-            deliverDtos.add(deliverDto);
-        }
+        List<DeliverDto> deliverDtos = entitys2DeliverDtos(delivers,auth);
         Page<DeliverDto> resPage = new PageImpl<DeliverDto>(deliverDtos, pageable, deliverEntityPages.getTotalElements());
         return resPage;
     }
@@ -247,17 +261,7 @@ public class AuditDeliverService {
         }
         List<ResumeDeliverEntity> delivers = deliverEntityPages.getContent();
 
-        List<DeliverDto> deliverDtos = new ArrayList<>();
-        for (ResumeDeliverEntity resumeDeliverEntity : delivers) {
-            DeliverDto deliverDto = new DeliverDto();
-            deliverDto.setId(resumeDeliverEntity.getId());
-            deliverDto.setUsername(getUsernameByDeliver(resumeDeliverEntity));
-            deliverDto.setSex(getSexByDeliver(resumeDeliverEntity));
-            deliverDto.setHighestEducation(getMaxHighEducationByDeliver(resumeDeliverEntity));
-            deliverDto.setDeliverDate(resumeDeliverEntity.getDeliverDate());
-            deliverDto.setAuth(auth);
-            deliverDtos.add(deliverDto);
-        }
+        List<DeliverDto> deliverDtos = entitys2DeliverDtos(delivers,auth);
         Page<DeliverDto> resPage = new PageImpl<DeliverDto>(deliverDtos, pageable, deliverEntityPages.getTotalElements());
         return resPage;
     }
@@ -280,17 +284,7 @@ public class AuditDeliverService {
             auth = 1;
         }
         if (delivers == null) return null;
-        List<DeliverDto> deliverDtos = new ArrayList<>();
-        for (ResumeDeliverEntity resumeDeliverEntity : delivers) {
-            DeliverDto deliverDto = new DeliverDto();
-            deliverDto.setId(resumeDeliverEntity.getId());
-            deliverDto.setUsername(getUsernameByDeliver(resumeDeliverEntity));
-            deliverDto.setSex(getSexByDeliver(resumeDeliverEntity));
-            deliverDto.setHighestEducation(getMaxHighEducationByDeliver(resumeDeliverEntity));
-            deliverDto.setDeliverDate(resumeDeliverEntity.getDeliverDate());
-            deliverDto.setAuth(auth);
-            deliverDtos.add(deliverDto);
-        }
+        List<DeliverDto> deliverDtos = entitys2DeliverDtos(delivers,auth);
         Page<DeliverDto> resPage = new PageImpl<DeliverDto>(deliverDtos, pageable, deliverEntityPages.getTotalElements());
         return resPage;
     }
@@ -313,17 +307,7 @@ public class AuditDeliverService {
         if (department == PersonnelDepartmentId) {
             auth = 1;
         }
-        List<DeliverDto> deliverDtos = new ArrayList<>();
-        for (ResumeDeliverEntity resumeDeliverEntity : delivers) {
-            DeliverDto deliverDto = new DeliverDto();
-            deliverDto.setId(resumeDeliverEntity.getId());
-            deliverDto.setUsername(getUsernameByDeliver(resumeDeliverEntity));
-            deliverDto.setSex(getSexByDeliver(resumeDeliverEntity));
-            deliverDto.setHighestEducation(getMaxHighEducationByDeliver(resumeDeliverEntity));
-            deliverDto.setDeliverDate(resumeDeliverEntity.getDeliverDate());
-            deliverDto.setAuth(auth);
-            deliverDtos.add(deliverDto);
-        }
+        List<DeliverDto> deliverDtos = entitys2DeliverDtos(delivers,auth);
         Page<DeliverDto> resPage = new PageImpl<DeliverDto>(deliverDtos, pageable, deliverEntityPages.getTotalElements());
         return resPage;
     }
@@ -346,17 +330,7 @@ public class AuditDeliverService {
         if (department == PersonnelDepartmentId) {
             auth = 1;
         }
-        List<DeliverDto> deliverDtos = new ArrayList<>();
-        for (ResumeDeliverEntity resumeDeliverEntity : delivers) {
-            DeliverDto deliverDto = new DeliverDto();
-            deliverDto.setId(resumeDeliverEntity.getId());
-            deliverDto.setUsername(getUsernameByDeliver(resumeDeliverEntity));
-            deliverDto.setSex(getSexByDeliver(resumeDeliverEntity));
-            deliverDto.setHighestEducation(getMaxHighEducationByDeliver(resumeDeliverEntity));
-            deliverDto.setDeliverDate(resumeDeliverEntity.getDeliverDate());
-            deliverDto.setAuth(auth);
-            deliverDtos.add(deliverDto);
-        }
+        List<DeliverDto> deliverDtos = entitys2DeliverDtos(delivers,auth);
         Page<DeliverDto> resPage = new PageImpl<DeliverDto>(deliverDtos, pageable, deliverEntityPages.getTotalElements());
         return resPage;
     }

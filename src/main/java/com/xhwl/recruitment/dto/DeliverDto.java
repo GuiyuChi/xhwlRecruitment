@@ -12,6 +12,7 @@ public class DeliverDto {
     private String username;
     private String sex;
     private String highestEducation;
+    private String workSeniority; //工作年限
     private Date deliverDate;
     private Integer auth;  //标注是否有修改权限，有权限为1，无则为0
 
@@ -63,6 +64,14 @@ public class DeliverDto {
         this.auth = auth;
     }
 
+    public String getWorkSeniority() {
+        return workSeniority;
+    }
+
+    public void setWorkSeniority(String workSeniority) {
+        this.workSeniority = workSeniority;
+    }
+
     @Override
     public String toString() {
         return "DeliverDto{" +
@@ -70,6 +79,7 @@ public class DeliverDto {
                 ", username='" + username + '\'' +
                 ", sex='" + sex + '\'' +
                 ", highestEducation='" + highestEducation + '\'' +
+                ", workSeniority='" + workSeniority + '\'' +
                 ", deliverDate=" + deliverDate +
                 ", auth=" + auth +
                 '}';

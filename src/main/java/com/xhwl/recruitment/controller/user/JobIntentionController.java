@@ -56,7 +56,7 @@ public class JobIntentionController {
         if (!formValid(jobIntentionVo)) {
             throw new FormSubmitFormatException("表单格式错误");
         }
-        
+
         if (resumeService.getJobIntension(userId) == null) {
             return resumeService.addJobIntension(userId, jobIntentionVo);
         } else {
