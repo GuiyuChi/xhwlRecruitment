@@ -7,7 +7,7 @@ import java.util.Objects;
 /**
  * @Author: guiyu
  * @Description:
- * @Date: Create in 下午3:38 2018/6/7
+ * @Date: Create in 下午7:38 2018/6/16
  **/
 @Entity
 @Table(name = "resume_deliver", schema = "xhwl", catalog = "")
@@ -16,7 +16,7 @@ public class ResumeDeliverEntity {
     private Long positionId;
     private Long userId;
     private Long dwResumeId;
-    private Integer emailState;
+    private String emailState;
     private String recruitmentState;
     private Date deliverDate;
     private Integer readFlag;
@@ -63,12 +63,12 @@ public class ResumeDeliverEntity {
     }
 
     @Basic
-    @Column(name = "email_state", nullable = true)
-    public Integer getEmailState() {
+    @Column(name = "email_state", nullable = true, length = 255)
+    public String getEmailState() {
         return emailState;
     }
 
-    public void setEmailState(Integer emailState) {
+    public void setEmailState(String emailState) {
         this.emailState = emailState;
     }
 

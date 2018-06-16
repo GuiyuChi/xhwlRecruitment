@@ -3,6 +3,7 @@ package com.xhwl.recruitment.service;
 import com.xhwl.recruitment.dao.*;
 import com.xhwl.recruitment.domain.*;
 import com.xhwl.recruitment.redis.DeliverRedis;
+import com.xhwl.recruitment.util.EmailStateUtil;
 import com.xhwl.recruitment.util.StatusCodeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -318,7 +319,7 @@ public class DeliverService {
 
         Date currentDate = new java.sql.Date(System.currentTimeMillis());
         resumeDeliverEntity.setDeliverDate(currentDate);
-        resumeDeliverEntity.setEmailState(0);
+        resumeDeliverEntity.setEmailState(EmailStateUtil.stateInit());
 
         ResumeDeliverEntity rde = resumeDeliverRepository.save(resumeDeliverEntity);
 //        log.info("the result of copy addResumeDeliver: {}", rde);

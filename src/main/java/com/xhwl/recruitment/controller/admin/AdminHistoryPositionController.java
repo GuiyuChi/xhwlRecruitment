@@ -80,10 +80,10 @@ public class AdminHistoryPositionController {
         PageRequest request = new PageRequest(page - 1, size);
         return historyPositionService.searchPositionAfterDeadline(request,departmentId,publishDate,endDate,departmentName,positionName);
     }
-    @GetMapping("admin/getMailState/{resumeId}")//管理员拿到email_state字段，判断是否发送邮件
-    @RequiresRoles("admin")
-    public int getMailState(@PathVariable("resumeId") Long resumeId){
-        ResumeDeliverEntity resumeDelieverEntity=resumeDeliverRepository.findById(resumeId);
-        return resumeDelieverEntity.getEmailState();
-    }
+//    @GetMapping("admin/getMailState/{resumeId}")//管理员拿到email_state字段，判断是否发送邮件
+//    @RequiresRoles("admin")
+//    public int getMailState(@PathVariable("resumeId") Long resumeId){
+//        ResumeDeliverEntity resumeDelieverEntity=resumeDeliverRepository.findById(resumeId);
+//        return resumeDelieverEntity.getEmailState();
+//    }
 }
