@@ -7,6 +7,7 @@ import com.xhwl.recruitment.domain.PositionEntity;
 import com.xhwl.recruitment.domain.ResumeDeliverEntity;
 import com.xhwl.recruitment.dto.DeliverDto;
 import com.xhwl.recruitment.redis.DeliverRedis;
+import com.xhwl.recruitment.util.EmailStateUtil;
 import com.xhwl.recruitment.util.StatusCodeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -136,6 +137,13 @@ public class AuditDeliverService {
                 deliverDto.setWorkSeniority(null);
             }
 
+            //判断邮件发送状态
+            //获取此时的投递步数
+            Integer step = StatusCodeUtil.codeAnalysis(resumeDeliverEntity.getRecruitmentState());
+            //获取原先的邮件状态码
+            String state = resumeDeliverEntity.getEmailState();
+
+            deliverDto.setIsSendEmail(String.valueOf(EmailStateUtil.getEmailState(state,step)));
             deliverDto.setId(resumeDeliverEntity.getId());
             deliverDto.setUsername(getUsernameByDeliver(resumeDeliverEntity));
             deliverDto.setSex(getSexByDeliver(resumeDeliverEntity));
@@ -366,6 +374,11 @@ public class AuditDeliverService {
             hashMap.put("refuseStep", StatusCodeUtil.getRefuseStep(resumeDeliverEntity.getRecruitmentState()));
             hashMap.put("auth", String.valueOf(auth));
 
+            //获取此时的投递步数
+            Integer step = StatusCodeUtil.codeAnalysis(resumeDeliverEntity.getRecruitmentState());
+            //获取原先的邮件状态码
+            String state = resumeDeliverEntity.getEmailState();
+            hashMap.put("isSendEmail", String.valueOf(EmailStateUtil.getEmailState(state,step)));
             res.add(hashMap);
         }
         Page<HashMap> resPage = new PageImpl<HashMap>(res, pageable, deliverEntityPages.getTotalElements());

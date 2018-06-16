@@ -1,5 +1,7 @@
 package com.xhwl.recruitment.dto;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
+
 import java.sql.Date;
 
 /**
@@ -15,6 +17,7 @@ public class DeliverDto {
     private String workSeniority; //工作年限
     private Date deliverDate;
     private Integer auth;  //标注是否有修改权限，有权限为1，无则为0
+    private String isSendEmail;//当前简历在当前轮询状态是否发送过简历
 
     public Long getId() {
         return id;
@@ -72,6 +75,14 @@ public class DeliverDto {
         this.workSeniority = workSeniority;
     }
 
+    public String getIsSendEmail() {
+        return isSendEmail;
+    }
+
+    public void setIsSendEmail(String isSendEmail) {
+        this.isSendEmail = isSendEmail;
+    }
+
     @Override
     public String toString() {
         return "DeliverDto{" +
@@ -82,6 +93,7 @@ public class DeliverDto {
                 ", workSeniority='" + workSeniority + '\'' +
                 ", deliverDate=" + deliverDate +
                 ", auth=" + auth +
+                ", isSendEmail='" + isSendEmail + '\'' +
                 '}';
     }
 }
