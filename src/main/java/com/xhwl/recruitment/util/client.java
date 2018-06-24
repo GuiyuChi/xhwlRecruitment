@@ -7,8 +7,7 @@ package com.xhwl.recruitment.util;
  **/
 public class client {
     public static void main(String[] args) {
-        String one = EmailStateUtil.stateInit();
-        String two = EmailStateUtil.sendChange(one,2);
-        System.out.println(EmailStateUtil.getEmailState(two,1));
+        String a = MD5Util.md5Password("123456");
+        System.out.println(a);
     }
 }

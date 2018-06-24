@@ -7,6 +7,7 @@ import com.xhwl.recruitment.exception.ImperfectException;
 import com.xhwl.recruitment.exception.PhoneCaptchaException;
 import com.xhwl.recruitment.exception.UserNoExistException;
 import com.xhwl.recruitment.exception.UserRepeatException;
+import com.xhwl.recruitment.util.MD5Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -54,7 +55,7 @@ public class RegisterController {
         } else {
             userEntity = new UserEntity();
             userEntity.setUsername(username);
-            userEntity.setPassword(password);
+            userEntity.setPassword(MD5Util.md5Password(password));
             userEntity.setRole("user");
             userRepository.save(userEntity);
             return new ResponseBean(200, "register success", null);
@@ -86,7 +87,7 @@ public class RegisterController {
             throw new PhoneCaptchaException("手机验证码输入错误");
         } else {
             UserEntity userEntity = userRepository.findByUsername(username);
-            userEntity.setPassword(password);
+            userEntity.setPassword(MD5Util.md5Password(password));
             userRepository.save(userEntity);
             return new ResponseBean(200, "resetPassword success", null);
         }

@@ -1,6 +1,7 @@
 package com.xhwl.recruitment.dao;
 
 import com.xhwl.recruitment.domain.UserEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Repository;
  * @Date: Create in 下午6:00 2018/3/22
  **/
 @Repository
-public interface UserRepository extends CrudRepository<UserEntity,Long>{
+public interface UserRepository extends JpaRepository<UserEntity,Long> {
 
     UserEntity findByUsername(String username);
 

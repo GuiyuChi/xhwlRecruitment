@@ -9,6 +9,7 @@ import com.xhwl.recruitment.exception.MException;
 import com.xhwl.recruitment.service.FileService;
 import com.xhwl.recruitment.service.UserService;
 import com.xhwl.recruitment.util.JWTUtil;
+import com.xhwl.recruitment.util.MD5Util;
 import com.xhwl.recruitment.util.VerifyUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
@@ -73,8 +74,8 @@ public class LoginController {
         String savedCaptcha = operations.get(uuid);
         if (!check.equalsIgnoreCase(savedCaptcha)) throw new CaptchaException("图形验证码输入错误");
         UserEntity userEntity = userService.getUser(username);
-        if (userEntity.getPassword().equals(password)) {
-            return new ResponseBean(200, "Login success", JWTUtil.sign(username, password));
+        if (userEntity.getPassword().equals(MD5Util.md5Password(password))) {
+            return new ResponseBean(200, "Login success", JWTUtil.sign(username, MD5Util.md5Password(password)));
         } else {
             throw new UnauthorizedException();
         }
@@ -99,11 +100,11 @@ public class LoginController {
         if (!check.equalsIgnoreCase(savedCaptcha)) throw new CaptchaException("图形验证码输入错误");
 
         UserEntity userEntity = userService.getUser(username);
-        if (userEntity.getPassword().equals(password)) {
+        if (userEntity.getPassword().equals(MD5Util.md5Password(password))) {
             if (userEntity.getRole().equals("admin")) {
                 Long userId = userEntity.getId();
                 AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
-                return new ResponseBean(200, adminAuthEntity.getRole(), JWTUtil.sign(username, password));
+                return new ResponseBean(200, adminAuthEntity.getRole(), JWTUtil.sign(username, MD5Util.md5Password(password)));
             } else {
                 throw new UnauthorizedException();
             }
@@ -144,8 +145,8 @@ public class LoginController {
     public ResponseBean login(@RequestParam("username") String username,
                               @RequestParam("password") String password) {
         UserEntity userEntity = userService.getUser(username);
-        if (userEntity.getPassword().equals(password)) {
-            return new ResponseBean(200, "Login success", JWTUtil.sign(username, password));
+        if (userEntity.getPassword().equals(MD5Util.md5Password(password))) {
+            return new ResponseBean(200, "Login success", JWTUtil.sign(username, MD5Util.md5Password(password)));
         } else {
             throw new UnauthorizedException();
         }
@@ -163,11 +164,11 @@ public class LoginController {
     public ResponseBean adminLogin(@RequestParam("username") String username,
                                    @RequestParam("password") String password) {
         UserEntity userEntity = userService.getUser(username);
-        if (userEntity.getPassword().equals(password)) {
+        if (userEntity.getPassword().equals(MD5Util.md5Password(password))) {
             if (userEntity.getRole().equals("admin")) {
                 Long userId = userEntity.getId();
                 AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
-                return new ResponseBean(200, adminAuthEntity.getRole(), JWTUtil.sign(username, password));
+                return new ResponseBean(200, adminAuthEntity.getRole(), JWTUtil.sign(username, MD5Util.md5Password(password)));
             } else {
                 throw new UnauthorizedException();
             }

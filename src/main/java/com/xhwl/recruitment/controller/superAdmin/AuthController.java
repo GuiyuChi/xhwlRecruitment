@@ -9,6 +9,7 @@ import com.xhwl.recruitment.exception.MyNoPermissionException;
 import com.xhwl.recruitment.exception.UserRepeatException;
 import com.xhwl.recruitment.service.AdminAuthService;
 import com.xhwl.recruitment.service.UserService;
+import com.xhwl.recruitment.util.MD5Util;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -71,7 +72,7 @@ public class AuthController {
             throw new UserRepeatException("用户已存在");
         }
 
-        adminAuthService.addAdmin(username, password, departmentId);
+        adminAuthService.addAdmin(username, MD5Util.md5Password(password), departmentId);
 
     }
 
@@ -121,7 +122,7 @@ public class AuthController {
             throw new DepartmentException("岗位错误");
         }
 
-        return adminAuthService.modifyAdmin(username, password, departmentId);
+        return adminAuthService.modifyAdmin(username, MD5Util.md5Password(password), departmentId);
     }
 
     /**
