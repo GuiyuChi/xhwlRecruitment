@@ -46,10 +46,10 @@ public class AdminResumeController {
      */
     @GetMapping("/admin/getResume/{deliverId}")
     @RequiresRoles("admin")
-    public List<Object> adminGetResumeBydeliver(@PathVariable("deliverId") Long deliverId) {
-        return dwResumeService.adminGetResume(deliverId);
+    public List<Object> adminGetResumeBydeliver(@RequestHeader HttpHeaders headers, @PathVariable("deliverId") Long deliverId) {
+        Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
+        return dwResumeService.adminGetResume(userId,deliverId);
     }
-
 
 
 }

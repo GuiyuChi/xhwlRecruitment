@@ -115,14 +115,14 @@ public class AuditDeliverService {
     }
 
     //获得工作年限
-    private String getWorkSeniority(ResumeDeliverEntity resumeDeliverEntity){
+    private String getWorkSeniority(ResumeDeliverEntity resumeDeliverEntity) {
         Long resumeId = resumeDeliverEntity.getDwResumeId();
         DwPersonalInformationEntity dwPersonalInformationEntity = dwPersonalInformationRepository.findByResumeId(resumeId);
         if (dwPersonalInformationEntity == null) return "未填写";
         return dwPersonalInformationEntity.getWorkSeniority();
     }
 
-    private List<DeliverDto> entitys2DeliverDtos(List<ResumeDeliverEntity> delivers,Integer auth){
+    private List<DeliverDto> entitys2DeliverDtos(List<ResumeDeliverEntity> delivers, Integer auth) {
         List<DeliverDto> deliverDtos = new ArrayList<>();
 
         for (ResumeDeliverEntity resumeDeliverEntity : delivers) {
@@ -130,10 +130,10 @@ public class AuditDeliverService {
 
             // 判断岗位的类型
             PositionEntity positionEntity = positionRepository.findOne(resumeDeliverEntity.getPositionId());
-            if(positionEntity!=null && 2==positionEntity.getRecruitmentType()){
+            if (positionEntity != null && 2 == positionEntity.getRecruitmentType()) {
                 //岗位为社招
                 deliverDto.setWorkSeniority(getWorkSeniority(resumeDeliverEntity));
-            } else{
+            } else {
                 deliverDto.setWorkSeniority(null);
             }
 
@@ -143,13 +143,20 @@ public class AuditDeliverService {
             //获取原先的邮件状态码
             String state = resumeDeliverEntity.getEmailState();
 
-            deliverDto.setIsSendEmail(String.valueOf(EmailStateUtil.getEmailState(state,step)));
+            deliverDto.setIsSendEmail(String.valueOf(EmailStateUtil.getEmailState(state, step)));
             deliverDto.setId(resumeDeliverEntity.getId());
             deliverDto.setUsername(getUsernameByDeliver(resumeDeliverEntity));
             deliverDto.setSex(getSexByDeliver(resumeDeliverEntity));
             deliverDto.setHighestEducation(getMaxHighEducationByDeliver(resumeDeliverEntity));
             deliverDto.setDeliverDate(resumeDeliverEntity.getDeliverDate());
             deliverDto.setAuth(auth);
+
+            //只有有权限处理时才显示未读
+            if (auth == 1 && resumeDeliverEntity.getReadFlag() == 0) {
+                deliverDto.setIsRead("false");
+            } else {
+                deliverDto.setIsRead("true");
+            }
             deliverDtos.add(deliverDto);
         }
         return deliverDtos;
@@ -164,10 +171,10 @@ public class AuditDeliverService {
         ResumeDeliverEntity deliver = resumeDeliverRepository.findOne(deliverId);
         String oldCode = deliver.getRecruitmentState();
         deliver.setRecruitmentState(StatusCodeUtil.codeChange(oldCode, 1));
+        // 设置阅读状态为未读
+        deliver.setReadFlag(0);
         resumeDeliverRepository.save(deliver);
 
-        // 重新设置阅读状态为未读
-        deliverRedis.setDeliverUnread(deliverId);
     }
 
     /**
@@ -179,10 +186,9 @@ public class AuditDeliverService {
         ResumeDeliverEntity deliver = resumeDeliverRepository.findOne(deliverId);
         String oldCode = deliver.getRecruitmentState();
         deliver.setRecruitmentState(StatusCodeUtil.codeChange(oldCode, 2));
+        // 设置阅读状态为未读
+        deliver.setReadFlag(0);
         resumeDeliverRepository.save(deliver);
-
-        // 重新设置阅读状态为未读
-        deliverRedis.setDeliverUnread(deliverId);
     }
 
     /**
@@ -194,10 +200,11 @@ public class AuditDeliverService {
         ResumeDeliverEntity deliver = resumeDeliverRepository.findOne(deliverId);
         String oldCode = deliver.getRecruitmentState();
         deliver.setRecruitmentState(StatusCodeUtil.cancelRefuse(oldCode));
+        // 设置阅读状态为未读
+        deliver.setReadFlag(0);
         resumeDeliverRepository.save(deliver);
 
-        // 重新设置阅读状态为未读
-        deliverRedis.setDeliverUnread(deliverId);
+
     }
 
     /**
@@ -207,7 +214,7 @@ public class AuditDeliverService {
      * @param department
      * @return
      */
-    public Page<DeliverDto> findDeliverInResumeReview(Pageable pageable,Long positionId, Long department) {
+    public Page<DeliverDto> findDeliverInResumeReview(Pageable pageable, Long positionId, Long department) {
         // 获取到对应的状态码
         String queryCode = StatusCodeUtil.getCode(ResumeReview);
         Page<ResumeDeliverEntity> deliverEntityPages = resumeDeliverRepository.findAllByPositionIdAndRecruitmentStateContaining(pageable, positionId, queryCode);
@@ -220,11 +227,10 @@ public class AuditDeliverService {
             auth = 1;
         }
         if (delivers == null) return null;
-        List<DeliverDto> deliverDtos = entitys2DeliverDtos(delivers,auth);
+        List<DeliverDto> deliverDtos = entitys2DeliverDtos(delivers, auth);
         Page<DeliverDto> resPage = new PageImpl<DeliverDto>(deliverDtos, pageable, deliverEntityPages.getTotalElements());
         return resPage;
     }
-
 
 
     /**
@@ -245,7 +251,7 @@ public class AuditDeliverService {
             auth = 1;
         }
 
-        List<DeliverDto> deliverDtos = entitys2DeliverDtos(delivers,auth);
+        List<DeliverDto> deliverDtos = entitys2DeliverDtos(delivers, auth);
         Page<DeliverDto> resPage = new PageImpl<DeliverDto>(deliverDtos, pageable, deliverEntityPages.getTotalElements());
         return resPage;
     }
@@ -269,7 +275,7 @@ public class AuditDeliverService {
         }
         List<ResumeDeliverEntity> delivers = deliverEntityPages.getContent();
 
-        List<DeliverDto> deliverDtos = entitys2DeliverDtos(delivers,auth);
+        List<DeliverDto> deliverDtos = entitys2DeliverDtos(delivers, auth);
         Page<DeliverDto> resPage = new PageImpl<DeliverDto>(deliverDtos, pageable, deliverEntityPages.getTotalElements());
         return resPage;
     }
@@ -281,7 +287,7 @@ public class AuditDeliverService {
      * @param department
      * @return
      */
-    public Page<DeliverDto> findDeliverInDepartmentInterview(Pageable pageable,Long positionId, Long department) {
+    public Page<DeliverDto> findDeliverInDepartmentInterview(Pageable pageable, Long positionId, Long department) {
         // 获取到对应的状态码
         String queryCode = StatusCodeUtil.getCode(DepartmentInterview);
         Page<ResumeDeliverEntity> deliverEntityPages = resumeDeliverRepository.findAllByPositionIdAndRecruitmentStateContaining(pageable, positionId, queryCode);
@@ -292,7 +298,7 @@ public class AuditDeliverService {
             auth = 1;
         }
         if (delivers == null) return null;
-        List<DeliverDto> deliverDtos = entitys2DeliverDtos(delivers,auth);
+        List<DeliverDto> deliverDtos = entitys2DeliverDtos(delivers, auth);
         Page<DeliverDto> resPage = new PageImpl<DeliverDto>(deliverDtos, pageable, deliverEntityPages.getTotalElements());
         return resPage;
     }
@@ -305,7 +311,7 @@ public class AuditDeliverService {
      * @param department
      * @return
      */
-    public Page<DeliverDto> findDeliverInHRInterview(Pageable pageable,Long positionId, Long department) {
+    public Page<DeliverDto> findDeliverInHRInterview(Pageable pageable, Long positionId, Long department) {
         // 获取到对应的状态码
         String queryCode = StatusCodeUtil.getCode(HRInterview);
         Page<ResumeDeliverEntity> deliverEntityPages = resumeDeliverRepository.findAllByPositionIdAndRecruitmentStateContaining(pageable, positionId, queryCode);
@@ -315,7 +321,7 @@ public class AuditDeliverService {
         if (department == PersonnelDepartmentId) {
             auth = 1;
         }
-        List<DeliverDto> deliverDtos = entitys2DeliverDtos(delivers,auth);
+        List<DeliverDto> deliverDtos = entitys2DeliverDtos(delivers, auth);
         Page<DeliverDto> resPage = new PageImpl<DeliverDto>(deliverDtos, pageable, deliverEntityPages.getTotalElements());
         return resPage;
     }
@@ -338,7 +344,7 @@ public class AuditDeliverService {
         if (department == PersonnelDepartmentId) {
             auth = 1;
         }
-        List<DeliverDto> deliverDtos = entitys2DeliverDtos(delivers,auth);
+        List<DeliverDto> deliverDtos = entitys2DeliverDtos(delivers, auth);
         Page<DeliverDto> resPage = new PageImpl<DeliverDto>(deliverDtos, pageable, deliverEntityPages.getTotalElements());
         return resPage;
     }
@@ -378,7 +384,16 @@ public class AuditDeliverService {
             Integer step = StatusCodeUtil.codeAnalysis(resumeDeliverEntity.getRecruitmentState());
             //获取原先的邮件状态码
             String state = resumeDeliverEntity.getEmailState();
-            hashMap.put("isSendEmail", String.valueOf(EmailStateUtil.getEmailState(state,step)));
+            hashMap.put("isSendEmail", String.valueOf(EmailStateUtil.getEmailState(state, step)));
+
+            //获取阅读情况
+            //只有有权限处理时才显示未读
+            if (auth == 1 && resumeDeliverEntity.getReadFlag() == 0) {
+                hashMap.put("isRead","false");
+            } else {
+                hashMap.put("isRead","true");
+
+            }
             res.add(hashMap);
         }
         Page<HashMap> resPage = new PageImpl<HashMap>(res, pageable, deliverEntityPages.getTotalElements());

@@ -133,6 +133,8 @@ public class MailService {
         //设置新的邮件状态
         resumeDelieverEntity.setEmailState(EmailStateUtil.sendChange(oldState,step));
 
+        resumeDeliverRepository.saveAndFlush(resumeDelieverEntity);
+
         try {
             final MimeMessage mimeMessage = this.mailSender.createMimeMessage();
             final MimeMessageHelper message = new MimeMessageHelper(mimeMessage);

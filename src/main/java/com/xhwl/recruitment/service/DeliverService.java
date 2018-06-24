@@ -321,6 +321,9 @@ public class DeliverService {
         resumeDeliverEntity.setDeliverDate(currentDate);
         resumeDeliverEntity.setEmailState(EmailStateUtil.stateInit());
 
+        // 设置阅读状态为未读
+        resumeDeliverEntity.setReadFlag(0);
+
         ResumeDeliverEntity rde = resumeDeliverRepository.save(resumeDeliverEntity);
 //        log.info("the result of copy addResumeDeliver: {}", rde);
         return rde.getId();
@@ -337,9 +340,6 @@ public class DeliverService {
         HashMap<String, String> filespath = fileService.copyDocument(userId);
         Long newResumeId = copyDatabase(userId, filespath);
         Long resumeDeliverId = addResumeDeliver(positionId, userId, newResumeId);
-
-        // 设置简历的阅读状态为未读
-        deliverRedis.setDeliverUnread(resumeDeliverId);
 
         return resumeDeliverId;
     }

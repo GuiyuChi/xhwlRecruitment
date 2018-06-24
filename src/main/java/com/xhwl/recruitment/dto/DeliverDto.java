@@ -18,6 +18,7 @@ public class DeliverDto {
     private Date deliverDate;
     private Integer auth;  //标注是否有修改权限，有权限为1，无则为0
     private String isSendEmail;//当前简历在当前轮询状态是否发送过简历
+    private String isRead;
 
     public Long getId() {
         return id;
@@ -83,6 +84,14 @@ public class DeliverDto {
         this.isSendEmail = isSendEmail;
     }
 
+    public String getIsRead() {
+        return isRead;
+    }
+
+    public void setIsRead(String isRead) {
+        this.isRead = isRead;
+    }
+
     @Override
     public String toString() {
         return "DeliverDto{" +
@@ -94,6 +103,7 @@ public class DeliverDto {
                 ", deliverDate=" + deliverDate +
                 ", auth=" + auth +
                 ", isSendEmail='" + isSendEmail + '\'' +
+                ", isRead='" + isRead + '\'' +
                 '}';
     }
 }
