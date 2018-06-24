@@ -389,9 +389,9 @@ public class AuditDeliverService {
             //获取阅读情况
             //只有有权限处理时才显示未读
             if (auth == 1 && resumeDeliverEntity.getReadFlag() == 0) {
-                hashMap.put("isRead","false");
+                hashMap.put("isRead", "false");
             } else {
-                hashMap.put("isRead","true");
+                hashMap.put("isRead", "true");
 
             }
             res.add(hashMap);
@@ -399,6 +399,57 @@ public class AuditDeliverService {
         Page<HashMap> resPage = new PageImpl<HashMap>(res, pageable, deliverEntityPages.getTotalElements());
         return resPage;
 
+    }
+
+    /**
+     * 管理员获取自己未读的操作的条数
+     *
+     * @param positionId 该岗位的ID
+     * @param department 管理员部门ID
+     * @return
+     */
+    public HashMap getNotReadNum(Long positionId, Long department) {
+        HashMap<String, Integer> res = new LinkedHashMap<>();
+        PositionEntity position = positionRepository.findOne(positionId);
+
+        // 简历审核
+        String queryCodeResumeReview = StatusCodeUtil.getCode(ResumeReview);
+        res.put("ResumeReview", getCount(position, queryCodeResumeReview, position.getResumeAuditDepartment(), department));
+
+        //HR初审
+        String queryCodeHRFristReview = StatusCodeUtil.getCode(HRFristReview);
+        res.put("HRFristReview", getCount(position, queryCodeHRFristReview, PersonnelDepartmentId, department));
+
+        //部门笔试
+        String queryCodeDepartmentWrittenExamination = StatusCodeUtil.getCode(DepartmentWrittenExamination);
+        res.put("DepartmentWrittenExamination", getCount(position, queryCodeDepartmentWrittenExamination, position.getDepartment(), department));
+
+        //部门面试
+        String queryCodeDepartmentInterview = StatusCodeUtil.getCode(DepartmentInterview);
+        res.put("DepartmentInterview", getCount(position, queryCodeDepartmentInterview, position.getDepartment(), department));
+
+        //HR面试
+        String queryCodeHRInterview = StatusCodeUtil.getCode(HRInterview);
+        res.put("HRInterview", getCount(position, queryCodeHRInterview, position.getDepartment(), department));
+
+
+        //已通过
+        String queryCodePass = StatusCodeUtil.getCode(Pass);
+        res.put("Pass", getCount(position, queryCodePass, PersonnelDepartmentId, department));
+
+        //已回绝
+        String queryCodeRefuse = StatusCodeUtil.getCode(Refuse);
+        res.put("Refuse", getCount(position, queryCodeRefuse, PersonnelDepartmentId, department));
+
+        return res;
+    }
+
+    private Integer getCount(PositionEntity position, String queryCode, Long authDepartmentId, Long department) {
+        if (department == authDepartmentId) {
+            return resumeDeliverRepository.countAllByPositionIdAndRecruitmentStateContainingAndReadFlag(position.getId(), queryCode, 0);
+        } else {
+            return 0;
+        }
     }
 
 

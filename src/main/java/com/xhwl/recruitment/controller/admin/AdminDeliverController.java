@@ -78,7 +78,7 @@ public class AdminDeliverController {
             throw new MyNoPermissionException("没有权限");
         }
         PageRequest request = new PageRequest(page - 1, size);
-        return auditDeliverService.findDeliverInResumeReview(request,positionId, departmentId);
+        return auditDeliverService.findDeliverInResumeReview(request, positionId, departmentId);
     }
 
     /**
@@ -100,7 +100,7 @@ public class AdminDeliverController {
             throw new MyNoPermissionException("没有权限");
         }
         PageRequest request = new PageRequest(page - 1, size);
-        return auditDeliverService.findDeliverInHRFristReview(request,positionId, departmentId);
+        return auditDeliverService.findDeliverInHRFristReview(request, positionId, departmentId);
     }
 
 
@@ -114,8 +114,8 @@ public class AdminDeliverController {
     @GetMapping("/admin/DepartmentWritten/{positionId}")
     @RequiresRoles("admin")
     public Page<DeliverDto> findDeliverInDepartmentWrittenExamination(@RequestHeader HttpHeaders headers, @PathVariable("positionId") Long positionId,
-                                                          @RequestParam(value = "page", defaultValue = "1") Integer page,
-                                                          @RequestParam(value = "size", defaultValue = "10") Integer size) {
+                                                                      @RequestParam(value = "page", defaultValue = "1") Integer page,
+                                                                      @RequestParam(value = "size", defaultValue = "10") Integer size) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
         Long departmentId = adminAuthEntity.getDepartmentId();
@@ -124,7 +124,7 @@ public class AdminDeliverController {
         }
 
         PageRequest request = new PageRequest(page - 1, size);
-        return auditDeliverService.findDeliverInDepartmentWrittenExamination(request,positionId, departmentId);
+        return auditDeliverService.findDeliverInDepartmentWrittenExamination(request, positionId, departmentId);
     }
 
     /**
@@ -146,7 +146,7 @@ public class AdminDeliverController {
             throw new MyNoPermissionException("没有权限");
         }
         PageRequest request = new PageRequest(page - 1, size);
-        return auditDeliverService.findDeliverInDepartmentInterview(request,positionId, departmentId);
+        return auditDeliverService.findDeliverInDepartmentInterview(request, positionId, departmentId);
     }
 
     /**
@@ -168,7 +168,7 @@ public class AdminDeliverController {
             throw new MyNoPermissionException("没有权限");
         }
         PageRequest request = new PageRequest(page - 1, size);
-        return auditDeliverService.findDeliverInHRInterview(request,positionId, departmentId);
+        return auditDeliverService.findDeliverInHRInterview(request, positionId, departmentId);
     }
 
     /**
@@ -191,7 +191,7 @@ public class AdminDeliverController {
         }
 
         PageRequest request = new PageRequest(page - 1, size);
-        return auditDeliverService.findDeliverInPass(request,positionId, departmentId);
+        return auditDeliverService.findDeliverInPass(request, positionId, departmentId);
     }
 
     /**
@@ -213,7 +213,7 @@ public class AdminDeliverController {
             throw new MyNoPermissionException("没有权限");
         }
         PageRequest request = new PageRequest(page - 1, size);
-        return auditDeliverService.findDeliverInRefuse(request,positionId, departmentId);
+        return auditDeliverService.findDeliverInRefuse(request, positionId, departmentId);
     }
 
     /**
@@ -287,5 +287,21 @@ public class AdminDeliverController {
         }
 
         return deliverService.getNumOfDeliver(positionId);
+    }
+
+    /**
+     * 管理员获取未读投递记录的条数
+     *
+     * @param headers
+     * @param positionId
+     * @return
+     */
+    @GetMapping("admin/getNotReadNum/{positionId}")
+    @RequiresRoles("admin")
+    public HashMap getNotReadNum(@RequestHeader HttpHeaders headers, @PathVariable("positionId") Long positionId) {
+        Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
+        AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
+        Long departmentId = adminAuthEntity.getDepartmentId();
+        return auditDeliverService.getNotReadNum(positionId, departmentId);
     }
 }

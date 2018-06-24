@@ -36,4 +36,12 @@ public interface ResumeDeliverRepository extends JpaRepository<ResumeDeliverEnti
      */
     Page<ResumeDeliverEntity> findAllByPositionIdAndRecruitmentStateContaining(Pageable pageable, Long positionId, String code);
 
+    /**
+     * 统计有多少条未读
+     * @param positionId
+     * @param recruitmentState
+     * @param readFlag
+     * @return
+     */
+    Integer countAllByPositionIdAndRecruitmentStateContainingAndReadFlag(Long positionId, String recruitmentState, Integer readFlag);
 }
