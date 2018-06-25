@@ -165,7 +165,7 @@ public class AdminAuthService {
      * @return
      */
     public AdminAuthDto searchAdmin(String adminName) {
-        AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserName(adminName);
+        AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserNameContaining(adminName);
         if (adminAuthEntity == null) return null;
 
         AdminAuthDto adminAuthDto = new AdminAuthDto();

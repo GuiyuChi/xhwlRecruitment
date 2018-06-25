@@ -60,7 +60,7 @@ public class AuditDeliverService {
 
     @Autowired
     PositionRepository positionRepository;
-    
+
 
     //获取用户名
     private String getUsernameByDeliver(ResumeDeliverEntity resumeDeliverEntity) {
