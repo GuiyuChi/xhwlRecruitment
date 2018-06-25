@@ -37,48 +37,50 @@ public class AdminHistoryPositionController {
     AdminAuthRepository adminAuthRepository;
     @Autowired
     ResumeDeliverRepository resumeDeliverRepository;
+
     //显示过期前项目
     @GetMapping("/admin/PositionsBeforeDeadline")
     @RequiresRoles("admin")
     public Page<HashMap> getPositionBeforeDeadline(@RequestHeader HttpHeaders headers,
                                                    @RequestParam(value = "page", defaultValue = "1") Integer page,
-                                                   @RequestParam(value = "size", defaultValue = "20") Integer size){
+                                                   @RequestParam(value = "size", defaultValue = "20") Integer size) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
-        Long departmentId=adminAuthEntity.getDepartmentId();
+        Long departmentId = adminAuthEntity.getDepartmentId();
         PageRequest request = new PageRequest(page - 1, size);
-        return historyPositionService.getPositionBeforeDeadline(request,departmentId);
+        return historyPositionService.getPositionBeforeDeadline(request, departmentId);
     }
-//显示过期后项目
+
+    //显示过期后项目
     @GetMapping("/admin/PositionAfterDeadline")
     @RequiresRoles("admin")
-    public Page<HashMap>getPositionAfterDeadline(@RequestHeader HttpHeaders headers,
-                                                        @RequestParam(value = "page", defaultValue = "1") Integer page,
-                                                        @RequestParam(value = "size", defaultValue = "20") Integer size){
+    public Page<HashMap> getPositionAfterDeadline(@RequestHeader HttpHeaders headers,
+                                                  @RequestParam(value = "page", defaultValue = "1") Integer page,
+                                                  @RequestParam(value = "size", defaultValue = "20") Integer size) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
-        Long departmentId=adminAuthEntity.getDepartmentId();
+        Long departmentId = adminAuthEntity.getDepartmentId();
         PageRequest request = new PageRequest(page - 1, size);
-        return historyPositionService.getPositionAfterDeadline(request,departmentId);
+        return historyPositionService.getPositionAfterDeadline(request, departmentId);
     }
 
     @PostMapping("/admin/searchPositionAfterDeadline")//查询历史记录
-   @RequiresRoles("admin")
-    public Page<HashMap>searchPositionAfterDeadline(@RequestHeader HttpHeaders headers,
-                                                    @RequestParam(value = "page", defaultValue = "1") Integer page,
-                                                    @RequestParam(value = "size", defaultValue = "20") Integer size,
-                                                    @RequestParam(value="publish_date") String publish_date,
-                                                    @RequestParam(value="end_date") String end_date,
-                                                    @RequestParam(value="departmentName")String departmentName,
-                                                    @RequestParam(value="positionName") String positionName) throws ParseException {
+    @RequiresRoles("admin")
+    public Page<HashMap> searchPositionAfterDeadline(@RequestHeader HttpHeaders headers,
+                                                     @RequestParam(value = "page", defaultValue = "1") Integer page,
+                                                     @RequestParam(value = "size", defaultValue = "20") Integer size,
+                                                     @RequestParam(value = "publish_date") String publish_date,
+                                                     @RequestParam(value = "end_date") String end_date,
+                                                     @RequestParam(value = "departmentName") String departmentName,
+                                                     @RequestParam(value = "positionName") String positionName) throws ParseException {
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Date endDate=format.parse(end_date);
-        Date publishDate=format.parse(publish_date);
+        Date endDate = format.parse(end_date);
+        Date publishDate = format.parse(publish_date);
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
-        Long departmentId=adminAuthEntity.getDepartmentId();
+        Long departmentId = adminAuthEntity.getDepartmentId();
         PageRequest request = new PageRequest(page - 1, size);
-        return historyPositionService.searchPositionAfterDeadline(request,departmentId,publishDate,endDate,departmentName,positionName);
+        return historyPositionService.searchPositionAfterDeadline(request, departmentId, publishDate, endDate, departmentName, positionName);
     }
 //    @GetMapping("admin/getMailState/{resumeId}")//管理员拿到email_state字段，判断是否发送邮件
 //    @RequiresRoles("admin")
