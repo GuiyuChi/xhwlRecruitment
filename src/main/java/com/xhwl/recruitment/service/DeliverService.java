@@ -2,7 +2,6 @@ package com.xhwl.recruitment.service;
 
 import com.xhwl.recruitment.dao.*;
 import com.xhwl.recruitment.domain.*;
-import com.xhwl.recruitment.redis.DeliverRedis;
 import com.xhwl.recruitment.util.EmailStateUtil;
 import com.xhwl.recruitment.util.StatusCodeUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -90,8 +89,6 @@ public class DeliverService {
     @Autowired
     private FileService fileService;
 
-    @Autowired
-    private DeliverRedis deliverRedis;
 
 
     /**

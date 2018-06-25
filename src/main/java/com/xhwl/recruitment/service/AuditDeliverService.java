@@ -6,7 +6,6 @@ import com.xhwl.recruitment.domain.DwPersonalInformationEntity;
 import com.xhwl.recruitment.domain.PositionEntity;
 import com.xhwl.recruitment.domain.ResumeDeliverEntity;
 import com.xhwl.recruitment.dto.DeliverDto;
-import com.xhwl.recruitment.redis.DeliverRedis;
 import com.xhwl.recruitment.util.EmailStateUtil;
 import com.xhwl.recruitment.util.StatusCodeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,9 +60,7 @@ public class AuditDeliverService {
 
     @Autowired
     PositionRepository positionRepository;
-
-    @Autowired
-    DeliverRedis deliverRedis;
+    
 
     //获取用户名
     private String getUsernameByDeliver(ResumeDeliverEntity resumeDeliverEntity) {

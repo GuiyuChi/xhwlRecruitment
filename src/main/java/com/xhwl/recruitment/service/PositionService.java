@@ -252,6 +252,8 @@ public class PositionService {
         //将截止日期设置为当前日期
         positionEntity.setDeadline(new Date(System.currentTimeMillis()));
 
+        positionRepository.saveAndFlush(positionEntity);
+
         //拒绝岗位下的所有简历
         refuseAllDeliverByPositionId(positionId);
 

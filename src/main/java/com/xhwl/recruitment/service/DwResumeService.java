@@ -5,7 +5,6 @@ import com.xhwl.recruitment.domain.AdminAuthEntity;
 import com.xhwl.recruitment.domain.DwResumeEntity;
 import com.xhwl.recruitment.domain.PositionEntity;
 import com.xhwl.recruitment.domain.ResumeDeliverEntity;
-import com.xhwl.recruitment.redis.DeliverRedis;
 import com.xhwl.recruitment.util.StatusCodeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,8 +52,6 @@ public class DwResumeService {
     @Autowired
     private PositionRepository positionRepository;
 
-    @Autowired
-    private DeliverRedis deliverRedis;
 
     @Autowired
     private AdminAuthRepository adminAuthRepository;
