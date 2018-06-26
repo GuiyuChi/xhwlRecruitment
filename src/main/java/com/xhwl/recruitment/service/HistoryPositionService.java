@@ -34,7 +34,7 @@ public class HistoryPositionService {
     public Page<HashMap> getPositionBeforeDeadline(Pageable pageable, long departmentId) {
 
         if (departmentId == 1L) {
-            List<PositionEntity> positions = historyPositionRepository.findAllByPublishType(1L);
+            List<PositionEntity> positions = historyPositionRepository.findAllByPublishType(1);
             List<HashMap> res = new ArrayList<>();
             for (PositionEntity position : positions) {
                 HashMap<String, String> hashMap = new LinkedHashMap<>();
@@ -50,7 +50,7 @@ public class HistoryPositionService {
             Page<HashMap> resPage = new PageImpl<>(res, pageable, positions.size());
             return resPage;
         } else {
-            List<PositionEntity> positions = historyPositionRepository.findAllByPublishTypeAndDepartment(1L,departmentId);
+            List<PositionEntity> positions = historyPositionRepository.findAllByPublishTypeAndDepartment(1,departmentId);
             List<HashMap> res = new ArrayList<>();
             for (PositionEntity position : positions) {
                 HashMap<String, String> hashMap = new LinkedHashMap<>();
@@ -71,7 +71,7 @@ public class HistoryPositionService {
     //获得过期后的发布项目
     public Page<HashMap> getPositionAfterDeadline(Pageable pageable, long departmentId) {
         if (departmentId == 1L) {
-            List<PositionEntity> positions = historyPositionRepository.findAllByPublishType(2L);
+            List<PositionEntity> positions = historyPositionRepository.findAllByPublishType(2);
             List<HashMap> res = new ArrayList<>();
             for (PositionEntity position : positions) {
                 HashMap<String, String> hashMap = new LinkedHashMap<>();
@@ -87,7 +87,7 @@ public class HistoryPositionService {
             Page<HashMap> resPage = new PageImpl<>(res, pageable, positions.size());
             return resPage;
         } else {
-            List<PositionEntity> positions = historyPositionRepository.findAllByPublishTypeAndDepartment(2L,departmentId);
+            List<PositionEntity> positions = historyPositionRepository.findAllByPublishTypeAndDepartment(2,departmentId);
             List<HashMap> res = new ArrayList<>();
             for (PositionEntity position : positions) {
                 HashMap<String, String> hashMap = new LinkedHashMap<>();
@@ -123,7 +123,7 @@ public class HistoryPositionService {
         }
         if (departmentId == 1L)//人事查询
         {
-            List<PositionEntity> positions = historyPositionRepository.findAllByPublishTypeAndDepartmentInAndPositionNameContainingAndPublishDateAfterAndDeadlineBefore(2L, department, positionName, publishDate, endDate);
+            List<PositionEntity> positions = historyPositionRepository.findAllByPublishTypeAndDepartmentInAndPositionNameContainingAndPublishDateAfterAndDeadlineBefore(2, department, positionName, publishDate, endDate);
             List<HashMap> res = new ArrayList<>();
             for (PositionEntity position : positions) {
                 HashMap<String, String> hashMap = new LinkedHashMap<>();
@@ -140,7 +140,7 @@ public class HistoryPositionService {
             return resPage;
         } else//非人事查询
         {
-            List<PositionEntity> positions = historyPositionRepository.findAllByPublishTypeAndDepartmentAndPositionNameContainingAndPublishDateAfterAndDeadlineBefore(2L, departmentId, positionName, publishDate, endDate);
+            List<PositionEntity> positions = historyPositionRepository.findAllByPublishTypeAndDepartmentAndPositionNameContainingAndPublishDateAfterAndDeadlineBefore(2, departmentId, positionName, publishDate, endDate);
             List<HashMap> res = new ArrayList<>();
             for (PositionEntity position : positions) {
                 HashMap<String, String> hashMap = new LinkedHashMap<>();

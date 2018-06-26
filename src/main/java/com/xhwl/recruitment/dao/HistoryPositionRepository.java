@@ -17,15 +17,15 @@ import java.util.List;
 @Repository
 public interface HistoryPositionRepository extends JpaRepository<PositionEntity, Long> {
     //查询截止日期之前或之后的发布项目
-    List<PositionEntity> findAllByPublishType(Long publish_type);
+    List<PositionEntity> findAllByPublishType(Integer publish_type);
 
     //根据部门号显示截至日期之前或之后的发布项目
-    List<PositionEntity> findAllByPublishTypeAndDepartment(Long publish_type,Long departmentId);
+    List<PositionEntity> findAllByPublishTypeAndDepartment(Integer publish_type,Long departmentId);
 
     //人事历史记录模糊查询
-    List<PositionEntity> findAllByPublishTypeAndDepartmentInAndPositionNameContainingAndPublishDateAfterAndDeadlineBefore(Long publish_type, List<Long>department, String positionName, Date publishDate, Date endDate);
+    List<PositionEntity> findAllByPublishTypeAndDepartmentInAndPositionNameContainingAndPublishDateAfterAndDeadlineBefore(Integer publish_type, List<Long>department, String positionName, Date publishDate, Date endDate);
 
     //非人事历史记录模糊查询
-    List<PositionEntity> findAllByPublishTypeAndDepartmentAndPositionNameContainingAndPublishDateAfterAndDeadlineBefore(Long publish_type, Long departmentId, String positionName, Date publishDate, Date endDate);
+    List<PositionEntity> findAllByPublishTypeAndDepartmentAndPositionNameContainingAndPublishDateAfterAndDeadlineBefore(Integer publish_type, Long departmentId, String positionName, Date publishDate, Date endDate);
     //普通部门历史记录模糊查询
 }
