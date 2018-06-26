@@ -138,6 +138,10 @@ public class AuthController {
         if (!adminAuthRepository.findByUserId(userId).getRole().equalsIgnoreCase(SuperAdminRole)) {
             throw new MyNoPermissionException("需要超级管理员权限");
         }
+        //不能删除超级管理员
+       if(adminAuthRepository.findByUserName(adminName).getRole().equals("superAdmin")) {
+            throw new MyNoPermissionException("超级管理员不能删除");
+       }
 
         adminAuthService.deleteAdmin(adminName);
     }

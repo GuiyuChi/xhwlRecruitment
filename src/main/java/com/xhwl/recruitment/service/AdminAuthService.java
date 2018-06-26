@@ -86,13 +86,11 @@ public class AdminAuthService {
 
             if (userRepository.findOne(adminAuthEntityList.get(i).getUserId()) != null) {
                 String department = String.valueOf(departmentRepository.findOne(adminAuthEntityList.get(i).getDepartmentId()).getId());
-                String password = userRepository.findOne(adminAuthEntityList.get(i).getUserId()).getPassword();
                 String username = adminAuthEntityList.get(i).getUserName();
 
                 adminAuthDto.setId(adminAuthEntityList.get(i).getId());
                 adminAuthDto.setUsername(username);
                 adminAuthDto.setDepartment(department);
-                adminAuthDto.setPassword(password);
 
                 adminAuthDtoList.add(adminAuthDto);
             }else{

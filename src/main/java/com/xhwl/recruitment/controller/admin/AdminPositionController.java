@@ -5,11 +5,13 @@ import com.xhwl.recruitment.dao.DepartmentRepository;
 import com.xhwl.recruitment.dao.PositionRepository;
 import com.xhwl.recruitment.domain.AdminAuthEntity;
 import com.xhwl.recruitment.exception.DepartmentException;
+import com.xhwl.recruitment.exception.FormSubmitFormatException;
 import com.xhwl.recruitment.exception.MyNoPermissionException;
 import com.xhwl.recruitment.exception.PositionNoExistException;
 import com.xhwl.recruitment.service.DeliverService;
 import com.xhwl.recruitment.service.PositionService;
 import com.xhwl.recruitment.service.UserService;
+import com.xhwl.recruitment.util.ValidateUtils;
 import com.xhwl.recruitment.vo.PositionVo;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -79,6 +81,11 @@ public class AdminPositionController {
             throw new MyNoPermissionException("需要中级管理员以上权限");
         }
 
+        //表单验证
+        if (!formValid(positionVo)) {
+            throw new FormSubmitFormatException("表单格式错误");
+        }
+
         Long department = positionVo.getDepartment();
         Long resumeAuditDepartment = positionVo.getResumeAuditDepartment();
         Long assessmentDepartment = positionVo.getAssessmentDepartment();
@@ -123,6 +130,13 @@ public class AdminPositionController {
         Sort sort = new Sort(Sort.Direction.DESC, "publishDate");
 
         PageRequest request = new PageRequest(page - 1, size,sort);
+        //日期格式必须正确
+        if(!"".equals(early_date) && !ValidateUtils.isValidDate(early_date)){
+            throw new FormSubmitFormatException("日期格式错误");
+        }
+        if(!"".equals(early_date) && !ValidateUtils.isValidDate(last_date)){
+            throw new FormSubmitFormatException("日期格式错误");
+        }
         if (adminAuthEntity.getDepartmentId() == PersonnelDepartmentId) {
             return positionService.adminGetAllPublishPositions(request, 1, department, positionName, early_date, last_date);
         } else {
@@ -151,5 +165,48 @@ public class AdminPositionController {
         } else {
             throw new MyNoPermissionException("没有权限");
         }
+    }
+
+    /**
+     * 表单验证
+     *
+     * @param vo
+     * @return
+     */
+    private boolean formValid(PositionVo vo) {
+        boolean validRes = true;
+
+        if (!ValidateUtils.Notempty(vo.getPositionName())) {
+            validRes = false;
+        }
+        if (!ValidateUtils.Notempty(String.valueOf(vo.getDepartment()))) {
+            validRes = false;
+        }
+        if (!ValidateUtils.Notempty(String.valueOf(vo.getResumeAuditDepartment()))) {
+            validRes = false;
+        }
+        if (!ValidateUtils.Notempty(String.valueOf(vo.getAssessmentDepartment()))) {
+            validRes = false;
+        }
+        if (!ValidateUtils.Notempty(String.valueOf(vo.getPositionType()))) {
+            validRes = false;
+        }
+        if (!ValidateUtils.Notempty(String.valueOf(vo.getRecruitmentType()))) {
+            validRes = false;
+        }
+        if (!ValidateUtils.Notempty(vo.getWorkPlace())) {
+            validRes = false;
+        }
+        if (!ValidateUtils.Notempty(vo.getEducation())) {
+            validRes = false;
+        }
+        if(!ValidateUtils.Notempty(String.valueOf(vo.getRecruitingNumbers()))){
+            validRes = false;
+        }
+        if(!ValidateUtils.isValidDate(vo.getDeadline())){
+            validRes = false;
+        }
+
+        return validRes;
     }
 }
