@@ -134,7 +134,7 @@ public class AdminPositionController {
         if(!"".equals(early_date) && !ValidateUtils.isValidDate(early_date)){
             throw new FormSubmitFormatException("日期格式错误");
         }
-        if(!"".equals(early_date) && !ValidateUtils.isValidDate(last_date)){
+        if(!"".equals(last_date) && !ValidateUtils.isValidDate(last_date)){
             throw new FormSubmitFormatException("日期格式错误");
         }
         if (adminAuthEntity.getDepartmentId() == PersonnelDepartmentId) {
