@@ -71,7 +71,7 @@ public class AdminHistoryPositionController {
                                                      @RequestParam(value = "size", defaultValue = "20") Integer size,
                                                      @RequestParam(value = "publish_date") String publish_date,
                                                      @RequestParam(value = "end_date") String end_date,
-                                                     @RequestParam(value = "departmentName") String departmentName,
+                                                     @RequestParam(value = "departmentName") Long departmentName,
                                                      @RequestParam(value = "positionName") String positionName) throws ParseException {
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Date endDate = format.parse(end_date);

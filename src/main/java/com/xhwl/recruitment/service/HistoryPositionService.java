@@ -106,7 +106,7 @@ public class HistoryPositionService {
     }
 
     //过期后的发布项目模糊查询
-    public Page<HashMap> searchPositionAfterDeadline(Pageable pageable, Long departmentId, java.util.Date publish_date, java.util.Date end_date, String departmentName, String positionName) {
+    public Page<HashMap> searchPositionAfterDeadline(Pageable pageable, Long departmentId, java.util.Date publish_date, java.util.Date end_date, Long departmentName, String positionName) {
         java.util.Date date1 = new java.util.Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String str = sdf.format(date1);
@@ -115,10 +115,9 @@ public class HistoryPositionService {
         Date publishDate = Date.valueOf(str);
         str = sdf.format(end_date);
         Date endDate = Date.valueOf(str);
-        Long department=Long.parseLong(departmentName);
         if (departmentId == 1L)//人事查询
         {
-            List<PositionEntity> positions = historyPositionRepository.findAllByPublishTypeAndDepartmentAndPositionNameContainingAndPublishDateAfterAndDeadlineBefore(2, department, positionName, publishDate, endDate);
+            List<PositionEntity> positions = historyPositionRepository.findAllByPublishTypeAndDepartmentAndPositionNameContainingAndPublishDateAfterAndDeadlineBefore(2, departmentName, positionName, publishDate, endDate);
             List<HashMap> res = new ArrayList<>();
             for (PositionEntity position : positions) {
                 HashMap<String, String> hashMap = new LinkedHashMap<>();
