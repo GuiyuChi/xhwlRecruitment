@@ -24,5 +24,6 @@ public interface HistoryPositionRepository extends JpaRepository<PositionEntity,
 
     //人事历史记录模糊查询
     List<PositionEntity> findAllByPublishTypeAndDepartmentAndPositionNameContainingAndPublishDateAfterAndDeadlineBefore(Integer publish_type, Long department, String positionName, Date publishDate, Date endDate);
-
+    //部门号为空时
+    List<PositionEntity>findAllByPublishTypeAndPositionNameContainingAndPublishDateAfterAndDeadlineBefore(Integer publish_type,String positionName,Date publishDate,Date endDate);
 }
