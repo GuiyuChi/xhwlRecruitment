@@ -115,15 +115,10 @@ public class HistoryPositionService {
         Date publishDate = Date.valueOf(str);
         str = sdf.format(end_date);
         Date endDate = Date.valueOf(str);
-        List<DepartmentEntity> departmentEntities = departmentRepository.findAllByNameContaining(departmentName);
-        List<Long> department = new ArrayList<Long>();
-        for (DepartmentEntity departmentEntity : departmentEntities
-                ) {
-            department.add(departmentEntity.getId());
-        }
+        Long department=Long.parseLong(departmentName);
         if (departmentId == 1L)//人事查询
         {
-            List<PositionEntity> positions = historyPositionRepository.findAllByPublishTypeAndDepartmentInAndPositionNameContainingAndPublishDateAfterAndDeadlineBefore(2, department, positionName, publishDate, endDate);
+            List<PositionEntity> positions = historyPositionRepository.findAllByPublishTypeAndDepartmentAndPositionNameContainingAndPublishDateAfterAndDeadlineBefore(2, department, positionName, publishDate, endDate);
             List<HashMap> res = new ArrayList<>();
             for (PositionEntity position : positions) {
                 HashMap<String, String> hashMap = new LinkedHashMap<>();
