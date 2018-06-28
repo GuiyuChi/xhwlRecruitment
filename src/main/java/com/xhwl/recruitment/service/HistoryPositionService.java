@@ -3,8 +3,10 @@ package com.xhwl.recruitment.service;
 import com.xhwl.recruitment.dao.DepartmentRepository;
 import com.xhwl.recruitment.dao.HistoryPositionRepository;
 import com.xhwl.recruitment.dao.PositionRepository;
+import com.xhwl.recruitment.dao.ResumeDeliverRepository;
 import com.xhwl.recruitment.domain.DepartmentEntity;
 import com.xhwl.recruitment.domain.PositionEntity;
+import com.xhwl.recruitment.domain.ResumeDeliverEntity;
 import groovy.util.logging.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -29,6 +31,8 @@ public class HistoryPositionService {
     HistoryPositionRepository historyPositionRepository;
     @Autowired
     DepartmentRepository departmentRepository;
+    @Autowired
+    ResumeDeliverRepository resumeDeliverRepository;
 
     //获得过期前的发布项目
     public Page<HashMap> getPositionBeforeDeadline(Pageable pageable, long departmentId) {
@@ -45,6 +49,8 @@ public class HistoryPositionService {
                 hashMap.put("workPlace", position.getWorkPlace());
                 hashMap.put("publishDate", String.valueOf(position.getPublishDate()));
                 hashMap.put("deadline", String.valueOf(position.getDeadline()));
+                List<ResumeDeliverEntity> resumeDeliverEntities = resumeDeliverRepository.findAllByPositionId(position.getId());
+                hashMap.put("number", String.valueOf(resumeDeliverEntities.size()));
                 res.add(hashMap);
             }
             Page<HashMap> resPage = new PageImpl<>(res, pageable, positions.size());
@@ -61,6 +67,8 @@ public class HistoryPositionService {
                 hashMap.put("workPlace", position.getWorkPlace());
                 hashMap.put("publishDate", String.valueOf(position.getPublishDate()));
                 hashMap.put("deadline", String.valueOf(position.getDeadline()));
+                List<ResumeDeliverEntity> resumeDeliverEntities = resumeDeliverRepository.findAllByPositionId(position.getId());
+                hashMap.put("number", String.valueOf(resumeDeliverEntities.size()));
                 res.add(hashMap);
             }
             Page<HashMap> resPage = new PageImpl<>(res, pageable, positions.size());
@@ -82,6 +90,8 @@ public class HistoryPositionService {
                 hashMap.put("workPlace", position.getWorkPlace());
                 hashMap.put("publishDate", String.valueOf(position.getPublishDate()));
                 hashMap.put("deadline", String.valueOf(position.getDeadline()));
+                List<ResumeDeliverEntity> resumeDeliverEntities = resumeDeliverRepository.findAllByPositionId(position.getId());
+                hashMap.put("number", String.valueOf(resumeDeliverEntities.size()));
                 res.add(hashMap);
             }
             Page<HashMap> resPage = new PageImpl<>(res, pageable, positions.size());
@@ -98,6 +108,8 @@ public class HistoryPositionService {
                 hashMap.put("workPlace", position.getWorkPlace());
                 hashMap.put("publishDate", String.valueOf(position.getPublishDate()));
                 hashMap.put("deadline", String.valueOf(position.getDeadline()));
+                List<ResumeDeliverEntity> resumeDeliverEntities = resumeDeliverRepository.findAllByPositionId(position.getId());
+                hashMap.put("number", String.valueOf(resumeDeliverEntities.size()));
                 res.add(hashMap);
             }
             Page<HashMap> resPage = new PageImpl<>(res, pageable, positions.size());
@@ -129,6 +141,8 @@ public class HistoryPositionService {
                 hashMap.put("workPlace", position.getWorkPlace());
                 hashMap.put("publishDate", String.valueOf(position.getPublishDate()));
                 hashMap.put("deadline", String.valueOf(position.getDeadline()));
+                List<ResumeDeliverEntity> resumeDeliverEntities = resumeDeliverRepository.findAllByPositionId(position.getId());
+                hashMap.put("number", String.valueOf(resumeDeliverEntities.size()));
                 res.add(hashMap);
             }
             Page<HashMap> resPage = new PageImpl<>(res, pageable, positions.size());
@@ -145,6 +159,8 @@ public class HistoryPositionService {
                 hashMap.put("workPlace", position.getWorkPlace());
                 hashMap.put("publishDate", String.valueOf(position.getPublishDate()));
                 hashMap.put("deadline", String.valueOf(position.getDeadline()));
+                List<ResumeDeliverEntity> resumeDeliverEntities = resumeDeliverRepository.findAllByPositionId(position.getId());
+                hashMap.put("number", String.valueOf(resumeDeliverEntities.size()));
                 res.add(hashMap);
             }
             Page<HashMap> resPage = new PageImpl<>(res, pageable, positions.size());
@@ -162,6 +178,8 @@ public class HistoryPositionService {
                 hashMap.put("workPlace", position.getWorkPlace());
                 hashMap.put("publishDate", String.valueOf(position.getPublishDate()));
                 hashMap.put("deadline", String.valueOf(position.getDeadline()));
+                List<ResumeDeliverEntity> resumeDeliverEntities = resumeDeliverRepository.findAllByPositionId(position.getId());
+                hashMap.put("number", String.valueOf(resumeDeliverEntities.size()));
                 res.add(hashMap);
             }
             Page<HashMap> resPage = new PageImpl<>(res, pageable, positions.size());
