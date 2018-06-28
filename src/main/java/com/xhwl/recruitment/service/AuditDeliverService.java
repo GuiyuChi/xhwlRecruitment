@@ -66,7 +66,7 @@ public class AuditDeliverService {
     private String getUsernameByDeliver(ResumeDeliverEntity resumeDeliverEntity) {
         Long resumeId = resumeDeliverEntity.getDwResumeId();
         DwPersonalInformationEntity dwPersonalInformationEntity = dwPersonalInformationRepository.findByResumeId(resumeId);
-        if (dwEducationExperienceRepository == null) return "未填写";
+        if (dwPersonalInformationEntity == null) return "未填写";
         return dwPersonalInformationEntity.getName();
     }
 

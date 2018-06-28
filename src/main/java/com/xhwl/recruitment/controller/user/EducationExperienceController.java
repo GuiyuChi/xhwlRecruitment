@@ -114,9 +114,6 @@ public class EducationExperienceController {
         if (!ValidateUtils.Notempty(vo.getEducationHistory().toString())) {
             validRes = false;
         }
-        if (!ValidateUtils.Notempty(vo.getRank().toString())){
-            validRes = false;
-        }
         return validRes;
     }
 }
