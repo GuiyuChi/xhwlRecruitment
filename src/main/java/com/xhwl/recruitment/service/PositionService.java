@@ -113,6 +113,9 @@ public class PositionService {
         hashMap.put("deadline", String.valueOf(position.getDeadline()));
         hashMap.put("jobResponsibilities", position.getJobResponsibilities());
         hashMap.put("jobRequirements", position.getJobRequirements());
+        //获取岗位投递数量
+        List<ResumeDeliverEntity> resumeDeliverEntities = resumeDeliverRepository.findAllByPositionId(position.getId());
+        hashMap.put("number", String.valueOf(resumeDeliverEntities.size()));
         return hashMap;
     }
 
@@ -167,12 +170,16 @@ public class PositionService {
             hashMap.put("salary",position.getSalary());
             hashMap.put("publishDate", String.valueOf(position.getPublishDate()));
             hashMap.put("deadline", String.valueOf(position.getDeadline()));
+            //获取岗位投递数量
+            List<ResumeDeliverEntity> resumeDeliverEntities = resumeDeliverRepository.findAllByPositionId(position.getId());
+            hashMap.put("number", String.valueOf(resumeDeliverEntities.size()));
             res.add(hashMap);
         }
 
         Page<HashMap> resPage = new PageImpl<>(res, pageable, positionEntityPage.getTotalElements());
         return resPage;
     }
+
 
     /**
      * 人事部门查看所有已经发布的工作
@@ -194,7 +201,6 @@ public class PositionService {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
         if (early_date != null && !"".equals(early_date)) {
             try {
                 early = new Date(dateFormat.parse(early_date).getTime());
@@ -202,7 +208,6 @@ public class PositionService {
                 e.printStackTrace();
             }
         }
-
         if (last_date != null && !"".equals(last_date)) {
             try {
                 last = new Date(dateFormat.parse(last_date).getTime());
@@ -210,7 +215,6 @@ public class PositionService {
                 e.printStackTrace();
             }
         }
-
         Page<PositionEntity> positionEntityPage = null;
         if (deaprtment != 0) {
             positionEntityPage = positionRepository.findAllByPositionNameContainingAndDepartmentAndPublishTypeAndPublishDateBetween(positionName, deaprtment, publicType, early, last, pageable);
@@ -231,6 +235,9 @@ public class PositionService {
             hashMap.put("salary",position.getSalary());
             hashMap.put("publishDate", String.valueOf(position.getPublishDate()));
             hashMap.put("deadline", String.valueOf(position.getDeadline()));
+            //获取岗位投递数量
+            List<ResumeDeliverEntity> resumeDeliverEntities = resumeDeliverRepository.findAllByPositionId(position.getId());
+            hashMap.put("number", String.valueOf(resumeDeliverEntities.size()));
             res.add(hashMap);
         }
 

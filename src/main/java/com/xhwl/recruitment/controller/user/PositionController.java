@@ -17,6 +17,7 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 
@@ -69,7 +70,8 @@ public class PositionController {
                                                     @RequestParam(value="workPlace", required = false, defaultValue = "") String workPlace,
                                                     @RequestParam(value="positionType", required = false, defaultValue = "") String positionType,
                                                     @RequestParam(value="positionName", required = false, defaultValue = "") String positionName) {
-        PageRequest request = new PageRequest(page - 1, size);
+        Sort sort = new Sort(Sort.Direction.DESC, "publishDate");
+        PageRequest request = new PageRequest(page - 1, size,sort);
         Page<HashMap> res = positionService.getLikePositions(request,workPlace,positionName,positionType,typeId);
         return res;
     }
