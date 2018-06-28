@@ -44,7 +44,7 @@ public class PermissionService {
      */
     public boolean EducationExperiencePermission(Long userId,Long educationExperiencId){
         Long resumeId = educationRepository.findOne(educationExperiencId).getResumeId();
-        if(resumeId == resumeRepository.findByUserId(userId).getId()){
+        if(resumeId.equals(resumeRepository.findByUserId(userId).getId())){
             return true;
         }
         else {
@@ -60,7 +60,7 @@ public class PermissionService {
      */
     public boolean trainingExperiencePermission(Long userId,Long trainingExperienceId){
         Long resumeId = trainingRepository.findOne(trainingExperienceId).getResumeId();
-        if(resumeId == resumeRepository.findByUserId(userId).getId()){
+        if(resumeId.equals(resumeRepository.findByUserId(userId).getId())){
             return true;
         }
         else{
@@ -76,7 +76,7 @@ public class PermissionService {
      */
     public boolean projectExperiencePermission(Long userId,Long projectExperienceId){
         Long resumeId = projectExperienceRepository.findOne(projectExperienceId).getResumeId();
-        if(resumeId == resumeRepository.findByUserId(userId).getId()){
+        if(resumeId.equals(resumeRepository.findByUserId(userId).getId())){
             return true;
         }
         else{
@@ -92,7 +92,7 @@ public class PermissionService {
      */
     public boolean workExperiencePermission(Long userId,Long workExperienceId) {
         Long resumeId = workExperienceRepository.findOne(workExperienceId).getResumeId();
-        if (resumeId == resumeRepository.findByUserId(userId).getId()) {
+        if (resumeId.equals(resumeRepository.findByUserId(userId).getId())) {
             return true;
         } else {
             return false;
@@ -107,7 +107,7 @@ public class PermissionService {
      */
     public boolean internshipExperiencePermission(Long userId, Long internshipId){
         Long resumeId = internshipExperienceRepository.findOne(internshipId).getResumeId();
-        if (resumeId == resumeRepository.findByUserId(userId).getId()) {
+        if (resumeId.equals(resumeRepository.findByUserId(userId).getId())) {
             return true;
         } else {
             return false;
@@ -121,7 +121,7 @@ public class PermissionService {
      */
     public boolean awardPermission (Long userId,Long awardId){
         Long resumeId = awardRepository.findOne(awardId).getResumeId();
-        if (resumeId == resumeRepository.findByUserId(userId).getId()) {
+        if (resumeId.equals(resumeRepository.findByUserId(userId).getId())) {
             return true;
         } else {
             return false;

@@ -160,7 +160,7 @@ public class AdminPositionController {
             throw new PositionNoExistException("岗位不存在");
         }
 
-        if (adminAuthEntity.getDepartmentId() == PersonnelDepartmentId) {
+        if (!PersonnelDepartmentId.equals(adminAuthEntity.getDepartmentId())) {
             positionService.adminClosePosition(positionId);
         } else {
             throw new MyNoPermissionException("没有权限");

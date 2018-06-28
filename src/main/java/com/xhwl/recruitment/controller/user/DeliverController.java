@@ -88,10 +88,10 @@ public class DeliverController {
                 //未填写就业意向
                 throw new JobIntentionNoExistException("未填写就业意向");
             }
-            if (resumeEntity.getUploadResumePath() == null) {
-                //未上传简历附件
-                throw new UploadResumeNoExistException("未上传简历附件");
-            }
+//            if (resumeEntity.getUploadResumePath() == null) {
+//                //未上传简历附件
+//                throw new UploadResumeNoExistException("未上传简历附件");
+//            }
             if (resumeEntity.getPhotoPath() == null) {
                 //未上传照片
                 throw new PhotoNoExistException("未上传照片");
@@ -138,7 +138,7 @@ public class DeliverController {
         if(resumeDeliverEntity==null){
             throw new DeliverNoExitExeption("该投递记录不存在");
         }
-        if(resumeDeliverEntity.getUserId()!=userId){
+        if(!resumeDeliverEntity.getUserId().equals(userId)){
             throw new MyNoPermissionException("无权限");
         }
 

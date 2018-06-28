@@ -90,7 +90,7 @@ public class ResumeController {
             throw new MException("需要先创建用户的简历表再修改");
         }
 
-        if (userId != resumeVo.getUserId()) {
+        if (!userId.equals(resumeVo.getUserId())) {
             throw new MException("无修改权限");
         }
         return resumeService.modifyResume(resumeVo);
@@ -107,7 +107,6 @@ public class ResumeController {
     @RequiresAuthentication
     public HashMap<String, String> modifyResumesForm(@RequestHeader HttpHeaders headers, @PathVariable("type") Integer resumesForm) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
-
         if (resumeService.getResume(userId) == null) throw new MException("未创建简历");
         if (!(resumesForm == 1 || resumesForm == 2 || resumesForm == 3)) throw new MException("简历类型选择错误");
         HashMap<String, String> res = new LinkedHashMap<>();
@@ -116,18 +115,6 @@ public class ResumeController {
         return res;
     }
 
-//    @GetMapping("/resumetest/{form}")
-//    public ResumeEntity createResume2(@RequestHeader HttpHeaders headers, @PathVariable("form") int resumesForm) {
-//        Long userId = 9L;
-//
-//        //已经创建过该用户的简历
-//        if (resumeService.getResume(userId) != null) {
-//            throw new MException("已经创建过该用户的简历");
-//
-//        }
-//
-//        return resumeService.createNewResume(userId, resumesForm);
-//    }
 
 
 

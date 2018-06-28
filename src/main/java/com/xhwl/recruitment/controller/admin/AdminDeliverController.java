@@ -74,7 +74,7 @@ public class AdminDeliverController {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
         Long departmentId = adminAuthEntity.getDepartmentId();
-        if (departmentId != PersonnelDepartmentId && departmentId != positionRepository.findOne(positionId).getDepartment()) {
+        if (!departmentId.equals(PersonnelDepartmentId) && !departmentId.equals(positionRepository.findOne(positionId).getDepartment())) {
             throw new MyNoPermissionException("没有权限");
         }
         PageRequest request = new PageRequest(page - 1, size);
@@ -96,7 +96,7 @@ public class AdminDeliverController {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
         Long departmentId = adminAuthEntity.getDepartmentId();
-        if (departmentId != PersonnelDepartmentId && departmentId != positionRepository.findOne(positionId).getDepartment()) {
+        if (!departmentId.equals(PersonnelDepartmentId) && !departmentId.equals(positionRepository.findOne(positionId).getDepartment())) {
             throw new MyNoPermissionException("没有权限");
         }
         PageRequest request = new PageRequest(page - 1, size);
@@ -119,7 +119,7 @@ public class AdminDeliverController {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
         Long departmentId = adminAuthEntity.getDepartmentId();
-        if (departmentId != PersonnelDepartmentId && departmentId != positionRepository.findOne(positionId).getDepartment()) {
+        if (!departmentId.equals(PersonnelDepartmentId) && !departmentId.equals(positionRepository.findOne(positionId).getDepartment())) {
             throw new MyNoPermissionException("没有权限");
         }
 
@@ -142,7 +142,7 @@ public class AdminDeliverController {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
         Long departmentId = adminAuthEntity.getDepartmentId();
-        if (departmentId != PersonnelDepartmentId && departmentId != positionRepository.findOne(positionId).getDepartment()) {
+        if (!departmentId.equals(PersonnelDepartmentId) && !departmentId.equals(positionRepository.findOne(positionId).getDepartment())) {
             throw new MyNoPermissionException("没有权限");
         }
         PageRequest request = new PageRequest(page - 1, size);
@@ -164,7 +164,7 @@ public class AdminDeliverController {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
         Long departmentId = adminAuthEntity.getDepartmentId();
-        if (departmentId != PersonnelDepartmentId && departmentId != positionRepository.findOne(positionId).getDepartment()) {
+        if (!departmentId.equals(PersonnelDepartmentId) && !departmentId.equals(positionRepository.findOne(positionId).getDepartment()))  {
             throw new MyNoPermissionException("没有权限");
         }
         PageRequest request = new PageRequest(page - 1, size);
@@ -186,7 +186,7 @@ public class AdminDeliverController {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
         Long departmentId = adminAuthEntity.getDepartmentId();
-        if (departmentId != PersonnelDepartmentId && departmentId != positionRepository.findOne(positionId).getDepartment()) {
+        if (!departmentId.equals(PersonnelDepartmentId) && !departmentId.equals(positionRepository.findOne(positionId).getDepartment()))  {
             throw new MyNoPermissionException("没有权限");
         }
 
@@ -209,7 +209,7 @@ public class AdminDeliverController {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
         Long departmentId = adminAuthEntity.getDepartmentId();
-        if (departmentId != PersonnelDepartmentId && departmentId != positionRepository.findOne(positionId).getDepartment()) {
+        if (!departmentId.equals(PersonnelDepartmentId) && !departmentId.equals(positionRepository.findOne(positionId).getDepartment()))  {
             throw new MyNoPermissionException("没有权限");
         }
         PageRequest request = new PageRequest(page - 1, size);
@@ -229,7 +229,7 @@ public class AdminDeliverController {
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
         Long departmentId = adminAuthEntity.getDepartmentId();
         Long positionId = resumeDeliverRepository.findOne(deliverId).getPositionId();
-        if (departmentId != PersonnelDepartmentId && departmentId != positionRepository.findOne(positionId).getDepartment()) {
+        if (!departmentId.equals(PersonnelDepartmentId) && !departmentId.equals(positionRepository.findOne(positionId).getDepartment()))  {
             throw new MyNoPermissionException("没有权限");
         }
         auditDeliverService.deliverToNextStep(deliverId);
@@ -248,7 +248,7 @@ public class AdminDeliverController {
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
         Long departmentId = adminAuthEntity.getDepartmentId();
         Long positionId = resumeDeliverRepository.findOne(deliverId).getPositionId();
-        if (departmentId != PersonnelDepartmentId && departmentId != positionRepository.findOne(positionId).getDepartment()) {
+        if (!departmentId.equals(PersonnelDepartmentId) && !departmentId.equals(positionRepository.findOne(positionId).getDepartment()))  {
             throw new MyNoPermissionException("没有权限");
         }
         auditDeliverService.refuseDeliver(deliverId);
@@ -267,7 +267,7 @@ public class AdminDeliverController {
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
         Long departmentId = adminAuthEntity.getDepartmentId();
 
-        if (departmentId != PersonnelDepartmentId) {
+        if (!departmentId.equals(PersonnelDepartmentId)) {
             throw new MyNoPermissionException("没有权限");
         }
         auditDeliverService.cancelRefuse(deliverId);

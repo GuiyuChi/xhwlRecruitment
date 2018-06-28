@@ -42,7 +42,6 @@ public class FileController {
     @RequiresAuthentication
     public void uploadPhoto(@RequestParam("file") MultipartFile photo, @RequestHeader HttpHeaders headers) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
-//        Long userId = 4L;
         String strUserId = userId.toString();
 
         log.info(String.format("temp team \"%s\" uploads a file \"%s\", size %d Byte", userId, photo
@@ -90,7 +89,6 @@ public class FileController {
     public void uploadResume(@RequestParam("file") MultipartFile resume, @RequestHeader HttpHeaders headers) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         String strUserId = userId.toString();
-
         try {
             fileService.saveResume(resume, strUserId);
         } catch (IOException e) {
