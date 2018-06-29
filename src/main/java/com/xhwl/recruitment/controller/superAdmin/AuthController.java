@@ -97,7 +97,7 @@ public class AuthController {
             throw new MyNoPermissionException("需要超级管理员权限");
         }
         Sort sort = new Sort(Sort.Direction.DESC, "id");
-        PageRequest request = new PageRequest(page - 1, size);
+        PageRequest request = new PageRequest(page - 1, size,sort);
         Page<AdminAuthDto> adminAuthDtoPage = adminAuthService.findByName(request,adminName);
         return adminAuthDtoPage;
     }
