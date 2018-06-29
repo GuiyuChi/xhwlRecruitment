@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 /**
  * @Author: guiyu
  * @Description:
@@ -17,7 +19,7 @@ public interface AdminAuthRepository extends JpaRepository<AdminAuthEntity, Long
 
     AdminAuthEntity findByUserId(Long userId);
 
-    AdminAuthEntity findByUserNameContaining(String username);
+    Page<AdminAuthEntity> findByUserNameContaining(Pageable pageable,String username);
 
     AdminAuthEntity findByUserName(String username);
 }

@@ -14,10 +14,12 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * @Author: guiyu
@@ -88,14 +90,15 @@ public class AuthController {
     @RequiresRoles("admin")
     public Page<AdminAuthDto> listAdmin(@RequestHeader HttpHeaders headers,
                                         @RequestParam(value = "page", defaultValue = "1") Integer page,
-                                        @RequestParam(value = "size", defaultValue = "20") Integer size) {
+                                        @RequestParam(value = "size", defaultValue = "20") Integer size,
+                                        @RequestParam(value="adminName",defaultValue="") String adminName) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         if (!adminAuthRepository.findByUserId(userId).getRole().equalsIgnoreCase(SuperAdminRole)) {
             throw new MyNoPermissionException("需要超级管理员权限");
         }
-
+        Sort sort = new Sort(Sort.Direction.DESC, "id");
         PageRequest request = new PageRequest(page - 1, size);
-        Page<AdminAuthDto> adminAuthDtoPage = adminAuthService.findAll(request);
+        Page<AdminAuthDto> adminAuthDtoPage = adminAuthService.findByName(request,adminName);
         return adminAuthDtoPage;
     }
 
@@ -146,21 +149,4 @@ public class AuthController {
         adminAuthService.deleteAdmin(adminName);
     }
 
-    /**
-     * 超级管理员按工号查找管理员
-     *
-     * @param headers
-     * @param adminName
-     * @return
-     */
-    @GetMapping("/super/searchAdmin/{adminName}")
-    @RequiresRoles("admin")
-    public AdminAuthDto searchAdmin(@RequestHeader HttpHeaders headers, @PathVariable("adminName") String adminName) {
-        Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
-        if (!adminAuthRepository.findByUserId(userId).getRole().equalsIgnoreCase(SuperAdminRole)) {
-            throw new MyNoPermissionException("需要超级管理员权限");
-        }
-
-        return adminAuthService.searchAdmin(adminName);
-    }
 }

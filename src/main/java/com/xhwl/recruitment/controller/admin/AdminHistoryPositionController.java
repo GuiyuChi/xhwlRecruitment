@@ -5,13 +5,17 @@ import com.xhwl.recruitment.dao.ResumeDeliverRepository;
 import com.xhwl.recruitment.domain.AdminAuthEntity;
 import com.xhwl.recruitment.domain.PositionEntity;
 import com.xhwl.recruitment.domain.ResumeDeliverEntity;
+import com.xhwl.recruitment.exception.FormSubmitFormatException;
 import com.xhwl.recruitment.service.HistoryPositionService;
+import com.xhwl.recruitment.service.PositionService;
 import com.xhwl.recruitment.service.UserService;
+import com.xhwl.recruitment.util.ValidateUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,6 +41,13 @@ public class AdminHistoryPositionController {
     AdminAuthRepository adminAuthRepository;
     @Autowired
     ResumeDeliverRepository resumeDeliverRepository;
+    @Autowired
+    PositionService positionService;
+
+    /**
+     * 人事部门的id
+     */
+    private static final Long PersonnelDepartmentId = 1L;
 
     //显示过期前项目
     @GetMapping("/admin/PositionsBeforeDeadline")
@@ -64,28 +75,38 @@ public class AdminHistoryPositionController {
         return historyPositionService.getPositionAfterDeadline(request, departmentId);
     }
 
-    @PostMapping("/admin/searchPositionAfterDeadline")//查询历史记录
+    /**
+     * 管理员（人事）获取全部处于招聘中的岗位，中级和超级管理员可以获得全部，其余管理员只能看到自己部门的情况
+     *
+     * @return
+     */
+    @PostMapping("/admin/searchPositionAfterDeadline")
     @RequiresRoles("admin")
-    public Page<HashMap> searchPositionAfterDeadline(@RequestHeader HttpHeaders headers,
-                                                     @RequestParam(value = "page", defaultValue = "1") Integer page,
-                                                     @RequestParam(value = "size", defaultValue = "20") Integer size,
-                                                     @RequestParam(value = "publish_date") String publish_date,
-                                                     @RequestParam(value = "end_date") String end_date,
-                                                     @RequestParam(value = "departmentName",defaultValue="0") Long departmentName,
-                                                     @RequestParam(value = "positionName") String positionName) throws ParseException {
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Date endDate = format.parse(end_date);
-        Date publishDate = format.parse(publish_date);
+    public Page<HashMap> adminGetPositions(@RequestHeader HttpHeaders headers,
+                                           @RequestParam(value = "page", defaultValue = "1") Integer page,
+                                           @RequestParam(value = "size", defaultValue = "20") Integer size,
+                                           @RequestParam(value = "department", defaultValue = "0") Long department,
+                                           @RequestParam(value = "positionName", defaultValue = "") String positionName,
+                                           @RequestParam(value = "publish_date", defaultValue = "") String early_date,
+                                           @RequestParam(value = "end_date", defaultValue = "") String last_date) {
         Long userId = userService.getUserIdByToken(headers.getFirst("authorization"));
         AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
-        Long departmentId = adminAuthEntity.getDepartmentId();
-        PageRequest request = new PageRequest(page - 1, size);
-        return historyPositionService.searchPositionAfterDeadline(request, departmentId, publishDate, endDate, departmentName, positionName);
+
+        // 管理员实现岗位查看时按 发布时间 逆序，即后添加的显示在前面
+        Sort sort = new Sort(Sort.Direction.DESC, "publishDate");
+
+        PageRequest request = new PageRequest(page - 1, size, sort);
+        //日期格式必须正确
+        if (!"".equals(early_date) && !ValidateUtils.isValidDate(early_date)) {
+            throw new FormSubmitFormatException("日期格式错误");
+        }
+        if (!"".equals(last_date) && !ValidateUtils.isValidDate(last_date)) {
+            throw new FormSubmitFormatException("日期格式错误");
+        }
+        if (adminAuthEntity.getDepartmentId() == PersonnelDepartmentId) {
+            return positionService.adminGetAllPublishPositions(request, 2, department, positionName, early_date, last_date);
+        } else {
+            return positionService.adminGetDepartmentPositions(request, adminAuthEntity.getDepartmentId(), 2, positionName, early_date, last_date);
+        }
     }
-//    @GetMapping("admin/getMailState/{resumeId}")//管理员拿到email_state字段，判断是否发送邮件
-//    @RequiresRoles("admin")
-//    public int getMailState(@PathVariable("resumeId") Long resumeId){
-//        ResumeDeliverEntity resumeDelieverEntity=resumeDeliverRepository.findById(resumeId);
-//        return resumeDelieverEntity.getEmailState();
-//    }
 }

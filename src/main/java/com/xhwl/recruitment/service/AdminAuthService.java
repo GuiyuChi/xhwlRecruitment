@@ -71,40 +71,6 @@ public class AdminAuthService {
     }
 
     /**
-     * 超级管理员查看全部人员信息，分页
-     *
-     * @param pageable
-     * @return
-     */
-    public Page<AdminAuthDto> findAll(Pageable pageable) {
-        Page<AdminAuthEntity> adminAuthEntityPage = adminAuthRepository.findAll(pageable);
-        List<AdminAuthEntity> adminAuthEntityList = adminAuthEntityPage.getContent();
-
-        List<AdminAuthDto> adminAuthDtoList = new ArrayList<>();
-        for (int i = 0; i < adminAuthEntityList.size(); i++) {
-            AdminAuthDto adminAuthDto = new AdminAuthDto();
-
-            if (userRepository.findOne(adminAuthEntityList.get(i).getUserId()) != null) {
-                String department = String.valueOf(departmentRepository.findOne(adminAuthEntityList.get(i).getDepartmentId()).getId());
-                String username = adminAuthEntityList.get(i).getUserName();
-
-                adminAuthDto.setId(adminAuthEntityList.get(i).getId());
-                adminAuthDto.setUsername(username);
-                adminAuthDto.setDepartment(department);
-
-                adminAuthDtoList.add(adminAuthDto);
-            }else{
-                System.out.println(i);
-            }
-        }
-
-        Page<AdminAuthDto> adminAuthDtoPage = new PageImpl<AdminAuthDto>(adminAuthDtoList, pageable, adminAuthEntityPage.getTotalElements());
-
-
-        return adminAuthDtoPage;
-    }
-
-    /**
      * 超级管理员修改管理员部门或密码
      *
      * @param username
@@ -157,21 +123,33 @@ public class AdminAuthService {
     }
 
     /**
-     * 超级管理员按工号查看管理员
+     * 超级管理员查看全部人员信息，分页,模糊
      *
-     * @param adminName
+     * @param pageable
      * @return
      */
-    public AdminAuthDto searchAdmin(String adminName) {
-        AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserName(adminName);
-        if (adminAuthEntity == null) return null;
+    public Page<AdminAuthDto> findByName(Pageable pageable,String adminName) {
+        Page<AdminAuthEntity> adminAuthEntityPage = adminAuthRepository.findByUserNameContaining(pageable,adminName);
+        List<AdminAuthEntity> adminAuthEntityList = adminAuthEntityPage.getContent();
 
-        AdminAuthDto adminAuthDto = new AdminAuthDto();
-        adminAuthDto.setId(adminAuthEntity.getId());
-        adminAuthDto.setUsername(adminAuthEntity.getUserName());
-        adminAuthDto.setPassword(userRepository.findOne(adminAuthEntity.getUserId()).getPassword());
-        adminAuthDto.setDepartment(String.valueOf(adminAuthEntity.getDepartmentId()));
+        List<AdminAuthDto> adminAuthDtoList = new ArrayList<>();
+        for (int i = 0; i < adminAuthEntityList.size(); i++) {
+            AdminAuthDto adminAuthDto = new AdminAuthDto();
 
-        return adminAuthDto;
+            if (userRepository.findOne(adminAuthEntityList.get(i).getUserId()) != null) {
+                String department = String.valueOf(departmentRepository.findOne(adminAuthEntityList.get(i).getDepartmentId()).getId());
+                String username = adminAuthEntityList.get(i).getUserName();
+
+                adminAuthDto.setId(adminAuthEntityList.get(i).getId());
+                adminAuthDto.setUsername(username);
+                adminAuthDto.setDepartment(department);
+
+                adminAuthDtoList.add(adminAuthDto);
+            }else{
+                System.out.println(i);
+            }
+        }
+        Page<AdminAuthDto> adminAuthDtoPage = new PageImpl<AdminAuthDto>(adminAuthDtoList, pageable, adminAuthEntityPage.getTotalElements());
+        return adminAuthDtoPage;
     }
 }
