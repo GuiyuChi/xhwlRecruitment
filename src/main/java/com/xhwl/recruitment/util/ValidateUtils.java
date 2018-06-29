@@ -13,7 +13,7 @@ public class ValidateUtils {
     /**
      * 非空
      */
-    private static final String V_NOTEMPTY = "^\\S+$";
+    private static final String V_NOTEMPTY = "\\S+";
 
     /**
      * 手机
@@ -60,7 +60,7 @@ public class ValidateUtils {
         return match(V_EMAIL, value);
     }
 
-    /**
+    /**m
      * 验证是不是手机号码
      *
      * @param value 要验证的字符串
@@ -129,7 +129,7 @@ public class ValidateUtils {
     private static boolean match(String regex, String str) {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(str);
-        return matcher.matches();
+        return matcher.find();
     }
 }
 

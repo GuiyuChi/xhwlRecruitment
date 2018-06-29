@@ -88,6 +88,7 @@ public class AdminAuthService {
 
         //修改管理员表
         admin.setDepartmentId(departmentId);
+        if(!admin.getRole().equals("superAdmin"))
         if (departmentId == PersonnelDepartmentId) {
             admin.setRole(SeniorAdminRole);
         } else {
