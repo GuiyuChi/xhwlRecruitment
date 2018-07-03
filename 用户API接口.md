@@ -201,6 +201,28 @@ eg：{{8080}}/positions/1?workPlace=深圳
     "number": 0
 }
 ```
+## 获得用户的投递情况（需要header） get {{8080}}/deliver
+recruitmentType 招聘类型 1校园招聘 2社会招聘 3.实习生招聘
+recruitmentState 应聘情况 0.待审核1.简历审核通过2.部门笔试通过3.部门面试通过 4.已录用 -1.已回绝
+deleteAuth: 是否有删除权限 0不可删除 1可删除
+```
+[
+    {
+        "id": "38",
+        "positionName": "测试岗位,误删~",
+        "recruitmentType": "1",
+        "recruitmentState": "2",
+        "deleteAuth": "0"
+    }, 
+    {
+        "id": "70",
+        "positionName": "企业客户销售客户代表",
+        "recruitmentType": "1",
+        "recruitmentState": "-2",
+        "deleteAuth": "0"
+    }
+]
+```
 
 ## 用户删除投递 delete {{8080}}/deliver/45 数字为投递记录的id
 
