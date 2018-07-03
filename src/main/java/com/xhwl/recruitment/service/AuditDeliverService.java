@@ -1,10 +1,7 @@
 package com.xhwl.recruitment.service;
 
 import com.xhwl.recruitment.dao.*;
-import com.xhwl.recruitment.domain.DwEducationExperienceEntity;
-import com.xhwl.recruitment.domain.DwPersonalInformationEntity;
-import com.xhwl.recruitment.domain.PositionEntity;
-import com.xhwl.recruitment.domain.ResumeDeliverEntity;
+import com.xhwl.recruitment.domain.*;
 import com.xhwl.recruitment.dto.DeliverDto;
 import com.xhwl.recruitment.util.EmailStateUtil;
 import com.xhwl.recruitment.util.StatusCodeUtil;
@@ -60,6 +57,9 @@ public class AuditDeliverService {
 
     @Autowired
     PositionRepository positionRepository;
+
+    @Autowired
+    AdminAuthRepository adminAuthRepository;
 
 
     //获取用户名
@@ -447,6 +447,49 @@ public class AuditDeliverService {
         } else {
             return 0;
         }
+    }
+
+    /**
+     * 判断某一用户对查看的简历是否有处理的权限，进而进行阅读状态的修改
+     *
+     * @param deliverId
+     * @param userId
+     * @return
+     */
+    public Boolean authJudge(Long deliverId, Long userId) {
+        try {
+            AdminAuthEntity adminAuthEntity = adminAuthRepository.findByUserId(userId);
+            ResumeDeliverEntity deliver = resumeDeliverRepository.findById(deliverId);
+            Long positionId = deliver.getPositionId();
+            PositionEntity position = positionRepository.findOne(positionId);
+            Long adminDepartment = adminAuthEntity.getDepartmentId();
+            Long positionDepartment = position.getDepartment();
+            Long resumeAuditDepartment = position.getResumeAuditDepartment();
+
+            String state = deliver.getRecruitmentState();
+            switch (StatusCodeUtil.codeAnalysis(state)) {
+                case 0:
+                    return adminDepartment == resumeAuditDepartment ? true : false;
+                case 1:
+                    return adminDepartment == PersonnelDepartmentId ? true : false;
+                case 2:
+                    return adminDepartment == positionDepartment ? true : false;
+                case 3:
+                    return adminDepartment == positionDepartment ? true : false;
+                case 4:
+                    return adminDepartment == PersonnelDepartmentId ? true : false;
+                case 5:
+                    return adminDepartment == PersonnelDepartmentId ? true : false;
+                case 6:
+                    return adminDepartment == PersonnelDepartmentId ? true : false;
+                default:
+                    return false;
+            }
+
+        } catch (Exception e) {
+            return false;
+        }
+
     }
 
 
