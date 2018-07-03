@@ -141,7 +141,9 @@ public class ResumeService {
 
         personalInformationEntity.setEmail(personalInformationVo.getEmail());
         personalInformationEntity.setTelephone(personalInformationVo.getTelephone());
-        personalInformationEntity.setMaritalStatus(personalInformationVo.getMaritalStatus().byteValue());
+        if (personalInformationVo.getMaritalStatus() != null) {
+            personalInformationEntity.setMaritalStatus(personalInformationVo.getMaritalStatus().byteValue());
+        }
         personalInformationEntity.setWorkSeniority(personalInformationVo.getWorkSeniority());
         personalInformationEntity.setPoliticalStatus(personalInformationVo.getPoliticalStatus());
         personalInformationEntity.setPresentAddress(personalInformationVo.getPresentAddress());
@@ -183,7 +185,9 @@ public class ResumeService {
 
         personalInformationEntity.setEmail(personalInformationVo.getEmail());
         personalInformationEntity.setTelephone(personalInformationVo.getTelephone());
-        personalInformationEntity.setMaritalStatus(personalInformationVo.getMaritalStatus().byteValue());
+        if (personalInformationVo.getMaritalStatus() != null) {
+            personalInformationEntity.setMaritalStatus(personalInformationVo.getMaritalStatus().byteValue());
+        }
         personalInformationEntity.setWorkSeniority(personalInformationVo.getWorkSeniority());
         personalInformationEntity.setPoliticalStatus(personalInformationVo.getPoliticalStatus());
         personalInformationEntity.setPresentAddress(personalInformationVo.getPresentAddress());
@@ -935,6 +939,7 @@ public class ResumeService {
 
     /**
      * 修改用户的简历类型
+     *
      * @param userId
      * @param type
      * @return
