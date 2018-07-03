@@ -398,6 +398,7 @@ public class DeliverService {
                 hashMap.put("positionName", positionEntity.getPositionName());
                 hashMap.put("recruitmentType", String.valueOf(positionEntity.getRecruitmentType()));
                 hashMap.put("recruitmentState", StatusCodeUtil.code2View(resumeDeliver.getRecruitmentState()));
+                hashMap.put("deleteAuth",StatusCodeUtil.codeAnalysis(resumeDeliver.getRecruitmentState())==0?"1":"0");
                 res.add(hashMap);
             }
         }
