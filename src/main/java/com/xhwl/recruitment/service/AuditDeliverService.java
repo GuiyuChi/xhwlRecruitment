@@ -427,7 +427,7 @@ public class AuditDeliverService {
 
         //HR面试
         String queryCodeHRInterview = StatusCodeUtil.getCode(HRInterview);
-        res.put("HRInterview", getCount(position, queryCodeHRInterview, position.getDepartment(), department));
+        res.put("HRInterview", getCount(position, queryCodeHRInterview, PersonnelDepartmentId, department));
 
 
         //已通过
