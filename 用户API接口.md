@@ -1,4 +1,515 @@
 # xhwlRecruitment
+## 用户登录 post {{8080}}/login 
+```
+    【form】 username=admin
+    【form】 password=123456
+
+正常返回
+{
+    "code": 200,
+    "msg": "Login success",
+    "data": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1MjM3MDEwODQsInVzZXJuYW1lIjoiYWRtaW4ifQ.kTJxhGmQL8mj6q50IGOq7EeMcaf1e10WDNFtpBiix0Q"
+}
+用户不存在返回
+{
+    "code": 500,
+    "msg": null,
+    "data": null
+}
+密码错误返回
+{
+    "code": 401,
+    "msg": "Unauthorized",
+    "data": null
+}
+```
+
+## put {{8080}}/resume?form=1  新建简历表 id为简历类型
+```
+正常创建返回
+{
+    "id": 10,
+    "userId": 4,
+    "selfAssessment": null,
+    "uploadResumePath": null,
+    "supportDetailPath": null,
+    "photoPath": null,
+    "resumesForm": 1
+}
+重复创建返回
+{
+    "code": 500,
+    "msg": "已经创建过该用户的简历",
+    "data": null
+}
+```
+
+## get {{8080}}/resume 获得简历表
+```
+正常返回
+{
+    "id": 10,
+    "userId": 4,
+    "selfAssessment": null,
+    "uploadResumePath": null,
+    "supportDetailPath": null,
+    "photoPath": null,
+    "resumesForm": 1
+}
+```
+
+## post {{8080}}/resume 修改简历表
+```
+【body】
+{
+    "id": 10,
+    "userId": 4,
+    "selfAssessment": null,
+    "uploadResumePath": null,
+    "supportDetailPath": null,
+    "photoPath": null,
+    "resumesForm": 1
+}
+正常返回
+{
+    "id": 10,
+    "userId": 4,
+    "selfAssessment": null,
+    "uploadResumePath": null,
+    "supportDetailPath": null,
+    "photoPath": null,
+    "resumesForm": 1
+}
+无修改权限（userId 不是自己的id）
+{
+    "code": 500,
+    "msg": "无修改权限",
+    "data": null
+}
+```
+
+## 个人信息表
+
+## get {{8080}}/person 获得个人信息表
+```
+正常返回
+{
+    "id": 5,
+    "resumeId": 5,
+    "name": "张三丰",
+    "sex": 2,
+    "idType": 1,
+    "idNumber": "350124199601052343",
+    "birthday": "1996-12-05",
+    "email": "32453424534@qq.com",
+    "telephone": "15980245342",
+    "maritalStatus": 1,
+    "workSeniority": "5",
+    "politicalStatus": "团员",
+    "presentAddress": "福建省厦门市思明区厦大学生公寓",
+}
+```
+## post {{8080}}/person 上传个人信息表（新建或修改）
+```
+时间格式为 "2015-01-02"
+【body】
+{
+    "name": "张三丰",
+    "sex": 2,
+    "idType": 1,
+    "idNumber": "350124199601052343",
+    "birthday": "1996-12-05",
+    "email": "32453424534@qq.com",
+    "telephone": "15980245342",
+    "maritalStatus": 1,
+    "workSeniority": "5",
+    "politicalStatus": "团员",
+    "presentAddress": "福建省厦门市思明区厦大学生公寓",
+}
+正常返回
+{
+    "id": 3,
+    "resumeId": 4,
+    "name": "张三丰",
+    "sex": 2,
+    "idType": 1,
+    "idNumber": "350124199601052343",
+    "birthday": "1996-12-05",
+    "email": "32453424534@qq.com",
+    "telephone": "15980245342",
+    "maritalStatus": 1,
+    "workSeniority": "5",
+    "politicalStatus": "团员",
+    "presentAddress": "福建省厦门市思明区厦大学生公寓",
+}
+```
+
+## 教育经历表
+
+## get {{8080}}/education 获取教育经历表
+```
+正常返回
+[
+    {
+        "id": 9,
+        "resumeId": 10,
+        "startTime": null,
+        "endTime": null,
+        "school": null,
+        "speciality": null,
+        "educationHistory": null,
+        "rank": null
+    }
+]
+无教育经历
+[]
+```
+
+
+
+## post {{8080}}/education 新建修改一条教育经历
+```
+传id为修改，不传id为新建
+【body】
+{
+    "id": 9,
+    "startTime": "2015-01-01",
+    "endTime": "2016-02-03",
+    "school": "厦门大学",
+    "speciality": "计算机科学",
+    "educationHistory": 1,
+    "rank": null
+}
+正常返回
+{
+    "id": 9,
+    "resumeId": 10,
+    "startTime": "2015-01-01",
+    "endTime": "2016-02-03",
+    "school": "厦门大学",
+    "speciality": "计算机科学",
+    "educationHistory": 1,
+    "rank": null
+}
+```
+
+## delete {{8080}}/education/9 删除id为9的教育经历
+```
+正常返回
+    无返回
+    
+修改不是自己的教育经历
+{
+    "code": 500,
+    "msg": "无修改权限",
+    "data": null
+}
+```
+
+## 培训经历
+## get {{8080}}/training 获取培训经历
+```
+返回
+[
+    {
+        "id": 5,
+        "resumeId": 10,
+        "startTime": "2015-07-12",
+        "endTime": "2016-05-13",
+        "trainingInstitutions": "安大法",
+        "trainingContent": "搭建一个深度学习框架",
+        "description": "强的一批"
+    },
+    {
+        "id": 7,
+        "resumeId": 10,
+        "startTime": null,
+        "endTime": null,
+        "trainingInstitutions": null,
+        "trainingContent": null,
+        "description": null
+    }
+]
+```
+
+## post {{8080}}/training 新建或修改培训经历
+```
+【body】带id为修改，不带id为新建
+{
+    "id": 5,
+    "resumeId": 10,
+    "startTime": "2015-07-12",
+    "endTime": "2016-05-13",
+    "trainingInstitutions": "安大法",
+    "trainingContent": "搭建一个深度学习模板",
+    "description": "强的一批"
+}
+返回
+{
+    "id": 5,
+    "resumeId": 10,
+    "startTime": "2015-07-12",
+    "endTime": "2016-05-13",
+    "trainingInstitutions": "安大法",
+    "trainingContent": "搭建一个深度学习模板",
+    "description": "强的一批"
+}
+```
+
+## delete {{8080}}/training/7 删除id为7培训经历字段
+```
+正确无结果
+错误返回
+{
+    "code": 500,
+    "msg": null,
+    "data": null
+}
+```
+
+## 项目经历
+
+## get {{8080}}/project 获取项目经历
+```
+[
+    {
+        "id": 3,
+        "resumeId": 10,
+        "projectName": "创客空间管理系统",
+        "projectRole": "后端程序员",
+        "projectDescription": "给大佬端茶送水"
+    },
+    {
+        "id": 4,
+        "resumeId": 10,
+        "projectName": "xhwl",
+        "projectRole": "后端程序员",
+        "projectDescription": "做了一点微小的贡献"
+    }
+]
+```
+
+## post http://119.29.16.250:8080/project 新建或修改项目经历
+```
+[body] 无id 为新建，有id为修改
+{
+	"id":6,
+    "projectName": "xhwl",
+    "projectRole": "后端程序员",
+    "projectDescription":"做了一点微小的贡献"
+}
+正常返回
+{
+    "id": 6,
+    "resumeId": 10,
+    "projectName": "xhwl",
+    "projectRole": "后端程序员",
+    "projectDescription": "做了一点微小的贡献"
+}
+```
+
+## delete /project/6 删除项目经历 （提交与返回同其他删除）
+
+## 工作经历
+
+## get {{8080}}/work 获取工作经历
+```
+[
+    {
+        "id": 2,
+        "resumeId": 10,
+        "startTime": "2015-01-01",
+        "endTime": "2016-12-12",
+        "company": "兴海物联",
+        "position": "机器学习工程师",
+        "description": "复制编写机器学习框架"
+    },
+    {
+        "id": 3,
+        "resumeId": 10,
+        "startTime": "2015-01-01",
+        "endTime": "2016-12-12",
+        "company": "京东",
+        "position": "后端工程师",
+        "description": "干苦力"
+    },
+    {
+        "id": 4,
+        "resumeId": 10,
+        "startTime": "2015-01-01",
+        "endTime": "2016-12-12",
+        "company": "华为",
+        "position": "后端工程师",
+        "description": "干苦力"
+    }
+]
+```
+
+## post {{8080}}/work 新建或修改工作经历
+```
+【body】无id 为新建，有id为修改
+    {
+        "id": 3,
+        "startTime": "2015-01-01",
+        "endTime": "2016-12-12",
+        "company": "京东",
+        "position": "后端工程师",
+        "description": "干苦力"
+    }
+返回
+{
+    "id": 3,
+    "resumeId": 10,
+    "startTime": "2015-01-01",
+    "endTime": "2016-12-12",
+    "company": "京东",
+    "position": "后端工程师",
+    "description": "干苦力"
+}
+```
+
+## delete {{8080}}/work/4 删除工作经历 （同其他delete）
+
+
+## 实习经历
+## get {{8080}}/internship 获取实习经历
+```
+返回
+[
+    {
+        "id": 2,
+        "resumeId": 10,
+        "startTime": null,
+        "endTime": null,
+        "company": null,
+        "position": null,
+        "description": null
+    },
+    {
+        "id": 3,
+        "resumeId": 10,
+        "startTime": "2015-01-02",
+        "endTime": null,
+        "company": null,
+        "position": null,
+        "description": null
+    }
+]
+```
+
+
+## post {{8080}}/internship 新建或修改实习经历
+```
+【body】无id 为新建，有id为修改
+{
+        "id": 3,
+        "startTime": "2015-01-02",
+        "endTime": "2016-01-02",
+        "company": "京东方",
+        "position": "电子工程师",
+        "description": "焊接电路"
+}
+返回
+{
+    "id": 3,
+    "resumeId": 10,
+    "startTime": "2015-01-02",
+    "endTime": "2016-01-02",
+    "company": "京东方",
+    "position": "电子工程师",
+    "description": "焊接电路"
+}
+```
+
+
+## delete {{8080}}/internship/2 删除实习经历
+
+
+## 奖励情况
+## get {{8080}}/award 获取奖励情况
+```
+[
+    {
+        "id": 1,
+        "resumeId": 10,
+        "awardName": null,
+        "dateOfAward": null
+    },
+    {
+        "id": 2,
+        "resumeId": 10,
+        "awardName": "acm程序设计大赛",
+        "dateOfAward": "2015-01-12"
+    }
+]
+```
+
+## post {{8080}}/award 新建或修改奖励
+```
+【body】无id 为新建，有id为修改
+{
+    "id": 2,
+    "resumeId": 10,
+    "awardName": "acm程序设计大赛",
+    "dateOfAward": "2015-01-12"
+}
+返回
+{
+    "id": 2,
+    "resumeId": 10,
+    "awardName": "acm程序设计大赛",
+    "dateOfAward": "2015-01-12"
+}
+```
+
+## delete {{8080}}/award/3 删除奖励
+
+## 求职意向
+
+## get {{8080}}/intention 获取求职意向
+```
+返回
+{
+    "id": 3,
+    "resumeId": 10,
+    "workPlace": "深圳",
+    "salary": 10000,
+    "expectedTimeForDuty": "2018-06-02"
+}
+```
+
+## post http://119.29.16.250:8080/intention 新建或修改求职意向
+```
+【body】工作地点和期待时间必填，否则会抛出异常
+{
+    "workPlace": "深圳",
+    "salary": 10000,
+    "expectedTimeForDuty": "2018-06-02"
+}
+返回
+{
+    "id": 3,
+    "resumeId": 10,
+    "workPlace": "深圳",
+    "salary": 10000,
+    "expectedTimeForDuty": "2018-06-02"
+}
+```
+
+## 自我评价
+## get {{8080}}/selfAssessment 获取自我评价
+```
+返回一个字符串
+```
+
+## post {{8080}}/selfAssessment 修改自我评价
+```
+{
+	"selfAssessment":"一般般的自我介绍"
+}
+返回一个字符串
+```
+
 ## 修改简历类型 put {{8080}}/resumesForm/1 需要header 1.校园招聘 2.社会招聘 3.实习生招聘
 ```
 返回
