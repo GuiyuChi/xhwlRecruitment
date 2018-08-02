@@ -1,4 +1,25 @@
 # xhwlRecruitment
+## 修改简历类型 put {{8080}}/resumesForm/1 需要header 1.校园招聘 2.社会招聘 3.实习生招聘
+```
+返回
+{
+    "resumesForm": "1"
+}
+```
+## token状态查看 get {{8080}}/tokenCheck
+```
+正常 200状态码
+错误 或过期 404状态码
+{
+    "timestamp": 1524561297658,
+    "status": 404,
+    "error": "Not Found",
+    "message": "No message available",
+    "path": "/401"
+}
+
+```
+
 ## 获取图形验证码 get {{8080}}/createPictureCaptcha
 ```
 获取图形验证码的通用接口 返回uuid和byte[]格式的验证码图片
@@ -199,6 +220,22 @@ eg：{{8080}}/positions/1?workPlace=深圳
     "numberOfElements": 2,
     "size": 10,
     "number": 0
+}
+```
+## 用户进行投递 put {{8080}}/deliver/1 传入岗位的id （需要header）
+```
+成功返回   投递结果的数据库记录id
+失败返回
+{
+    "code": 500,
+    "msg": "重复投递",
+    "data": null
+}
+或
+{
+    "code": 500,
+    "msg": "简历类型不符",
+    "data": null
 }
 ```
 ## 获得用户的投递情况（需要header） get {{8080}}/deliver
