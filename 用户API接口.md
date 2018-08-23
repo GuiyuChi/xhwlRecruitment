@@ -703,6 +703,7 @@ eg：{{8080}}/positions/1?workPlace=深圳
             "workSeniority": "不限",
             "workPlace": "深圳",
             "salary": null,
+	    "education": "本科",
             "recruitingNumbers": "10",
             "publishDate": "2018-05-03",
             "department": "7",
@@ -756,10 +757,15 @@ deleteAuth: 是否有删除权限 0不可删除 1可删除
 ```
 [
     {
-        "id": "38",
-        "positionName": "测试岗位,误删~",
+       "id": "135",
+        "positionName": "web开发",
         "recruitmentType": "1",
-        "recruitmentState": "2",
+        "recruitmentState": "-1",
+        "workSeniority": "3",
+        "workPlace": "深圳",
+        "salary": "8000",
+        "education": "本科",
+        "publishDate": "2018-07-02",
         "deleteAuth": "0"
     }, 
     {
@@ -767,6 +773,11 @@ deleteAuth: 是否有删除权限 0不可删除 1可删除
         "positionName": "企业客户销售客户代表",
         "recruitmentType": "1",
         "recruitmentState": "-2",
+	"workSeniority": "3",
+        "workPlace": "深圳",
+        "salary": "8000",
+        "education": "本科",
+        "publishDate": "2018-07-02",
         "deleteAuth": "0"
     }
 ]
