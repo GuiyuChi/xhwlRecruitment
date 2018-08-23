@@ -357,6 +357,7 @@ public class PositionService {
                     hashMap.put("workSeniority", position.getWorkSeniority());
                     hashMap.put("workPlace", position.getWorkPlace());
                     hashMap.put("salary", position.getSalary());
+                    hashMap.put("education", position.getEducation());
                     hashMap.put("recruitingNumbers", position.getRecruitingNumbers().toString());
                     hashMap.put("publishDate", position.getPublishDate().toString());
                     hashMap.put("department", String.valueOf(position.getDepartment()));

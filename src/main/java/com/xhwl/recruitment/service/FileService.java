@@ -92,7 +92,7 @@ public class FileService {
         //写入文件位置
         String name = FileUtil.saveMultipartFileToLocal(file, PhotoFileFolderPath + userId);
         String path = PhotoFileFolderPath + userId + "/" + name;
-        log.info("photo save path:{}", path);
+//        log.info("photo save path:{}", path);
 
         //获取文件的后缀
         String filename = file.getOriginalFilename();
@@ -133,7 +133,7 @@ public class FileService {
         //写入文件
         String name = FileUtil.saveMultipartFileToLocal(file, ResumeAccessoryFileFolderPath + userId);
         String path = ResumeAccessoryFileFolderPath + userId + "/" + name;
-        log.info("resume save path:{}", path);
+//        log.info("resume save path:{}", path);
 
         //将简历文件夹下的具体位置写入数据表 resume表
         ResumeEntity resumeEntity = resumeRepository.findByUserId(new Long(userId));
@@ -305,7 +305,7 @@ public class FileService {
         //写入文件
         String name = FileUtil.saveMultipartFileToLocal(file, SupportDetailFileFolderPath + userId);
         String path = SupportDetailFileFolderPath + userId + "/" + name;
-        log.info("SupportDetail save path:{}", path);
+//        log.info("SupportDetail save path:{}", path);
 
         //将简历文件夹下的具体位置写入数据表 resume表
         ResumeEntity resumeEntity = resumeRepository.findByUserId(new Long(userId));
@@ -339,7 +339,7 @@ public class FileService {
         String oldPath = PhotoFileFolderPath + lp;
 
         FileUtil.moveFile(oldPath, DwPhotoFileFolderPath + userId);
-        log.info(DwPhotoFileFolderPath + lp);
+//        log.info(DwPhotoFileFolderPath + lp);
         return lp;
     }
 
@@ -356,7 +356,7 @@ public class FileService {
         String oldPath = ResumeAccessoryFileFolderPath + lp;
 
         FileUtil.moveFile(oldPath, DwResumeAccessoryFileFolderPath + userId);
-        log.info(DwResumeAccessoryFileFolderPath + lp);
+//        log.info(DwResumeAccessoryFileFolderPath + lp);
         return lp;
     }
 
@@ -373,7 +373,7 @@ public class FileService {
         String oldPath = SupportDetailFileFolderPath + lp;
 
         FileUtil.moveFile(oldPath, DwSupportDetailFileFolderPath + userId);
-        log.info(DwSupportDetailFileFolderPath + lp);
+//        log.info(DwSupportDetailFileFolderPath + lp);
         return lp;
     }
 

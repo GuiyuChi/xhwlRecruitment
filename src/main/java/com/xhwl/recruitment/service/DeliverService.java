@@ -398,6 +398,11 @@ public class DeliverService {
                 hashMap.put("positionName", positionEntity.getPositionName());
                 hashMap.put("recruitmentType", String.valueOf(positionEntity.getRecruitmentType()));
                 hashMap.put("recruitmentState", StatusCodeUtil.code2View(resumeDeliver.getRecruitmentState()));
+                hashMap.put("workSeniority", positionEntity.getWorkSeniority());
+                hashMap.put("workPlace", positionEntity.getWorkPlace());
+                hashMap.put("salary", positionEntity.getSalary());
+                hashMap.put("education", positionEntity.getEducation());
+                hashMap.put("publishDate", positionEntity.getPublishDate().toString());
                 hashMap.put("deleteAuth",StatusCodeUtil.codeAnalysis(resumeDeliver.getRecruitmentState())==0?"1":"0");
                 res.add(hashMap);
             }
