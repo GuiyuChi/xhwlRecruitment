@@ -752,8 +752,9 @@ eg：{{8080}}/positions/1?workPlace=深圳
 ```
 ## 获得用户的投递情况（需要header） get {{8080}}/deliver
 recruitmentType 招聘类型 1校园招聘 2社会招聘 3.实习生招聘    
-recruitmentState 应聘情况 1~4表示审核中、部门笔试中、部门面试中、HR面试中
--1~-4表示审核被拒、部门面试被拒、部门面试被拒、HR面试被拒
+recruitmentState 应聘情况    
+1~4表示审核中、部门笔试中、部门面试中、HR面试中    
+-1~-4表示审核被拒、部门面试被拒、部门面试被拒、HR面试被拒    
 deleteAuth: 是否有删除权限 0不可删除 1可删除
 ```
 [
