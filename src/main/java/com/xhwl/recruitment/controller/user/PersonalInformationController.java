@@ -106,12 +106,6 @@ public class PersonalInformationController {
         if (!ValidateUtils.Notempty(vo.getSex().toString())) {
             validRes = false;
         }
-        if (!ValidateUtils.Notempty(vo.getIdType().toString())) {
-            validRes = false;
-        }
-        if (vo.getIdType() == 1 && !ValidateUtils.IDcard(vo.getIdNumber())) {
-            validRes = false;
-        }
         if (!ValidateUtils.isValidDate(vo.getBirthday())) {
             validRes = false;
         }
