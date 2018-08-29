@@ -84,10 +84,10 @@ public class DeliverController {
                 //未填写个人教育经历
                 throw new EducationNoExistException("未填写教育经历");
             }
-            if (jobIntentionRepository.findByResumeId(resumeEntity.getId()) == null) {
-                //未填写就业意向
-                throw new JobIntentionNoExistException("未填写就业意向");
-            }
+//            if (jobIntentionRepository.findByResumeId(resumeEntity.getId()) == null) {
+//                //未填写就业意向
+//                throw new JobIntentionNoExistException("未填写就业意向");
+//            }
 //            if (resumeEntity.getUploadResumePath() == null) {
 //                //未上传简历附件
 //                throw new UploadResumeNoExistException("未上传简历附件");
