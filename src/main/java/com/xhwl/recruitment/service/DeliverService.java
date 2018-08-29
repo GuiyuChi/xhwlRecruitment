@@ -90,7 +90,6 @@ public class DeliverService {
     private FileService fileService;
 
 
-
     /**
      * 查找用户原先的resumeId
      *
@@ -157,7 +156,7 @@ public class DeliverService {
 
         DwPersonalInformationEntity dwPersonalInformationEntity = new DwPersonalInformationEntity();
 
-        BeanUtils.copyProperties(personalInformationEntity, dwPersonalInformationEntity,new String[]{"id"});
+        BeanUtils.copyProperties(personalInformationEntity, dwPersonalInformationEntity, new String[]{"id"});
 
         dwPersonalInformationEntity.setResumeId(newResumeId);
 
@@ -179,7 +178,7 @@ public class DeliverService {
 
         for (int i = 0; i < educations.size(); i++) {
             DwEducationExperienceEntity dwEducation = new DwEducationExperienceEntity();
-            BeanUtils.copyProperties(educations.get(i), dwEducation,new String[]{"id"});
+            BeanUtils.copyProperties(educations.get(i), dwEducation, new String[]{"id"});
             dwEducation.setResumeId(newResumeId);
             DwEducationExperienceEntity dwr = dwEducationExperienceRepository.save(dwEducation);
 //            log.info("the {} result of copy educationExperience: {}", i, dwr);
@@ -198,7 +197,7 @@ public class DeliverService {
 
         for (int i = 0; i < trains.size(); i++) {
             DwTrainingExperienceEntity dwTrain = new DwTrainingExperienceEntity();
-            BeanUtils.copyProperties(trains.get(i), dwTrain,new String[]{"id"});
+            BeanUtils.copyProperties(trains.get(i), dwTrain, new String[]{"id"});
             dwTrain.setResumeId(newResumeId);
             DwTrainingExperienceEntity dwt = dwTrainingExperienceRepository.save(dwTrain);
 //            log.info("the {} result of copy copyTrainingExperience: {}", i, dwt);
@@ -216,7 +215,7 @@ public class DeliverService {
 
         for (int i = 0; i < projects.size(); i++) {
             DwProjectExperienceEntity dwProject = new DwProjectExperienceEntity();
-            BeanUtils.copyProperties(projects.get(i), dwProject,new String[]{"id"});
+            BeanUtils.copyProperties(projects.get(i), dwProject, new String[]{"id"});
             dwProject.setResumeId(newResumeId);
             DwProjectExperienceEntity dwp = dwProjectExperienceRepository.save(dwProject);
 //            log.info("the {} result of copy copyProjectExperience: {}", i, dwp);
@@ -235,7 +234,7 @@ public class DeliverService {
 
         for (int i = 0; i < works.size(); i++) {
             DwWorkExperienceEntity dwWork = new DwWorkExperienceEntity();
-            BeanUtils.copyProperties(works.get(i), dwWork,new String[]{"id"});
+            BeanUtils.copyProperties(works.get(i), dwWork, new String[]{"id"});
             dwWork.setResumeId(newResumeId);
             DwWorkExperienceEntity dww = dwWorkExperienceRepository.save(dwWork);
 //            log.info("the {} result of copy copyWorkExperience: {}", i, dww);
@@ -253,7 +252,7 @@ public class DeliverService {
 
         for (int i = 0; i < internships.size(); i++) {
             DwInternshipExperienceEntity dwInternship = new DwInternshipExperienceEntity();
-            BeanUtils.copyProperties(internships.get(i), dwInternship,new String[]{"id"});
+            BeanUtils.copyProperties(internships.get(i), dwInternship, new String[]{"id"});
             dwInternship.setResumeId(newResumeId);
             DwInternshipExperienceEntity dwi = dwInternshipExperienceRepository.save(dwInternship);
 //            log.info("the {} result of copy copyInternshipExperience: {}", i, dwi);
@@ -272,7 +271,7 @@ public class DeliverService {
 
         for (int i = 0; i < awards.size(); i++) {
             DwAwardEntity dwAward = new DwAwardEntity();
-            BeanUtils.copyProperties(awards.get(i), dwAward,new String[]{"id"});
+            BeanUtils.copyProperties(awards.get(i), dwAward, new String[]{"id"});
             dwAward.setResumeId(newResumeId);
             DwAwardEntity dwa = dwAwardRepository.save(dwAward);
 //            log.info("the {} result of copy copyAward: {}", i, dwa);
@@ -288,11 +287,13 @@ public class DeliverService {
     private void copyJobIntention(Long oldResumeId, Long newResumeId) {
         JobIntentionEntity jobIntention = jobIntentionRepository.findByResumeId(oldResumeId);
 
-        DwJobIntentionEntity dwJobIntention = new DwJobIntentionEntity();
-        BeanUtils.copyProperties(jobIntention, dwJobIntention,new String[]{"id"});
-        dwJobIntention.setResumeId(newResumeId);
-        DwJobIntentionEntity dwj = dwJobIntentionRepository.save(dwJobIntention);
-//        log.info("the result of copy copyJobIntention: {}", dwj);
+        //为了适应奇怪的需求，导致的求职意向不存在的情况
+        if (jobIntention != null) {
+            DwJobIntentionEntity dwJobIntention = new DwJobIntentionEntity();
+            BeanUtils.copyProperties(jobIntention, dwJobIntention, new String[]{"id"});
+            dwJobIntention.setResumeId(newResumeId);
+            DwJobIntentionEntity dwj = dwJobIntentionRepository.save(dwJobIntention);
+        }
     }
 
     /**
@@ -403,7 +404,7 @@ public class DeliverService {
                 hashMap.put("salary", positionEntity.getSalary());
                 hashMap.put("education", positionEntity.getEducation());
                 hashMap.put("publishDate", positionEntity.getPublishDate().toString());
-                hashMap.put("deleteAuth",StatusCodeUtil.codeAnalysis(resumeDeliver.getRecruitmentState())==0?"1":"0");
+                hashMap.put("deleteAuth", StatusCodeUtil.codeAnalysis(resumeDeliver.getRecruitmentState()) == 0 ? "1" : "0");
                 res.add(hashMap);
             }
         }
