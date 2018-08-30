@@ -41,12 +41,12 @@ public class FileService {
      */
 //    private final String ROOT = "/Users/chikatsurasakai/";
 //    private final String ROOT = "/home/ubuntu/";
-    private final String ROOT = "/root/";
+//    private final String ROOT = "/root/";
 
     /**
      * 最终部署服务器文件存放位置
      */
-//    private final String ROOT = "/home/XMuniv-sp/chigy/";
+    private final String ROOT = "/home/XMuniv-sp/chigy/";
 
 
     /**
